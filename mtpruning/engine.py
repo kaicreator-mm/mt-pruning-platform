@@ -16,11 +16,13 @@ itself is the reference sigmoid + expert-bias rule everywhere.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import time
 from dataclasses import dataclass
 from pathlib import Path
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 from safetensors import safe_open
@@ -29,6 +31,9 @@ from safetensors import safe_open
 # alive for the rest of the process so a dropped Checkpoint cannot unmap memory
 # that a view still references.
 _HANDLES: list = []
+
+# Logits kept per traced position; the whole row is bound by a hash.
+TRACE_TOP = 64
 
 # Reference-implementation options this engine relies on. A checkpoint that
 # disagrees is not supported and must fail closed rather than run wrongly.
@@ -131,6 +136,19 @@ def eager_attention(query, key, value, n_rep, scaling, mask=None):
         weights = weights + mask
     weights = F.softmax(weights, dim=-1, dtype=torch.float32).to(query.dtype)
     return torch.matmul(weights, value)
+
+
+def trace_rows(logits: torch.Tensor) -> dict:
+    """What a traced position keeps: its TRACE_TOP largest logits with their indices, the
+    argmax, and a 128-bit hash of the whole row. Greedy decoding depends on nothing
+    beyond the largest logit, and the hash still tells whether two runs produced
+    exactly the same row.
+    """
+    values, index = torch.topk(logits.float(), TRACE_TOP, dim=-1)
+    raw = logits.contiguous().view(torch.uint16).numpy()
+    digest = b"".join(hashlib.blake2b(memoryview(row), digest_size=16).digest() for row in raw)
+    return {"top_values": values.bfloat16(), "top_index": index.int(), "argmax": logits.float().argmax(-1).int(),
+            "row_hash": torch.from_numpy(np.frombuffer(digest, dtype=np.uint8).reshape(-1, 16).copy())}
 
 
 def expert_combine(x: torch.Tensor, top: torch.Tensor, weights: torch.Tensor, gate, up, down) -> torch.Tensor:
@@ -247,7 +265,7 @@ class Generation:
     prompt_tokens: int
     prefill_seconds: float
     decode_seconds: float
-    trace: dict | None = None   # logits [steps, vocab] bf16, route_ids [steps, layers, k], route_w same
+    trace: dict | None = None   # per position: top_values, top_index, argmax, row_hash; route_ids, route_w
 
 
 class Engine:
@@ -405,7 +423,7 @@ class Engine:
         if trace and depth == 0:
             raise ValueError("nothing to trace: the checkpoint has no sparse layers")
         pending = {"phase": None, "rows": None}
-        id_steps, weight_steps, logits_steps = [], [], []
+        steps, id_steps, weight_steps = [], [], []
         previous = self.on_route
 
         def collector(layer_idx, phase, top, weights):
@@ -429,7 +447,7 @@ class Engine:
                 logits = self.forward(prompt_ids, cache, "prefill")
                 prefill_seconds = time.perf_counter() - t0
                 if trace:
-                    logits_steps.append(logits)
+                    steps.append(trace_rows(logits))
                     flush()
                 tokens, finish, t0 = [], "length", time.perf_counter()
                 for _ in range(max_new_tokens):
@@ -440,14 +458,14 @@ class Engine:
                     tokens.append(nxt)
                     logits = self.forward([nxt], cache, "decode")
                     if trace:
-                        logits_steps.append(logits[-1:])
+                        steps.append(trace_rows(logits[-1:]))
                         flush()
                 decode_seconds = time.perf_counter() - t0
         finally:
             self.on_route = previous
         record = None
         if trace:
-            record = {"logits": torch.cat(logits_steps),
-                      "route_ids": torch.cat(id_steps),        # [steps, layers, k], original expert ids
-                      "route_w": torch.cat(weight_steps)}      # [steps, layers, k]
+            record = {name: torch.cat([step[name] for step in steps]) for name in steps[0]}   # per position
+            record["route_ids"] = torch.cat(id_steps)        # [steps, layers, k], released expert ids
+            record["route_w"] = torch.cat(weight_steps)      # [steps, layers, k]
         return Generation(tokens, finish, len(prompt_ids), prefill_seconds, decode_seconds, record)

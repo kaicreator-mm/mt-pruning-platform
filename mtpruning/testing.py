@@ -1,6 +1,7 @@
 """Random-weight HY-V3 checkpoints in the released layout, for tests and pipeline dry runs."""
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import shutil
@@ -30,7 +31,8 @@ def tiny_config(vocab_size: int, num_experts=8, top_k=2, layers=3) -> dict:
     }
 
 
-def tiny_checkpoint(out_dir, tokenizer_dir, vocab_size=120832, seed=0, num_experts=8, top_k=2, layers=3) -> Path:
+def tiny_checkpoint(out_dir, tokenizer_dir, vocab_size=120832, seed=0, num_experts=8, top_k=2, layers=3,
+                      router_gain=3.0) -> Path:
     """Write a two-shard random checkpoint plus the tokenizer files of ``tokenizer_dir``; returns its path."""
     out_dir, tokenizer_dir = Path(out_dir), Path(tokenizer_dir)
     config = tiny_config(vocab_size, num_experts, top_k, layers)
@@ -60,8 +62,10 @@ def tiny_checkpoint(out_dir, tokenizer_dir, vocab_size=120832, seed=0, num_exper
         if layer == 0:
             tensors.update(mlp(prefix + "mlp.", config["intermediate_size"]))
         else:
-            tensors[prefix + "mlp.router.gate.weight"] = normal(experts, hidden, gain=6.0)
-            tensors[prefix + "mlp.expert_bias"] = (torch.rand(experts, generator=generator) - 0.5).float()
+            tensors[prefix + "mlp.router.gate.weight"] = normal(experts, hidden, gain=router_gain)
+            # a small expert bias: with a large one the same experts win for every token and pruning
+            # would never change a routing decision, which makes a dry run of the mechanism vacuous
+            tensors[prefix + "mlp.expert_bias"] = ((torch.rand(experts, generator=generator) - 0.5) * 0.1).float()
             tensors.update(mlp(prefix + "mlp.shared_mlp.", inter))
             for expert in range(experts):
                 tensors.update(mlp(f"{prefix}mlp.experts.{expert}.", inter))
@@ -85,4 +89,11 @@ def tiny_checkpoint(out_dir, tokenizer_dir, vocab_size=120832, seed=0, num_exper
     for name in AUX_FILES:
         if (tokenizer_dir / name).exists():
             shutil.copyfile(tokenizer_dir / name, out_dir / name)
+    # Declares these weights as synthetic, so identity.checkpoint_identity can bind them
+    # without mistaking them for anything real.
+    declared = ["config.json", "model.safetensors.index.json", *sorted(set(weight_map.values()))]
+    provenance = {"kind": "synthetic", "seed": seed,
+                  "files": {name: hashlib.sha256((out_dir / name).read_bytes()).hexdigest() for name in declared}}
+    (out_dir / "checkpoint_provenance.json").write_text(json.dumps(provenance, indent=2, sort_keys=True) + "\n",
+                                                        encoding="utf-8")
     return out_dir

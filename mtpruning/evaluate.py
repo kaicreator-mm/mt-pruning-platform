@@ -9,7 +9,7 @@ import numpy as np
 import torch
 from sacrebleu.metrics import CHRF
 
-from .corpus import DIRECTIONS
+from .identity import sha256_file
 
 # Pre-registered equivalence bound on the bf16 logits: 2 ULPs where the top logits live (16–32).
 EQUIV_ABS_TOL = 0.125
@@ -87,29 +87,34 @@ def paired_bootstrap(metric, baseline_rows, other_rows, resamples=2000, seed=42)
             "resamples": resamples, "seed": seed}
 
 
-def bf16_ulp_distance(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
-    """Distance between bf16 values in representable steps."""
-    def ordered(x):
-        bits = x.view(torch.int16).to(torch.int32) & 0xFFFF
-        return torch.where(bits >= 0x8000, 0x8000 - bits, bits)
-    return (ordered(a) - ordered(b)).abs()
+def trace_path(directory: Path, sentence_id: str) -> Path:
+    return Path(directory) / f"{sentence_id.replace(':', '__')}.trace.npz"
+
+
+def trace_complete(directory: Path, sentence_id: str) -> bool:
+    return trace_path(directory, sentence_id).exists()
 
 
 def save_trace(directory: Path, sentence_id: str, trace: dict) -> None:
-    name = sentence_id.replace(":", "__")
-    directory.mkdir(parents=True, exist_ok=True)
-    np.save(directory / f"{name}.logits.npy", trace["logits"].view(torch.uint16).numpy())
-    np.savez_compressed(directory / f"{name}.route.npz", ids=trace["route_ids"].numpy().astype(np.int16),
-                        w=trace["route_w"].numpy().astype(np.float32))
+    path = trace_path(directory, sentence_id)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(path, top_values=trace["top_values"].view(torch.uint16).numpy(),
+                        top_index=trace["top_index"].numpy(), argmax=trace["argmax"].numpy(),
+                        row_hash=trace["row_hash"].numpy(),
+                        ids=trace["route_ids"].numpy().astype(np.int32), w=trace["route_w"].numpy().astype(np.float32))
 
 
 def load_trace(directory: Path, sentence_id: str) -> dict | None:
-    name = sentence_id.replace(":", "__")
-    if not (directory / f"{name}.logits.npy").exists():
+    path = trace_path(directory, sentence_id)
+    if not path.exists():
         return None
-    route = np.load(directory / f"{name}.route.npz")
-    return {"logits": torch.from_numpy(np.load(directory / f"{name}.logits.npy")).view(torch.bfloat16),
-            "route_ids": torch.from_numpy(route["ids"].astype(np.int64)), "route_w": torch.from_numpy(route["w"])}
+    with np.load(path, allow_pickle=False) as data:
+        return {"top_values": torch.from_numpy(data["top_values"].copy()).view(torch.bfloat16),
+                "top_index": torch.from_numpy(data["top_index"].astype(np.int64)),
+                "argmax": torch.from_numpy(data["argmax"].astype(np.int64)),
+                "row_hash": torch.from_numpy(data["row_hash"].copy()),
+                "route_ids": torch.from_numpy(data["ids"].astype(np.int64)),
+                "route_w": torch.from_numpy(data["w"].astype(np.float32))}
 
 
 def compare_trace(reference: dict, candidate: dict) -> dict:
@@ -118,25 +123,39 @@ def compare_trace(reference: dict, candidate: dict) -> dict:
     Both traces hold every position the model was run on: the prompt, then each
     generated token. They agree only while both models generated the same tokens,
     so the comparison stops at the first position where the greedy choice differs.
+    Logits are compared on the union of the two top lists (an index missing from
+    one list counts as outside it); whether the whole rows are identical is decided
+    by their hashes.
     """
-    ref_logits, cand_logits = reference["logits"], candidate["logits"]
-    n = min(ref_logits.shape[0], cand_logits.shape[0])
-    ref_arg, cand_arg = ref_logits[:n].float().argmax(-1), cand_logits[:n].float().argmax(-1)
+    n = min(reference["argmax"].shape[0], candidate["argmax"].shape[0])
+    ref_arg, cand_arg = reference["argmax"][:n], candidate["argmax"][:n]
     mismatch = ref_arg != cand_arg
     first = int(mismatch.nonzero()[0]) if bool(mismatch.any()) else None
     stop = n if first is None else first + 1
-    diff = (ref_logits[:stop].float() - cand_logits[:stop].float()).abs()
-    ulp = bf16_ulp_distance(ref_logits[:stop], cand_logits[:stop])
+    ref_index, cand_index = reference["top_index"][:stop], candidate["top_index"][:stop]
+    union = torch.cat((ref_index, cand_index), dim=1)                    # [stop, top ref + top cand]
+    minus_inf = torch.tensor(float("-inf"))
+
+    def spread(index, values):
+        # the value a run assigns to every index of the union; -inf outside its top list
+        present = union[:, :, None] == index[:, None, :]
+        picked = torch.where(present, values[:, None, :].expand(-1, union.shape[1], -1), minus_inf)
+        return picked.amax(dim=-1)
+
+    ref_values = spread(ref_index, reference["top_values"][:stop].float())
+    cand_values = spread(cand_index, candidate["top_values"][:stop].float())
+    both = torch.isfinite(ref_values) & torch.isfinite(cand_values)
+    diff = torch.where(both, (ref_values - cand_values).abs(), torch.zeros_like(ref_values))
+    same_rows = bool((reference["row_hash"][:stop] == candidate["row_hash"][:stop]).all())
     ids_match = (torch.sort(reference["route_ids"][:stop], dim=-1).values
                  == torch.sort(candidate["route_ids"][:stop], dim=-1).values).all(dim=-1)
     weight_diff = (reference["route_w"][:stop] - candidate["route_w"][:stop]).abs()
     return {
         "positions_compared": stop,
         "logits_max_abs_diff": float(diff.max()),
-        "logits_mean_abs_diff": float(diff.mean()),
-        "logits_max_ulp": int(ulp.max()),
-        "logits_differing_elements": int((diff > 0).sum()),
-        "logits_elements": int(diff.numel()),
+        "logits_mean_abs_diff": float(diff.sum() / max(int(both.sum()), 1)),
+        "top_entries_outside_the_other_list": int((~both).sum()),
+        "full_logits_bitwise_identical": same_rows,
         "argmax_mismatches": int(mismatch.sum()),
         "first_divergent_position": first,
         "route_id_mismatches": int((~ids_match).sum()),
@@ -145,25 +164,34 @@ def compare_trace(reference: dict, candidate: dict) -> dict:
     }
 
 
-def compare_runs(reference_dir: Path, candidate_dir: Path, reference_text: dict, candidate_text: dict) -> dict:
+def compare_runs(reference_dir: Path, candidate_dir: Path, reference_text: dict, candidate_text: dict,
+                 expected_ids: list[str] | None = None) -> dict:
+    """Compare every traced sentence. With ``expected_ids`` the reference must hold exactly those."""
+    ids = sorted(path.name[:-len(".trace.npz")].replace("__", ":")
+                 for path in Path(reference_dir).glob("*.trace.npz"))
+    if expected_ids is not None and ids != sorted(expected_ids):
+        raise ValueError(f"reference traces cover {len(ids)} of the {len(expected_ids)} expected sentences")
+    if not ids:
+        raise ValueError("no traces to compare")
     sentences = []
-    for path in sorted(Path(reference_dir).glob("*.logits.npy")):
-        sentence_id = path.name[:-len(".logits.npy")].replace("__", ":")
+    for sentence_id in ids:
         reference, candidate = load_trace(reference_dir, sentence_id), load_trace(candidate_dir, sentence_id)
         if reference is None or candidate is None:
             raise ValueError(f"missing trace for {sentence_id}")
+        if sentence_id not in reference_text or sentence_id not in candidate_text:
+            raise ValueError(f"missing output text for {sentence_id}")
         result = compare_trace(reference, candidate)
-        result.update(id=sentence_id, text_equal=reference_text[sentence_id] == candidate_text[sentence_id])
+        result.update(id=sentence_id, text_equal=reference_text[sentence_id] == candidate_text[sentence_id],
+                      reference_trace_sha256=sha256_file(trace_path(reference_dir, sentence_id)),
+                      candidate_trace_sha256=sha256_file(trace_path(candidate_dir, sentence_id)))
         sentences.append(result)
-    if not sentences:
-        raise ValueError("no traces to compare")
     same_text = [s["text_equal"] for s in sentences]
     argmax_ok = [s["argmax_mismatches"] == 0 for s in sentences]
     route_ok = [s["route_id_mismatches"] == 0 for s in sentences]
     tol_ok = [s["logits_max_abs_diff"] <= EQUIV_ABS_TOL for s in sentences]
-    bitwise = [s["logits_differing_elements"] == 0 for s in sentences]
+    bitwise = [s["full_logits_bitwise_identical"] for s in sentences]
     return {
-        "sentences": len(sentences), "abs_tol": EQUIV_ABS_TOL,
+        "sentences": len(sentences), "abs_tol": EQUIV_ABS_TOL, "compared_logits": "64 largest per position",
         "identical_text": sum(same_text),
         "all_argmax_agree": sum(argmax_ok),
         "all_route_ids_agree": sum(route_ok),
@@ -171,7 +199,6 @@ def compare_runs(reference_dir: Path, candidate_dir: Path, reference_text: dict,
         "bitwise_identical_logits": sum(bitwise),
         "positions_compared": sum(s["positions_compared"] for s in sentences),
         "logits_max_abs_diff": max(s["logits_max_abs_diff"] for s in sentences),
-        "logits_max_ulp": max(s["logits_max_ulp"] for s in sentences),
         "route_id_mismatches": sum(s["route_id_mismatches"] for s in sentences),
         "pass": all(same_text) and all(argmax_ok) and all(route_ok) and all(tol_ok),
         "per_sentence": sentences,

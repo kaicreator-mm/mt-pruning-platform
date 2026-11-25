@@ -91,7 +91,6 @@ def sample_indices(texts, n_calibration: int, n_validation: int, n_test: int, se
     rng = random.Random(seed)
     picks, set_aside = {}, {}
     for lang in LANGUAGES:
-        count = len(texts[("dev", FLORES_LANG[lang])])
         clean = {split: [i for i in range(len(forms[split][0]))
                          if not any(forms[split][c][i] in across[other[split]] for c in range(len(codes)))]
                  for split in ("dev", "devtest")}

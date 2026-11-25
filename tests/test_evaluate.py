@@ -5,9 +5,9 @@ from pathlib import Path
 import torch
 
 from mtpruning.corpus import FLORES_LANG, build_prompt, prompt_lang, sample_indices
-from mtpruning.evaluate import (EQUIV_ABS_TOL, bf16_ulp_distance, chrf_pp, compare_runs, compare_trace,
-                                failure_flags, load_trace, paired_bootstrap, save_trace,
-                                score_from_stats, segment_stats)
+from mtpruning.evaluate import (EQUIV_ABS_TOL, chrf_pp, compare_runs, compare_trace,
+                                failure_flags, load_trace, paired_bootstrap, save_trace, score_from_stats,
+                                segment_stats, trace_complete)
 
 
 def flags(source, reference, hyp, tgt="en", finish="eos", tokens=(1, 2, 3)):
@@ -60,52 +60,84 @@ class MetricTests(unittest.TestCase):
 
 class TraceTests(unittest.TestCase):
     @staticmethod
-    def trace(steps, vocab=64, seed=0):
+    def trace(steps, vocab=2048, seed=0):
+        from mtpruning.engine import trace_rows
         generator = torch.Generator().manual_seed(seed)
+        logits = torch.randn(steps, vocab, generator=generator).bfloat16()
         ids = torch.stack([torch.randperm(8, generator=generator)[:2] for _ in range(steps * 2)]).reshape(steps, 2, 2)
-        return {"logits": torch.randn(steps, vocab, generator=generator).bfloat16(), "route_ids": ids,
+        return {**trace_rows(logits), "logits": logits, "route_ids": ids,
                 "route_w": torch.rand(steps, 2, 2, generator=generator)}
 
-    def test_ulp_distance(self):
-        one = torch.tensor([1.0], dtype=torch.bfloat16)
-        self.assertEqual(bf16_ulp_distance(one, torch.nextafter(one, torch.full_like(one, 2.0))).item(), 1)
-        self.assertEqual(bf16_ulp_distance(torch.tensor([0.0], dtype=torch.bfloat16),
-                                           torch.tensor([-0.0], dtype=torch.bfloat16)).item(), 0)
-        self.assertEqual(bf16_ulp_distance(one, -one).item(), 2 * 0x3F80)   # both sides of zero
+    @staticmethod
+    def refreshed(trace):
+        from mtpruning.engine import trace_rows
+        return {**trace, **trace_rows(trace["logits"])}
+
+    def test_a_traced_position_keeps_the_top_logits_and_binds_the_whole_row(self):
+        trace = self.trace(9)
+        self.assertEqual((tuple(trace["top_values"].shape), tuple(trace["row_hash"].shape)), ((9, 64), (9, 16)))
+        # bf16 has 8 mantissa bits, so the largest logit can be tied: the first index of the top
+        # list need not be argmax's choice, but the values must agree.
+        self.assertTrue(torch.equal(trace["top_values"][:, 0], trace["logits"].float().gather(1, trace["argmax"][:, None])[:, 0]))
+        self.assertEqual(int(trace["top_values"].shape[1]), 64)
+        self.assertEqual(self.refreshed(trace)["row_hash"].tolist(), trace["row_hash"].tolist())
+        self.assertLess(float(trace["top_values"][:, -1].max()), float(trace["logits"].max()))
 
     def test_identical_traces(self):
         a = self.trace(7)
         result = compare_trace(a, {k: v.clone() for k, v in a.items()})
         self.assertEqual((result["positions_compared"], result["argmax_mismatches"],
                           result["route_id_mismatches"], result["logits_max_abs_diff"]), (7, 0, 0, 0.0))
+        self.assertTrue(result["full_logits_bitwise_identical"])
 
     def test_comparison_stops_at_first_divergent_choice(self):
         a = self.trace(9)
         b = {k: v.clone() for k, v in a.items()}
-        other = (int(a["logits"][4].argmax()) + 1) % a["logits"].shape[1]
-        b["logits"][4, other] = a["logits"][4].max() + 8        # position 4 now prefers another token
-        result = compare_trace(a, b)
+        b["logits"][4, 1] = a["logits"][4].max() + 8            # position 4 now prefers token 1
+        result = compare_trace(a, self.refreshed(b))
         self.assertEqual((result["first_divergent_position"], result["positions_compared"],
                           result["argmax_mismatches"]), (4, 5, 1))
 
-    def test_compare_runs_round_trip(self):
+    def test_a_changed_row_is_detected_even_below_the_top_logits(self):
+        a = self.trace(6)
+        b = {k: v.clone() for k, v in a.items()}
+        b["logits"][2, -1] = torch.nextafter(b["logits"][2, -1], torch.tensor(1.0, dtype=torch.bfloat16))
+        result = compare_trace(a, self.refreshed(b))
+        self.assertFalse(result["full_logits_bitwise_identical"])
+        self.assertEqual(result["logits_max_abs_diff"], 0.0)    # the change is below the kept list
+        b["logits"][2, 0] += 0.25                                 # inside the kept list
+        result = compare_trace(a, self.refreshed(b))
+        self.assertGreaterEqual(result["logits_max_abs_diff"], 0.2)
+
+    def test_an_index_missing_from_the_other_top_list_is_reported(self):
+        a = self.trace(5)
+        b = {k: v.clone() for k, v in a.items()}
+        b["top_index"][3, -1] = b["top_index"][3, -2]            # one index of a's list is absent from b's
+        self.assertEqual(compare_trace(a, b)["top_entries_outside_the_other_list"], 1)
+
+    def test_save_load_round_trip_and_compare_runs(self):
         with tempfile.TemporaryDirectory() as tmp:
             a, b = Path(tmp) / "a", Path(tmp) / "b"
             first = self.trace(6, seed=3)
             save_trace(a, "test:zh-my:12", first)
-            save_trace(b, "test:zh-my:12", {k: v.clone() for k, v in first.items()})
+            self.assertTrue(trace_complete(a, "test:zh-my:12"))
             loaded = load_trace(a, "test:zh-my:12")
-            self.assertTrue(torch.equal(loaded["logits"], first["logits"]))
-            self.assertTrue(torch.equal(loaded["route_ids"], first["route_ids"]))
-            self.assertTrue(torch.equal(loaded["route_w"], first["route_w"]))
+            for name in ("top_values", "top_index", "argmax", "row_hash", "route_ids", "route_w"):
+                self.assertTrue(torch.equal(loaded[name], first[name]), name)
+            save_trace(b, "test:zh-my:12", {k: v.clone() for k, v in first.items()})
             text = {"test:zh-my:12": "same"}
-            passing = compare_runs(a, b, text, text)
+            passing = compare_runs(a, b, text, text, ["test:zh-my:12"])
             self.assertTrue(passing["pass"])
             self.assertEqual((passing["bitwise_identical_logits"], passing["positions_compared"]), (1, 6))
-            diverged = self.trace(6, seed=4)
-            save_trace(b, "test:zh-my:12", diverged)
+            sentence = passing["per_sentence"][0]
+            self.assertEqual(sentence["reference_trace_sha256"], sentence["candidate_trace_sha256"])
+            with self.assertRaisesRegex(ValueError, "expected sentences"):
+                compare_runs(a, b, text, text, ["test:zh-my:12", "test:zh-my:13"])
+            save_trace(b, "test:zh-my:12", self.trace(6, seed=4))
             failing = compare_runs(a, b, text, {"test:zh-my:12": "different"})
             self.assertFalse(failing["pass"])
+            self.assertNotEqual(failing["per_sentence"][0]["reference_trace_sha256"],
+                                failing["per_sentence"][0]["candidate_trace_sha256"])
         self.assertEqual(EQUIV_ABS_TOL, 0.125)
 
 

@@ -2,6 +2,17 @@
 
 MODEL_REPO = "tencent/Hy-MT3-30B-A3B"
 MODEL_REVISION = "08ae9acea91abe265c6236e757e49d8851e1ce06"
+# Per-file sizes and hashes of the pinned revision, as listed by huggingface.co.
+MANIFEST_PATH = "manifests/hf_manifest.tsv"
+
+# The frozen pilot corpus. Only its manifest is committed (line numbers, hashes, rules);
+# the text is rebuilt from the FLORES-200 tarball and is bound by these two hashes.
+CORPUS_MANIFEST_SHA256 = "e516cc92a805eb3273c9376741ba5b4f24229d03d7189f0275d2829de848b901"
+CORPUS_SHA256 = "9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4"
+
+DECODING = "greedy (argmax of bf16 logits)"
+# Provisional gate of issue #1: chrF++ may not drop by more than this many points in any direction.
+MAX_CHRF_DROP = 1.0
 
 FLORES_URL = "https://dl.fbaipublicfiles.com/nllb/flores200_dataset.tar.gz"
 FLORES_LICENSE = "CC-BY-SA 4.0"

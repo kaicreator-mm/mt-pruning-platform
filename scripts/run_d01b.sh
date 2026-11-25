@@ -1,43 +1,67 @@
 #!/usr/bin/env bash
-# D01b real-weight validation: every stage, in order, on one machine.
+# D01b real-weight experiment on one machine, in stages. Safe to rerun: a stage whose
+# output exists is skipped, and a run resumes from its journal.
 #
-# Safe to rerun: a stage whose output already exists is skipped, and the run stage
-# resumes per sentence. Pruned checkpoints are deleted once their manifest,
-# verification and comparisons are on disk; they can be rebuilt from the
-# selection file.
+# By default this script stops after the provisional decision and never runs the
+# test split:
+#   corpus check → checkpoint content → baseline (calibration + validation) → selection
+#   → identity reload of the unpruned checkpoint (no-op), on validation sentences
+#   → per candidate: physical prune, masked equivalence on validation sentences, reference
+#     runtime, complete validation
+#   → provisional decision (validation only) → report
 #
-# Defaults are the real run on CC-LAN200. For a dry run on a tiny checkpoint set
-# MODEL_DIR, TOKENIZER_DIR, RUN, PRUNED, EVIDENCE_DIR, KEEP_LIST (first entry =
-# the checkpoint's expert count), LIMIT and SKIP_WAIT.
-set -uo pipefail
+# The mechanism checks run on held-out validation sentences, not on the calibration
+# sentences the selection was built from: the pruned experts are the ones the calibration
+# sentences rarely use, so on those the mask would hardly ever change a routing decision.
+#
+# The final test is a separate, explicit step that needs the independently reviewed
+# decision and a reference to that review:
+#   FINAL_TEST=1 REVIEWED_DECISION_SHA256=<sha256 of decision.json> REVIEW_REF=<review> \
+#   bash scripts/run_d01b.sh
+#
+# Environment (defaults are the real run on CC-LAN200; a dry run overrides them):
+#   PY ROOT RUN PRUNED EVIDENCE_DIR CACHE_DIR HUB_DIR MODEL_DIR TOKENIZER_DIR
+#   CORPUS_TARBALL MANIFEST_SHA256 CANDIDATES TRACE_LIMIT MAX_NEW THREADS LIMIT SKIP_WAIT
+#   FINAL_TEST REVIEWED_DECISION_SHA256 REVIEW_REF
+set -euo pipefail
 
 PY=${PY:-/home/cc/miniconda3/envs/mt-pruning/bin/python}
 ROOT=${ROOT:-$HOME/.cache/mt-pruning}
 REPO=$(cd "$(dirname "$0")/.." && pwd)
-REV=08ae9acea91abe265c6236e757e49d8851e1ce06
 HUB_DIR=${HUB_DIR:-$ROOT/hf_home/hub/models--tencent--Hy-MT3-30B-A3B}
-MODEL_DIR=${MODEL_DIR:-$HUB_DIR/snapshots/$REV}
-TARBALL=${TARBALL:-$ROOT/data/flores200_dataset.tar.gz}
+MODEL_DIR=${MODEL_DIR:-$HUB_DIR/snapshots/08ae9acea91abe265c6236e757e49d8851e1ce06}
 TOKENIZER_DIR=${TOKENIZER_DIR:-$MODEL_DIR}
 RUN=${RUN:-$ROOT/run-d01b}
 PRUNED=${PRUNED:-$ROOT/pruned}
-KEEP_LIST=${KEEP_LIST:-"128 96 64"}
-TRACE_N=${TRACE_N:-8}            # traced sentences per direction
-TRACE_LIMIT=${TRACE_LIMIT:-8}    # sentences per direction in the no-op / masked runs
+CACHE_DIR=${CACHE_DIR:-$ROOT/content-hashes}
+EVIDENCE_DIR=${EVIDENCE_DIR:-$REPO/evidence/d01b}
+CANDIDATES=${CANDIDATES:-"96 64"}
+TRACE_LIMIT=${TRACE_LIMIT:-8}       # validation sentences per direction in the mechanism checks
 MAX_NEW=${MAX_NEW:-640}
 THREADS=${THREADS:-16}
-LIMIT=${LIMIT:-}                 # sentences per split and direction; non-empty means dry run
 SKIP_WAIT=${SKIP_WAIT:-}
-EVIDENCE_DIR=${EVIDENCE_DIR:-$REPO/evidence/d01b}
-mkdir -p "$RUN" "$PRUNED" "$EVIDENCE_DIR/inputs"
+mkdir -p "$RUN" "$PRUNED" "$CACHE_DIR" "$EVIDENCE_DIR/inputs"
 cd "$REPO"
+CORPUS=$RUN/corpus/corpus.jsonl
 
 step() { echo "[$(date -u +%FT%TZ)] $*"; }
+# Checked first: a final test without the review is refused before any stage runs.
+if [ "${FINAL_TEST:-0}" = "1" ] && { [ -z "${REVIEWED_DECISION_SHA256:-}" ] || [ -z "${REVIEW_REF:-}" ]; }; then
+  echo "FINAL_TEST=1 needs REVIEWED_DECISION_SHA256 and REVIEW_REF"; exit 1
+fi
+PIN=(); [ -n "${MANIFEST_SHA256:-}" ] && PIN=(--manifest-sha256 "$MANIFEST_SHA256")
+LIMITED=(); [ -n "${LIMIT:-}" ] && LIMITED=(--limit "$LIMIT")
+COMMON=(--threads "$THREADS" --cache-dir "$CACHE_DIR" "${PIN[@]}")
+
+if [ -z "$SKIP_WAIT" ]; then
+  step "wait for the checkpoint download"
+  while [ ! -f "$HUB_DIR/snapshots/DOWNLOAD_COMPLETE" ]; do sleep 60; done
+  cp "$HUB_DIR/snapshots/download.state" "$EVIDENCE_DIR/inputs/download_state.txt"
+fi
 {
   echo "captured $(date -u +%FT%TZ) on $(hostname)"
   lscpu | grep -E "^(Model name|CPU\(s\)|Thread\(s\) per core|Core\(s\) per socket|NUMA node\(s\)|L3 cache)"
-  echo "flags of interest: $(lscpu | grep -o -E "avx[0-9a-z_]*|amx[a-z_]*" | sort -u | tr "
-" " ")"
+  echo "flags of interest: $(lscpu | grep -o -E "avx[0-9a-z_]*|amx[a-z_]*" | sort -u | tr "\n" " ")"
   free -g
   df -h / | sed -n '1p;2p'
   nvidia-smi --query-gpu=name,memory.total,memory.used --format=csv 2>&1
@@ -45,94 +69,106 @@ step() { echo "[$(date -u +%FT%TZ)] $*"; }
   uptime
   "$PY" -c "import sys, torch, transformers, sacrebleu, numpy; print('python', sys.version.split()[0], 'torch', torch.__version__, 'transformers', transformers.__version__, 'sacrebleu', sacrebleu.__version__, 'numpy', numpy.__version__, 'cuda', torch.cuda.is_available())"
 } > "$EVIDENCE_DIR/inputs/host.txt" 2>&1
-LIMIT_ARG=(); [ -n "$LIMIT" ] && LIMIT_ARG=(--limit "$LIMIT")
-COMMON=(--corpus "$RUN/corpus/corpus.jsonl" --max-new-tokens "$MAX_NEW" --threads "$THREADS")
 
-if [ -z "$SKIP_WAIT" ]; then
-  step "wait for the checkpoint download"
-  while [ ! -f "$HUB_DIR/snapshots/DOWNLOAD_COMPLETE" ]; do sleep 60; done
-  cp "$HUB_DIR/snapshots/download.state" "$EVIDENCE_DIR/inputs/download_state.txt"
+step "checkpoint content: hash every shard and compare with what the directory claims to be"
+"$PY" -m mtpruning checkpoint-check --model "$MODEL_DIR" --cache-dir "$CACHE_DIR" \
+  --out "$EVIDENCE_DIR/inputs/checkpoint_content.json"
+
+if [ ! -f "$CORPUS" ]; then
+  [ -n "${CORPUS_TARBALL:-}" ] || { echo "no corpus in $RUN and CORPUS_TARBALL is not set"; exit 1; }
+  step "build the corpus once; the check below decides whether it is the frozen one"
+  "$PY" -m mtpruning corpus --tarball "$CORPUS_TARBALL" --tokenizer "$TOKENIZER_DIR" --out "$RUN/corpus"
 fi
+step "frozen corpus contract (a failure here is BLOCKED_CORPUS_CONTRACT: nothing is resampled)"
+"$PY" -m mtpruning corpus-check --corpus-dir "$RUN/corpus" --out "$RUN/corpus_receipt.json" "${PIN[@]}"
 
-if [ ! -f "$RUN/corpus/corpus.jsonl" ]; then
-  step "corpus"
-  "$PY" -m mtpruning corpus --tarball "$TARBALL" --tokenizer "$TOKENIZER_DIR" --out "$RUN/corpus"
-fi
+step "baseline: calibration routing statistics and validation outputs"
+"$PY" -m mtpruning run --model "$MODEL_DIR" --corpus "$CORPUS" --out "$RUN/baseline/records.jsonl" \
+  --splits calibration,validation --stats "$RUN/baseline/stats" \
+  --trace-split validation --trace-dir "$RUN/baseline/traces" --trace-n "$TRACE_LIMIT"   --max-new-tokens "$MAX_NEW" "${LIMITED[@]}" "${COMMON[@]}"
+EXPERTS=$("$PY" -c "import json,sys; print(json.loads(open(sys.argv[1]).readline())['num_experts'])" "$RUN/baseline/records.jsonl")
 
-step "baseline run: original model, routing statistics, traces"
-"$PY" -m mtpruning run --model "$MODEL_DIR" --out "$RUN/baseline/records.jsonl" \
-  --stats "$RUN/baseline/stats" --trace-dir "$RUN/baseline/traces" --trace-n "$TRACE_N" \
-  "${COMMON[@]}" "${LIMIT_ARG[@]}"
+step "selection from the calibration routing, after the coverage check"
+"$PY" -m mtpruning select --run-dir "$RUN" --keep "$(echo "$CANDIDATES" | tr ' ' ',')" \
+  --out "$RUN/selection.json" "${PIN[@]}"
 
-SOURCE_EXPERTS=${KEEP_LIST%% *}
-CANDIDATES=${KEEP_LIST#* }
-if [ ! -f "$RUN/selection.json" ]; then
-  step "select: direction-balanced expert sets"
-  "$PY" -m mtpruning select --model "$MODEL_DIR" --stats "$RUN/baseline/stats" \
-    --keep "$(echo "$CANDIDATES" | tr ' ' ',')" --out "$RUN/selection.json"
-fi
-
-for K in $KEEP_LIST; do
-  D=$RUN/k$K
-  P=$PRUNED/k$K
-  mkdir -p "$D"
-  if [ ! -f "$D/prune.json" ]; then
-    step "prune $K: physical checkpoint + tensor-level verification of the reload"
-    # Stop before filling the disk: the pruned checkpoint is roughly K/E of the source plus slack for traces.
-    need=$("$PY" - "$MODEL_DIR" "$K" <<'EOF'
+# Stop before filling the disk: a pruned checkpoint is about keep/experts of the source, plus slack.
+needs_space() {
+  local need avail
+  need=$("$PY" - "$MODEL_DIR" "$1" <<'EOF'
 import json, sys
 total = json.load(open(sys.argv[1] + "/model.safetensors.index.json"))["metadata"]["total_size"]
 experts = json.load(open(sys.argv[1] + "/config.json"))["num_experts"]
 print(int(total * int(sys.argv[2]) / experts * 1.05) + 3_000_000_000)
 EOF
 )
-    avail=$(df --output=avail -B1 "$PRUNED" | tail -n 1)
-    if [ "$avail" -lt "$need" ]; then step "need $need bytes free in $PRUNED, have $avail: stopping"; exit 1; fi
-    rm -rf "$P"    # leftovers of an interrupted prune; the manifest is only written after verification
-    "$PY" -m mtpruning prune --model "$MODEL_DIR" --selection "$RUN/selection.json" --keep "$K" \
-      --out "$P" --out-manifest "$D/prune.json"
-  fi
-  SMALL=(--splits calibration --limit "$TRACE_LIMIT" --trace-n "$TRACE_N")
-  if [ "$K" = "$SOURCE_EXPERTS" ]; then
-    step "k$K: reload the identity prune and compare with the baseline traces"
-    "$PY" -m mtpruning run --model "$P" --out "$D/records.jsonl" --trace-dir "$D/traces" \
-      "${SMALL[@]}" "${COMMON[@]}"
-    "$PY" -m mtpruning equiv --reference-traces "$RUN/baseline/traces" --candidate-traces "$D/traces" \
-      --reference-records "$RUN/baseline/records.jsonl" --candidate-records "$D/records.jsonl" \
-      --out "$D/equiv.json" || { step "k$K no-op check FAILED: stopping"; exit 1; }
-    rm -rf "$D/traces" "$RUN/baseline/traces"    # ~2.3 GB per run; the comparisons keep their summaries
-  else
-    step "k$K: masked original (traces)"
-    "$PY" -m mtpruning run --model "$MODEL_DIR" --out "$D/masked/records.jsonl" \
-      --mask "$RUN/selection.json" --mask-keep "$K" --trace-dir "$D/masked/traces" \
-      "${SMALL[@]}" "${COMMON[@]}"
-    step "k$K: reloaded physical prune (validation + test, traces)"
-    "$PY" -m mtpruning run --model "$P" --out "$D/records.jsonl" --trace-dir "$D/traces" \
-      --trace-n "$TRACE_N" "${COMMON[@]}" "${LIMIT_ARG[@]}"
-    step "k$K: masked equivalence"
-    "$PY" -m mtpruning equiv --reference-traces "$D/masked/traces" --candidate-traces "$D/traces" \
-      --reference-records "$D/masked/records.jsonl" --candidate-records "$D/records.jsonl" \
-      --out "$D/equiv.json" || step "k$K masked equivalence FAILED: recorded, continuing"
-    rm -rf "$D/traces" "$D/masked/traces"
-    step "k$K: unmodified reference runtime on the pruned checkpoint"
-    "$PY" -m mtpruning stock-check --model "$P" --corpus "$RUN/corpus/corpus.jsonl" \
-      --records "$D/records.jsonl" --out "$D/stock_check.json" --splits validation --limit 1 \
-      --max-new-tokens "$MAX_NEW" --threads "$THREADS" || step "k$K stock check FAILED: recorded, continuing"
-  fi
-  if [ -f "$D/equiv.json" ]; then
-    step "release $P"
-    rm -rf "$P"
-  fi
+  avail=$(df --output=avail -B1 "$PRUNED" | tail -n 1)
+  if [ "$avail" -lt "$need" ]; then echo "need $need bytes free in $PRUNED, have $avail: stopping"; exit 1; fi
+}
+
+mechanism() {       # mechanism <keep> <model dir> <equiv args...>
+  local keep=$1 model=$2 folder=$RUN/k$1
+  shift 2
+  "$PY" -m mtpruning run --model "$model" --corpus "$CORPUS" --out "$folder/mechanism/records.jsonl" \
+    --splits validation --limit "$TRACE_LIMIT" --trace-dir "$folder/mechanism/traces" --trace-n "$TRACE_LIMIT" \
+    --max-new-tokens "$MAX_NEW" "${COMMON[@]}"
+  "$PY" -m mtpruning equiv --run-dir "$RUN" --keep "$keep" --candidate-traces "$folder/mechanism/traces" \
+    --candidate-records "$folder/mechanism/records.jsonl" --prune-record "$folder/prune.json" \
+    --trace-n "$TRACE_LIMIT" --out "$folder/equiv.json" "$@"
+  rm -rf "$folder/mechanism/traces"
+}
+
+step "identity reload of the unpruned checkpoint ($EXPERTS experts) against the baseline traces"
+needs_space "$EXPERTS"
+rm -rf "$PRUNED/k$EXPERTS"    # leftovers of an interrupted prune; the record is only written after verification
+"$PY" -m mtpruning prune --model "$MODEL_DIR" --keep "$EXPERTS" --out "$PRUNED/k$EXPERTS" \
+  --out-manifest "$RUN/k$EXPERTS/prune.json" --cache-dir "$CACHE_DIR"
+mechanism "$EXPERTS" "$PRUNED/k$EXPERTS" --kind noop --reference-traces "$RUN/baseline/traces" \
+  --reference-records "$RUN/baseline/records.jsonl" "${PIN[@]}"
+rm -rf "$PRUNED/k$EXPERTS" "$RUN/baseline/traces"    # about 2.3 GB of traces in the real run
+
+for keep in $CANDIDATES; do
+  folder=$RUN/k$keep
+  step "k$keep: physical prune and tensor-level verification of the reload"
+  needs_space "$keep"
+  rm -rf "$PRUNED/k$keep"
+  "$PY" -m mtpruning prune --model "$MODEL_DIR" --selection "$RUN/selection.json" --keep "$keep" \
+    --out "$PRUNED/k$keep" --out-manifest "$folder/prune.json" --cache-dir "$CACHE_DIR"
+  step "k$keep: masked original, then the reloaded prune, then their equivalence"
+  "$PY" -m mtpruning run --model "$MODEL_DIR" --corpus "$CORPUS" --out "$folder/masked/records.jsonl" \
+    --mask "$RUN/selection.json" --mask-keep "$keep" --splits validation --limit "$TRACE_LIMIT" \
+    --trace-dir "$folder/masked/traces" --trace-n "$TRACE_LIMIT" --max-new-tokens "$MAX_NEW" "${COMMON[@]}"
+  mechanism "$keep" "$PRUNED/k$keep" --kind masked --reference-traces "$folder/masked/traces" \
+    --reference-records "$folder/masked/records.jsonl" --selection "$RUN/selection.json" "${PIN[@]}"
+  rm -rf "$folder/masked/traces"
+  step "k$keep: validation outputs of the reloaded prune (the test split is not run)"
+  "$PY" -m mtpruning run --model "$PRUNED/k$keep" --corpus "$CORPUS" --out "$folder/records.jsonl" \
+    --splits validation --max-new-tokens "$MAX_NEW" "${LIMITED[@]}" "${COMMON[@]}"
+  step "k$keep: unmodified reference runtime on the pruned checkpoint"
+  "$PY" -m mtpruning stock-check --model "$PRUNED/k$keep" --corpus "$CORPUS" --records "$folder/records.jsonl" \
+    --out "$folder/stock_check.json" --splits validation --limit 1 --max-new-tokens "$MAX_NEW" --threads "$THREADS" "${PIN[@]}"
+  rm -rf "$PRUNED/k$keep"      # rebuildable from the selection; manifest, hashes and checks are on disk
 done
 
+step "provisional decision from validation records only"
+"$PY" -m mtpruning decide --run-dir "$RUN" --candidates "$(echo "$CANDIDATES" | tr ' ' ',')" \
+  --out "$RUN/decision.json" "${PIN[@]}"
+"$PY" -c "import hashlib,sys; print('decision.json sha256', hashlib.sha256(open(sys.argv[1],'rb').read()).hexdigest())" "$RUN/decision.json"
+
+if [ "${FINAL_TEST:-0}" = "1" ]; then
+  step "final test for the reviewed candidate"
+  "$PY" -m mtpruning final-test --run-dir "$RUN" --decision-sha256 "$REVIEWED_DECISION_SHA256" \
+    --review-ref "$REVIEW_REF" --threads "$THREADS" --cache-dir "$CACHE_DIR" "${PIN[@]}"
+else
+  step "final test: HOLD (set FINAL_TEST=1 with the reviewed decision hash and review reference to run it)"
+fi
+
 step "report"
-VARIANTS="{\"baseline\": \"baseline\""
-for K in $CANDIDATES; do VARIANTS="$VARIANTS, \"$K\": \"k$K\""; done
-VARIANTS="$VARIANTS}"
-"$PY" -m mtpruning report --run-dir "$RUN" --variants "$VARIANTS"
+"$PY" -m mtpruning report --run-dir "$RUN" "${PIN[@]}"
 
 step "collect evidence"
-( cd "$RUN" && find . -type f \( -name "*.json" -o -name "*.jsonl" -o -name "*.npz" \) -not -path "*/traces/*" ) | while read -r f; do
+(cd "$RUN" && find . -type f \( -name "*.json" -o -name "*.jsonl" -o -name "*.npz" -o -name "report.md" \) \
+    -not -path "*/traces/*" -not -name "*.timings.jsonl") | while read -r f; do
   mkdir -p "$EVIDENCE_DIR/$(dirname "$f")"
   cp "$RUN/$f" "$EVIDENCE_DIR/$f"
 done

@@ -18,6 +18,7 @@ from pathlib import Path
 import torch
 
 from .engine import Checkpoint
+from .identity import checkpoint_identity
 
 AUX_FILES = ("tokenizer.json", "tokenizer_config.json", "special_tokens_map.json", "chat_template.jinja")
 _EXPERT = re.compile(r"^model\.layers\.(\d+)\.mlp\.experts\.(\d+)\.(gate|up|down)_proj\.weight$")
@@ -114,8 +115,16 @@ def sha256_file(path: Path) -> str:
 
 
 def write_pruned(source: Checkpoint, kept: dict[int, list[int]], out_dir: Path,
-                 max_shard_bytes: int = 5_000_000_000) -> dict:
-    """Write the pruned checkpoint and return its manifest."""
+                 max_shard_bytes: int = 5_000_000_000, source_identity: dict | None = None) -> dict:
+    """Write the pruned checkpoint and return its manifest.
+
+    The manifest records where the checkpoint came from: the content digest of its
+    source and the hash of every file written, so later runs can bind to it.
+    ``source_identity`` is the result of identity.checkpoint_identity of the source;
+    pass it when the source is large and its hashes are cached.
+    """
+    if source_identity is None:
+        source_identity = checkpoint_identity(source.path)
     out_dir = Path(out_dir)
     if out_dir.exists() and any(out_dir.iterdir()):
         raise ValueError(f"{out_dir} is not empty")
@@ -149,6 +158,8 @@ def write_pruned(source: Checkpoint, kept: dict[int, list[int]], out_dir: Path,
             shutil.copyfile(source.path / name, out_dir / name)
     manifest = {
         "source_path": str(source.path), "source_num_experts": source.num_experts, "num_experts": config["num_experts"],
+        "source": {"kind": source_identity["kind"], "digest": source_identity["teacher"],
+                   "num_experts": source_identity["num_experts"]},
         "kept": {str(layer): list(ids) for layer, ids in sorted(kept.items())},
         "tensors": len(weight_map), "tensor_bytes": total, "files": files,
         "index_sha256": sha256_file(out_dir / "model.safetensors.index.json"),

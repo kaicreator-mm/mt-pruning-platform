@@ -55,7 +55,9 @@ class EngineVsReference(unittest.TestCase):
             self.assertEqual((a.tokens, a.finish), (b.tokens, b.finish))
             self.assertTrue(torch.equal(a.trace["route_ids"], b.trace["route_ids"]), "routing ids differ")
             self.assertTrue(torch.equal(a.trace["route_w"], b.trace["route_w"]), "routing weights differ")
-            self.assertTrue(torch.equal(a.trace["logits"], b.trace["logits"]), "logits differ")
+            self.assertTrue(torch.equal(a.trace["row_hash"], b.trace["row_hash"]), "logits differ")
+            self.assertTrue(torch.equal(a.trace["top_values"], b.trace["top_values"])
+                            and torch.equal(a.trace["top_index"], b.trace["top_index"]), "top logits differ")
 
     def test_prefill_logits_are_identical_to_the_reference(self):
         engine = Engine(self.source)
