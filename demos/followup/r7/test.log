@@ -1,0 +1,27 @@
+test_bad_score (test_handoff.HandoffTests.test_bad_score) ... ok
+test_boundary (test_handoff.HandoffTests.test_boundary) ... ok
+test_choose_smallest (test_handoff.HandoffTests.test_choose_smallest) ... ok
+test_corpus_hash (test_handoff.HandoffTests.test_corpus_hash) ... ok
+test_decoding (test_handoff.HandoffTests.test_decoding) ... ok
+test_digit_fold (test_handoff.HandoffTests.test_digit_fold) ... ok
+test_duplicate (test_handoff.HandoffTests.test_duplicate) ... ok
+test_empty (test_handoff.HandoffTests.test_empty) ... ok
+test_fallback (test_handoff.HandoffTests.test_fallback) ... ok
+test_manifest_hash (test_handoff.HandoffTests.test_manifest_hash) ... ok
+test_masked (test_handoff.HandoffTests.test_masked) ... ok
+test_missing (test_handoff.HandoffTests.test_missing) ... ok
+test_no_test_authorization (test_handoff.HandoffTests.test_no_test_authorization) ... ok
+test_parallel_alignment (test_handoff.HandoffTests.test_parallel_alignment) ... ok
+test_parallel_leak (test_handoff.HandoffTests.test_parallel_leak) ... ok
+test_prompt_count (test_handoff.HandoffTests.test_prompt_count) ... ok
+test_reorder (test_handoff.HandoffTests.test_reorder) ... ok
+test_test_header (test_handoff.HandoffTests.test_test_header) ... ok
+test_test_row (test_handoff.HandoffTests.test_test_row) ... ok
+test_text_leak (test_handoff.HandoffTests.test_text_leak) ... ok
+test_wrong_direction (test_handoff.HandoffTests.test_wrong_direction) ... ok
+test_wrong_model (test_handoff.HandoffTests.test_wrong_model) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.026s
+
+OK
