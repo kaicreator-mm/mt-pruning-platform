@@ -3,8 +3,12 @@
 Every quality statement goes through the reviewed r6 gate, which refuses a
 missing or duplicated direction, an incomplete group, a non-finite score or an
 inconsistent delta. A candidate whose records do not completely cover a split is
-NOT_EVALUATED on that split; it is never PASS. The test split appears only after
-the final-test stage ran for the reviewed candidate.
+NOT_EVALUATED on that split; it is never PASS. The whole verdict additionally
+goes through the same shared evidence-chain verifier the decision used
+(verify_pilot_chain): any missing, stale or altered receipt, any plan deviation,
+and the report cannot qualify a subset (R13-P1-03). The test split is out of
+scope in this build: final-test execution is hard-disabled and no ledger entry
+or leftover artifact can produce a test gate here (R13-P1-05).
 """
 from __future__ import annotations
 
@@ -19,15 +23,16 @@ import numpy as np
 from .corpus import DIRECTIONS
 from .evaluate import chrf_pp, failure_flags, paired_bootstrap, score_from_stats, segment_stats
 from .frozen import BlockedCorpus, load_frozen_corpus
-from .pipeline import read_json, read_run, sha256_file, write_text_atomic
+from .pipeline import (FINAL_TEST_DISABLED, read_json, read_run, sha256_file, verify_pilot_chain,
+                       write_text_atomic)
 from .reviewed import bridge, handoff
-from .spec import CORPUS_MANIFEST_SHA256, DECODING, MODEL_REVISION
+from .spec import CORPUS_MANIFEST_SHA256, MODEL_REVISION, PLAN
 
 # Failure flags a candidate must not add to, next to the chrF++ gate.
 DIAGNOSTIC_FLAGS = ("empty", "truncated", "digits_differ_from_reference")
-HELD = "the test split is held until the selection identity and evidence are independently reviewed"
+OUT_OF_SCOPE_TEST = "the final test is hard-disabled in this build; prior test exposure is out of scope here"
 NOT_RUN = [
-    f"the test split for every candidate ({HELD})",
+    f"the test split for every candidate ({FINAL_TEST_DISABLED})",
     "80 experts per layer (the issue lists 96/80/64; this pilot covers 96 and 64)",
     "same-size random pruning baseline and the 7B dense model as quality anchors",
     "GGUF at the same quantization, and peak memory / speed on the 16 GiB GPU",
@@ -78,43 +83,6 @@ def validation_records(manifest, contexts, path, keep, candidate) -> dict | None
     if read_run(path)[0] is None:
         return None
     return handoff.records(path, manifest, contexts, keep, candidate=candidate)[1]
-
-
-def read_json_lines(path) -> list[dict]:
-    with open(path, encoding="utf-8") as handle:
-        return [json.loads(line) for line in handle if line.strip()]
-
-
-def test_records(manifest, contexts, path, keep) -> dict:
-    """Test records of a run with exactly the expected coverage.
-
-    The reviewed r7 loader is validation-only by design and never accepts a test
-    record, so its checks are repeated here for the test split.
-    """
-    need, out, seen = handoff.need, {}, set()
-    rows = read_json_lines(path)
-    need(rows and rows[0].get("type") == "run", "missing run header")
-    header = rows[0]
-    need(header.get("corpus_sha256") == manifest["corpus_sha256"] and header.get("num_experts") == keep
-         and "masked_keep" in header and header["masked_keep"] is None, "wrong run identity")
-    need(header.get("splits") == ["test"], "not a test-only run")
-    need(type(header.get("max_new_tokens")) is int and header["max_new_tokens"] > 0
-         and header.get("decoding") == DECODING, "bad decoding contract")
-    for row in rows[1:]:
-        need(row.get("type") == "sentence" and row.get("id") in contexts and row["id"] not in seen,
-             "invalid/duplicate run record")
-        seen.add(row["id"])
-        context = contexts[row["id"]]
-        need(context["split"] == "test" and all(row.get(k) == context[k] for k in ("split", "direction", "line")),
-             "run sample mismatch")
-        need(row.get("prompt_tokens") == len(context["prompt_ids"]) and isinstance(row.get("tokens"), list)
-             and all(type(t) is int and t >= 0 for t in row["tokens"]), "bad token record")
-        need(type(row.get("new_tokens")) is int and len(row["tokens"]) == row["new_tokens"] <= header["max_new_tokens"]
-             and row.get("finish") in ("eos", "length") and isinstance(row.get("text"), str), "bad generation record")
-        need(row["finish"] != "length" or row["new_tokens"] == header["max_new_tokens"], "length finish inconsistent")
-        out[row["id"]] = row
-    need(set(out) == {i for i, c in contexts.items() if c["split"] == "test"}, "incomplete test records")
-    return out
 
 
 def gate(table: list, split: str, candidate: str, expected_n: int, max_drop: float) -> dict:
@@ -235,13 +203,16 @@ def mechanism_checks(run: Path) -> dict:
     return checks
 
 
-def decide(checks: dict, quality: dict, max_drop: float, expected: list[str]) -> dict:
+def decide(checks: dict, quality: dict, max_drop: float, expected: list[str], chain_problems: list[str],
+           decision_problems: list[str]) -> dict:
     """Mechanism verdict over the expected candidate set only.
 
     ``expected`` names every folder the plan requires: the identity no-op plus each
     selection candidate. A folder that is missing, or whose prune reload, masked
-    equivalence or reference-runtime check does not pass, fails the mechanism: the
-    report never shows a pass for a subset of the planned evidence (R11-P1-04).
+    equivalence or reference-runtime check does not pass, fails the mechanism; so does
+    any problem the shared verifier found anywhere in the chain, or a decision that is
+    missing or no longer bound to the files it was made from: the report never shows a
+    pass for a subset of the planned evidence (R11-P1-04/R13-P1-03).
     """
     noop = [c for c in checks.values() if c["identity_mapping"]]
     masked = {name: c for name, c in checks.items() if not c["identity_mapping"]}
@@ -249,15 +220,19 @@ def decide(checks: dict, quality: dict, max_drop: float, expected: list[str]) ->
     masked_pass = {name: bool(c["verify_pass"] and c["equiv"]["pass"] and c["stock_pass"])
                    for name, c in masked.items()}
     missing = [name for name in expected if name not in checks]
-    lines = [f"mechanism {'PASS' if noop_pass and all(masked_pass.values()) and not missing else 'FAIL'} "
+    ok = noop_pass and bool(masked_pass) and all(masked_pass.values()) and not missing \
+        and not chain_problems and not decision_problems
+    lines = [f"mechanism {'PASS' if ok else 'FAIL'} "
              f"(identity reload {'PASS' if noop_pass else 'FAIL'}; masked equivalence "
-             + (", ".join(f"{n[1:]}: {'PASS' if ok else 'FAIL'}" for n, ok in masked_pass.items()) or "NOT_RUN")
-             + (f"; missing evidence for {', '.join(missing)}" if missing else "") + ")"]
+             + (", ".join(f"{n[1:]}: {'PASS' if ok2 else 'FAIL'}" for n, ok2 in masked_pass.items()) or "NOT_RUN")
+             + (f"; missing evidence for {', '.join(missing)}" if missing else "")
+             + (f"; chain problems: {'; '.join(chain_problems)}" if chain_problems else "")
+             + (f"; decision problems: {'; '.join(decision_problems)}" if decision_problems else "") + ")"]
     for name, q in quality.items():
         lines.append(f"{name} experts: validation {q['validation']['status']}, test {q['test']['status']}")
     return {
         "noop_pass": noop_pass, "masked_pass": masked_pass,
-        "mechanism_pass": noop_pass and bool(masked_pass) and all(masked_pass.values()) and not missing,
+        "mechanism_pass": ok,
         "gate": f"per direction, chrF++ drop <= {max_drop} point and no more empty, truncated or digit-mismatch "
                 "outputs than the baseline",
         "quality": quality, "quality_result": "HOLD: not a quality result until the final test is reviewed",
@@ -265,10 +240,51 @@ def decide(checks: dict, quality: dict, max_drop: float, expected: list[str]) ->
     }
 
 
+def decision_problems(run: Path, decision: dict | None, source: dict) -> list[str]:
+    """What stops the report from trusting the decision: missing, foreign, or bound to
+    files that have since changed. The decision's own evidence inventory (R13-P1-03)
+    is re-validated against the current files, hash by hash."""
+    if decision is None:
+        return ["no provisional decision"]
+    if decision.get("identity", {}).get("teacher") != source["identity"]["teacher"]:
+        return ["decision.json was made from another baseline run"]
+    for name, entry in decision.get("runs", {}).items():
+        path = run / ("baseline/records.jsonl" if name == "baseline" else f"{name}/records.jsonl")
+        if not path.exists() or entry.get("records_sha256") != sha256_file(path):
+            return [f"decision.json binds {name} records that no longer match the run directory"]
+    evidence = decision.get("evidence")
+    if not isinstance(evidence, dict):
+        return ["decision.json carries no evidence inventory"]
+    bound = [("selection", run / "selection.json", evidence.get("selection_sha256")),
+             (f"k{PLAN['experts']} prune", run / f"k{PLAN['experts']}" / "prune.json",
+              evidence.get("noop", {}).get("prune_sha256")),
+             (f"k{PLAN['experts']} equiv", run / f"k{PLAN['experts']}" / "equiv.json",
+              evidence.get("noop", {}).get("equiv_sha256"))]
+    for keep, entry in evidence.get("candidates", {}).items():
+        folder = run / f"k{keep}"
+        bound += [(f"k{keep} prune", folder / "prune.json", entry.get("prune_sha256")),
+                  (f"k{keep} equiv", folder / "equiv.json", entry.get("equiv_sha256")),
+                  (f"k{keep} stock", folder / "stock_check.json", entry.get("stock_sha256"))]
+        for stage, relative in (("masked", "masked/records.jsonl"), ("mechanism", "mechanism/records.jsonl"),
+                                ("validation", "records.jsonl")):
+            provenance = entry.get(stage)
+            if isinstance(provenance, dict):
+                bound += [(f"k{keep} {stage} records", folder / relative, provenance.get("records_sha256"))]
+                bound += [(f"k{keep} {stage} journal", Path(str(folder / relative) + ".sqlite"),
+                           provenance.get("journal_sha256"))]
+    stale = [f"{what} ({path.name})" for what, path, sha in bound
+             if sha is not None and (not path.exists() or sha256_file(path) != sha)]
+    if stale:
+        return ["decision evidence changed since the decision: " + "; ".join(stale)]
+    return []
+
+
 def build(run_dir: Path, manifest_sha256=None, max_drop: float = 1.0, spot_n: int = 3) -> dict:
     run = Path(run_dir)
     if not (type(max_drop) in (int, float) and math.isfinite(max_drop) and max_drop >= 0):
         raise SystemExit("max_drop must be a finite, non-negative number")
+    if max_drop != PLAN["max_chrf_drop"]:
+        raise SystemExit(f"the fixed pilot plan's gate is {PLAN['max_chrf_drop']}, not {max_drop}")
     try:
         manifest, contexts = load_frozen_corpus(run / "corpus", manifest_sha256 or CORPUS_MANIFEST_SHA256)
     except BlockedCorpus as error:
@@ -280,8 +296,15 @@ def build(run_dir: Path, manifest_sha256=None, max_drop: float = 1.0, spot_n: in
         raise SystemExit("no baseline run to report on")
     baseline_keep = source["num_experts"]
     selection = read_json(run / "selection.json") if (run / "selection.json").exists() else None
-    keeps = sorted({int(k) for k in selection["candidates"]} if selection else
-                   {int(p.parent.name[1:]) for p in run.glob("k*/records.jsonl")}, reverse=True)
+    keeps = sorted(PLAN["candidate_keeps"])
+
+    # The one shared verifier decides what this report may claim. Any problem - a missing,
+    # stale or altered receipt, an incomplete journal replay, a plan deviation - turns the
+    # whole verdict into FAIL / NOT_EVALUATED: the report never qualifies a subset
+    # (R13-P1-03), and it derives its facts from the same replays decide ran.
+    chain_problems, chain_evidence = verify_pilot_chain(run, manifest_sha256 or CORPUS_MANIFEST_SHA256)
+    decision = read_json(run / "decision.json") if (run / "decision.json").exists() else None
+    decision_problems_list = decision_problems(run, decision, source)
 
     # Validation: the baseline and every candidate, through the reviewed validation-only loader.
     problems, validation = {}, {}
@@ -299,44 +322,34 @@ def build(run_dir: Path, manifest_sha256=None, max_drop: float = 1.0, spot_n: in
             validation[str(keep)], problems[str(keep)] = None, str(error)
     spot = SpotList(spot_n)
     table_validation = []
-    if validation["baseline"]:
+    if validation["baseline"] and not chain_problems and not decision_problems_list:
         groups = {"baseline": validation["baseline"],
                   **{name: records for name, records in validation.items() if name != "baseline" and records}}
         # A candidate with an unusable run gets no row entry at all: the reviewed gate then
         # refuses the incomplete group, and the verdict names the reason.
         table_validation = table_rows(metric, groups, contexts, "validation", max_drop, spot)
-    # The folders the plan requires: the identity no-op plus every selection candidate. A
-    # missing one fails the mechanism instead of showing a pass for a subset (R11-P1-04).
     expected = sorted({f"k{baseline_keep}", *(f"k{keep}" for keep in keeps)})
 
-    # Test: only what the final-test stage produced, and only for a completed entry of the exposure ledger.
+    # Test: hard-disabled in this build (R11-P1-05/R13-P1-05). No ledger entry or leftover
+    # artifact can produce a test gate here: the test split is out of scope for this report,
+    # and prior exposure is marked exploratory instead of scored.
     ledger = read_json(run / "test_exposure.json") if (run / "test_exposure.json").exists() else {"entries": []}
-    table_test, tested, test_notes = [], set(), {}
-    for entry in ledger["entries"]:
-        name, keep = str(entry["keep"]), entry["keep"]
-        if entry["status"] != "completed":
-            test_notes[name] = "the final test did not complete"
-            continue
-        try:
-            groups = {"baseline": test_records(manifest, contexts, run / "final_test" / "baseline" / "records.jsonl",
-                                               baseline_keep),
-                      name: test_records(manifest, contexts, run / "final_test" / f"k{keep}" / "records.jsonl", keep)}
-            table_test = table_rows(metric, groups, contexts, "test", max_drop)
-            tested.add(name)
-        except ValueError as error:
-            test_notes[name] = str(error)
-
+    table_test, test_notes = [], {}
+    for entry in ledger.get("entries", []):
+        test_notes[str(entry.get("keep"))] = OUT_OF_SCOPE_TEST
     quality = {}
     for keep in keeps:
         name = str(keep)
-        validation_gate = gate(table_validation, "validation", name, sizes["validation"], max_drop)
-        test_gate = (gate(table_test, "test", name, sizes["test"], max_drop) if name in tested
-                     else {"status": "NOT_RUN", "reason": HELD})
-        agree_with_reviewed_gate(table_validation, validation_gate, name)
-        agree_with_reviewed_gate(table_test, test_gate, name)
+        blocker = "; ".join(chain_problems + decision_problems_list) or "unknown"
+        validation_gate = (gate(table_validation, "validation", name, sizes["validation"], max_drop)
+                           if table_validation else {"status": "NOT_EVALUATED", "reason": blocker})
+        test_gate = {"status": "NOT_RUN", "reason": FINAL_TEST_DISABLED}
+        if table_validation:
+            agree_with_reviewed_gate(table_validation, validation_gate, name)
         quality[name] = {"max_drop": max_drop,
                          "validation": {**outcome(validation_gate),
-                                        "problem": problems.get(str(keep)) or problems.get("baseline")},
+                                        "problem": (problems.get(str(keep)) or problems.get("baseline")
+                                                    or (chain_problems + decision_problems_list or [None])[0])},
                          "test": {**outcome(test_gate), "problem": test_notes.get(name)}}
 
     summary = read_json(run / "baseline" / "records.jsonl.summary.json")
@@ -344,17 +357,8 @@ def build(run_dir: Path, manifest_sha256=None, max_drop: float = 1.0, spot_n: in
     for path in sorted(run.rglob("records.jsonl.summary.json")):
         data = read_json(path)
         timing[path.parent.relative_to(run).as_posix()] = {k: data.get(k) for k in (
-            "sentences", "new_tokens", "finish", "masked_keep", "splits", "synthetic", "identity", "identity_keys")}
-    decision = read_json(run / "decision.json") if (run / "decision.json").exists() else None
-    if decision is not None:
-        # The decision is bound to the exact records it was made from: if any of them has
-        # changed since, the report refuses instead of decorating stale evidence (R11-P1-04).
-        if decision.get("identity", {}).get("teacher") != source["identity"]["teacher"]:
-            raise SystemExit("decision.json was made from another baseline run")
-        for name, entry in decision.get("runs", {}).items():
-            path = run / ("baseline/records.jsonl" if name == "baseline" else f"{name}/records.jsonl")
-            if not path.exists() or entry.get("records_sha256") != sha256_file(path):
-                raise SystemExit(f"decision.json binds {name} records that no longer match the run directory")
+            "sentences", "new_tokens", "finish", "masked_keep", "splits", "synthetic", "identity", "identity_keys",
+            "mode")}
     outside = test_used_outside_final_test(run, baseline_keep)
     checks = mechanism_checks(run)
     report = {
@@ -374,7 +378,11 @@ def build(run_dir: Path, manifest_sha256=None, max_drop: float = 1.0, spot_n: in
         "test_used_outside_final_test": outside, "exploratory": bool(outside),
         "decision": decision,
         "decision_sha256": sha256_file(run / "decision.json") if decision is not None else None,
-        "verdict": decide(checks, quality, max_drop, expected),
+        "evidence_chain": {"problems": chain_problems, "mode": chain_evidence.get("mode"),
+                           "plan": chain_evidence.get("plan"), "witness_count": chain_evidence.get("witness_count"),
+                           "decision_bound": not decision_problems_list,
+                           "decision_problems": decision_problems_list},
+        "verdict": decide(checks, quality, max_drop, expected, chain_problems, decision_problems_list),
         "mechanism_checks": checks,
         "calibration": summary.get("routing"),
         "selection": selection,
@@ -449,7 +457,8 @@ def render_markdown(report: dict) -> str:
                 + (f"Smallest candidate passing every direction: {chosen} experts." if chosen is not None
                    else "No candidate passes every direction: FALLBACK_TO_TEACHER."),
                 f"- decision.json sha256 `{report['decision_sha256']}`.",
-                f"- `test_execution_authorized` is {decision['test_execution_authorized']}: {HELD}.", ""]
+                f"- `test_execution_authorized` is {decision['test_execution_authorized']}: "
+                f"{FINAL_TEST_DISABLED}.", ""]
     out += ["## Mechanism checks", "",
             "| check | keep | sentences | identical text | argmax agree | route ids agree | within tol | "
             "full logits bitwise identical | max abs Δ of the 64 largest logits | pass |",
@@ -461,10 +470,11 @@ def render_markdown(report: dict) -> str:
                    f"{e['logits_max_abs_diff']:.4g} | {'PASS' if e['pass'] else 'FAIL'} |")
     out += ["", "\"Within tol\" is a diagnostic: the 64 largest logits of every compared position differ by at "
              "most 0.125 (two bf16 steps where the top logits sit). A mechanism pass claims more than that: "
-             "equal trace lengths, identical text, every argmax and route id in agreement, whole logit rows "
-             "bitwise identical at every compared position, and route weights within float32 rounding "
-             "(1e-6; the masked wide router and the physically pruned one sum in different orders) - on the "
-             "traced witness sentences only.", ""]
+             "equal trace lengths, identical text, every argmax and route id in agreement, the BLAKE2b-128 "
+             "fingerprint of every full logit row identical at every compared position, and route weights "
+             "within float32 rounding (1e-6; the masked wide router and the physically pruned one sum in "
+             "different orders) - on the traced witness sentences only. Fingerprint equality says the engine's "
+             "rows were identical; it is not raw full-logit retention and not a mathematical proof.", ""]
     if report["mask_audit"]:
         out += ["## What the mask changes", "",
                 "On the traced validation sentences: routing decisions (token, layer) that differ from the unmasked "

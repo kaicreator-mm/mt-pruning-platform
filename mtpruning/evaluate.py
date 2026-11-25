@@ -24,6 +24,14 @@ EQUIV_ABS_TOL = 0.125
 ROUTE_WEIGHT_ABS_TOL = 1e-6
 # The arrays a saved trace holds, in the fixed order the content digest runs over.
 TRACE_ARRAYS = ("top_values", "top_index", "argmax", "row_hash", "ids", "w")
+# Exact on-disk dtypes: a trace with any other dtype is not this engine's evidence.
+TRACE_DTYPES = {"top_values": np.dtype("uint16"), "top_index": np.dtype("int32"),
+                "argmax": np.dtype("int32"), "row_hash": np.dtype("uint8"),
+                "ids": np.dtype("int32"), "w": np.dtype("float32")}
+# The full-logit row fingerprint (engine.py trace_rows): 128-bit BLAKE2b over each
+# position's raw logit row. Equality of these hashes is identity of the engine's rows;
+# it is a fingerprint, not a retention of raw full logits and not a mathematical proof.
+ROW_HASH_ALGORITHM = "BLAKE2b-128 per position logit row"
 _DIGITS = str.maketrans("၀၁၂၃၄၅၆၇၈၉０１２３４５６７８９", "0123456789" * 2)
 
 
@@ -116,21 +124,64 @@ def trace_digest(arrays: dict) -> str:
     return digest.hexdigest()
 
 
-def trace_complete(directory: Path, sentence_id: str, expected: dict | None = None) -> bool:
-    """True when the trace exists, parses, and (when given) matches the journal's record.
+def read_trace(directory: Path, sentence_id: str, expected: dict | None = None,
+               expected_positions: int | None = None) -> dict | None:
+    """The one trace reader every stage uses; returns the verified arrays or None.
 
-    An ``expected`` record is the {"sha256", "positions"} a committed sample carries:
-    mere existence proves nothing about an interrupted or corrupted file (R11-P1-03).
+    Loads the container, checks the exact array set and on-disk dtypes, checks the
+    per-position shapes agree with the position count, recomputes the content digest
+    from the actual bytes and compares it with the stored digest, and rejects
+    non-finite route weights. With ``expected`` (the journal's {"sha256", "positions"})
+    both must match; with ``expected_positions`` the position count must match too.
+    A valid container with altered arrays, a digest-only stub, a wrong dtype or shape,
+    or a truncated file is no evidence (R13-P1-01): the stored digest field alone is
+    never trusted.
     """
     path = trace_path(directory, sentence_id)
     if not path.exists():
-        return False
+        return None
+    arrays = {}
     try:
         with np.load(path, allow_pickle=False) as data:
-            digest, positions = str(data["digest"]), int(data["argmax"].shape[0])
-    except Exception:                              # any unreadable or truncated file: not complete
-        return False
-    return expected is None or (digest == expected.get("sha256") and positions == expected.get("positions"))
+            if set(data.files) != set(TRACE_ARRAYS) | {"digest"}:
+                return None
+            for name in TRACE_ARRAYS:
+                array = data[name]
+                if array.dtype != TRACE_DTYPES[name]:
+                    return None
+                arrays[name] = array
+            stored = data["digest"]
+            if stored.dtype.kind not in "US" or stored.shape != ():
+                return None
+            stored = str(stored)
+    except Exception:                              # truncated or otherwise unreadable
+        return None
+    positions = int(arrays["argmax"].shape[0])
+    top = int(arrays["top_values"].shape[1])
+    layers, k = int(arrays["ids"].shape[1]), int(arrays["ids"].shape[2])
+    if (positions < 1 or top < 1 or layers < 1 or k < 1
+            or arrays["top_values"].shape != (positions, top) or arrays["top_index"].shape != (positions, top)
+            or arrays["row_hash"].shape != (positions, 16)
+            or arrays["w"].shape != (positions, layers, k)
+            or not bool(np.isfinite(arrays["w"]).all())):
+        return None
+    if trace_digest(arrays) != stored:             # the stored digest counts only when the
+        return None                                 # actual bytes recompute to it
+    if expected is not None and (stored != expected.get("sha256") or positions != expected.get("positions")):
+        return None
+    if expected_positions is not None and positions != expected_positions:
+        return None
+    return {**arrays, "positions": positions, "digest": stored}
+
+
+def trace_complete(directory: Path, sentence_id: str, expected: dict | None = None,
+                   expected_positions: int | None = None) -> bool:
+    """True when read_trace fully verifies the trace against the journal's record.
+
+    An ``expected`` record is the {"sha256", "positions"} a committed sample carries;
+    ``expected_positions`` is the generation record's prompt + generated token count.
+    """
+    return read_trace(directory, sentence_id, expected, expected_positions) is not None
 
 
 def save_trace(directory: Path, sentence_id: str, trace: dict) -> dict:
@@ -155,20 +206,17 @@ def save_trace(directory: Path, sentence_id: str, trace: dict) -> dict:
 
 
 def load_trace(directory: Path, sentence_id: str) -> dict | None:
-    path = trace_path(directory, sentence_id)
-    if not path.exists():
+    """Load a trace for comparison - through the strict reader, never the raw container."""
+    verified = read_trace(directory, sentence_id)
+    if verified is None:
         return None
-    try:
-        with np.load(path, allow_pickle=False) as data:
-            return {"top_values": torch.from_numpy(data["top_values"].copy()).view(torch.bfloat16),
-                    "top_index": torch.from_numpy(data["top_index"].astype(np.int64)),
-                    "argmax": torch.from_numpy(data["argmax"].astype(np.int64)),
-                    "row_hash": torch.from_numpy(data["row_hash"].copy()),
-                    "route_ids": torch.from_numpy(data["ids"].astype(np.int64)),
-                    "route_w": torch.from_numpy(data["w"].astype(np.float32)),
-                    "digest": str(data["digest"])}
-    except Exception:                              # a truncated or damaged file is not evidence
-        return None
+    return {"top_values": torch.from_numpy(verified["top_values"]).view(torch.bfloat16),
+            "top_index": torch.from_numpy(verified["top_index"].astype(np.int64)),
+            "argmax": torch.from_numpy(verified["argmax"].astype(np.int64)),
+            "row_hash": torch.from_numpy(verified["row_hash"]),
+            "route_ids": torch.from_numpy(verified["ids"].astype(np.int64)),
+            "route_w": torch.from_numpy(verified["w"]),
+            "digest": verified["digest"], "positions": verified["positions"]}
 
 
 def compare_trace(reference: dict, candidate: dict) -> dict:
@@ -272,9 +320,11 @@ def compare_runs(reference_dir: Path, candidate_dir: Path, reference_text: dict,
     coverage_ok = [s["length_match"] and s["layout_match"] for s in sentences]
     return {
         "sentences": len(sentences), "abs_tol": EQUIV_ABS_TOL, "compared_logits": "64 largest per position",
-        "route_weight_abs_tol": ROUTE_WEIGHT_ABS_TOL,
-        "claim": "bitwise full-logit-row equivalence with route ids identical and route weights within "
-                 "float32 rounding, on the traced witness sentences only; not a whole-run claim",
+        "route_weight_abs_tol": ROUTE_WEIGHT_ABS_TOL, "row_hash_algorithm": ROW_HASH_ALGORITHM,
+        "claim": "engine logit-row fingerprints (BLAKE2b-128) identical at every compared position, route ids "
+                 "identical, route weights within float32 rounding, on the traced witness sentences only; "
+                 "fingerprint equality of the engine's rows: not raw full-logit retention, not a mathematical "
+                 "proof, and not a whole-run claim",
         "identical_text": sum(same_text),
         "all_argmax_agree": sum(argmax_ok),
         "all_route_ids_agree": sum(route_ok),

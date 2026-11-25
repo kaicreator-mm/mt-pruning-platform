@@ -109,6 +109,50 @@ EOF
   if [ "$avail" -lt "$need" ]; then echo "need $need bytes free in $PRUNED, have $avail: stopping"; exit 1; fi
 }
 
+# One full preflight before the stages that write: block early, with the numbers recorded,
+# instead of discovering a full disk mid-run (or silently reducing witnesses) (R13-P2-01).
+# It accounts for the whole retained working set with explicit assumptions: the largest
+# pruned checkpoint, every witness trace the plan retains (baseline + noop + masked and
+# mechanism per candidate), the journals, and the evidence copy of the run directory.
+disk_preflight() {
+  "$PY" - "$MODEL_DIR" "$RUN" "$EVIDENCE_DIR" <<'EOF'
+import json, os, subprocess, sys
+model_dir, run_dir, evidence_dir = sys.argv[1], sys.argv[2], sys.argv[3]
+total = json.load(open(model_dir + "/model.safetensors.index.json"))["metadata"]["total_size"]
+experts = json.load(open(model_dir + "/config.json"))["num_experts"]
+prune_peak = int(total * 96 / experts * 1.05) + 3_000_000_000      # the 96-expert candidate + slack
+# retained traces: baseline witnesses + noop + masked + mechanism per candidate; a position
+# costs at most ~1 KB on disk (top-64 logits/hashes + routing arrays), a witness sentence is
+# prompt + 640 generated positions at most; compression only shrinks this further.
+positions = 700 + 640
+witness_sentences = 6 * 8
+trace_runs = 1 + 1 + 2 * 2
+trace_budget = witness_sentences * trace_runs * positions * 1024
+journal_budget = (288 + 4 * 12) * 16_384        # payload text + routing cells, a few KB per sample
+def du(path):
+    done = subprocess.run(["du", "-sb", path], capture_output=True, text=True)
+    return int(done.stdout.split()[0]) if done.returncode == 0 else 0
+evidence_budget = int(du(run_dir) * 12 // 10) + 1_000_000_000
+needed = prune_peak + trace_budget + journal_budget + evidence_budget
+free = int(subprocess.run(["df", "--output=avail", "-B1", "/"], capture_output=True, text=True)
+           .stdout.splitlines()[1])
+receipt = {"needed_bytes": needed, "free_bytes": free, "sufficient": free >= needed,
+           "assumptions": {"prune_peak_bytes": prune_peak, "trace_budget_bytes": trace_budget,
+                           "trace_positions_per_sentence": positions, "trace_runs": trace_runs,
+                           "journal_budget_bytes": journal_budget, "evidence_budget_bytes": evidence_budget,
+                           "witness_sentences": witness_sentences, "witness_count_never_reduced": True}}
+os.makedirs(evidence_dir + "/inputs", exist_ok=True)
+with open(evidence_dir + "/inputs/disk_preflight.json", "w") as handle:
+    json.dump(receipt, handle, indent=2, sort_keys=True)
+    handle.write("\n")
+print(json.dumps(receipt))
+if free < needed:
+    sys.exit(f"disk preflight: need {needed} bytes for the retained working set, have {free}: stopping "
+             "(witness counts are never reduced to fit)")
+EOF
+}
+disk_preflight
+
 mechanism() {       # mechanism <keep> <model dir> <equiv args...>
   local keep=$1 model=$2 folder=$RUN/k$1
   shift 2
@@ -149,7 +193,8 @@ for keep in $CANDIDATES; do
     --splits validation --max-new-tokens "$MAX_NEW" "${LIMITED[@]}" "${COMMON[@]}"
   step "k$keep: unmodified reference runtime on the pruned checkpoint"
   "$PY" -m mtpruning stock-check --model "$PRUNED/k$keep" --corpus "$CORPUS" --records "$folder/records.jsonl" \
-    --out "$folder/stock_check.json" --splits validation --limit 1 --max-new-tokens "$MAX_NEW" --threads "$THREADS" "${PIN[@]}"
+    --out "$folder/stock_check.json" --splits validation --limit 1 --max-new-tokens "$MAX_NEW" --threads "$THREADS" \
+    --cache-dir "$CACHE_DIR" "${PIN[@]}"
   rm -rf "$PRUNED/k$keep"      # rebuildable from the selection; manifest, hashes and checks are on disk
 done
 
@@ -165,8 +210,17 @@ step "report"
 "$PY" -m mtpruning report --run-dir "$RUN" "${PIN[@]}"
 
 step "collect evidence"
+# A retained-evidence manifest first: relative path -> sha256 for EVERY file the run kept,
+# witness traces included. The evidence directory carries the manifest plus the small
+# artifacts themselves; the large raw traces stay in $RUN at their recorded location and
+# can be re-verified against this manifest (R13-P2-01).
+(cd "$RUN" && find . -type f -not -name "*.timings.jsonl" -not -name "retained_manifest.json") | sort | while read -r f; do
+  sha=$(sha256sum "$RUN/$f" | cut -d' ' -f1)
+  printf '%s  %s\n' "$sha" "$f"
+done > "$RUN/retained_manifest.sha256"
+step "evidence copy (JSON/JSONL/NPZ/SQLite/manifests; raw traces stay in the run directory)"
 (cd "$RUN" && find . -type f \( -name "*.json" -o -name "*.jsonl" -o -name "*.npz" -o -name "*.sqlite" \
-    -o -name "*.identity.json" -o -name "report.md" \) \
+    -o -name "*.identity.json" -o -name "report.md" -o -name "retained_manifest.sha256" \) \
     -not -path "*/traces/*" -not -name "*.timings.jsonl") | while read -r f; do
   mkdir -p "$EVIDENCE_DIR/$(dirname "$f")"
   cp "$RUN/$f" "$EVIDENCE_DIR/$f"

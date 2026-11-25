@@ -123,6 +123,29 @@ class CheckpointProvenanceTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "tokenizer files are not part of the pinned"):
                 identity.checkpoint_identity(self.model)
 
+    def test_real_qualification_requires_the_exact_pinned_inventory(self):
+        """R13-P1-02: real qualification needs all four tokenizer files and nothing beyond
+        the pinned listing; without exact_inventory (rehearsal) extra files stay tolerable."""
+        (self.model / "checkpoint_provenance.json").unlink()
+        for name in identity.TOKENIZER_FILES:
+            (self.model / name).write_bytes(f"tokens of {name}".encode())
+        names = ["config.json", "model.safetensors.index.json",
+                 *sorted({shard.name for shard in self.model.glob("*.safetensors")}), *identity.TOKENIZER_FILES]
+        pinned = {name: identity.sha256_file(self.model / name) for name in names}
+        with mock.patch.object(identity, "pinned_manifest", return_value=pinned):
+            identity.checkpoint_identity(self.model, exact_inventory=True)      # exactly the listing
+            (self.model / "unapproved-loader-input.bin").write_bytes(b"x")
+            with self.assertRaisesRegex(ValueError, "not the exact pinned inventory"):
+                identity.checkpoint_identity(self.model, exact_inventory=True)
+            identity.checkpoint_identity(self.model)                            # rehearsal: no inventory rule
+            (self.model / "unapproved-loader-input.bin").unlink()
+            (self.model / "special_tokens_map.json").unlink()
+            with self.assertRaisesRegex(ValueError, "does not carry the complete pinned tokenizer"):
+                identity.checkpoint_identity(self.model, exact_inventory=True)
+            (self.model / "special_tokens_map.json").write_bytes(b"tokens")     # present again, wrong bytes
+            with self.assertRaisesRegex(ValueError, "differs from the pinned revision"):
+                identity.checkpoint_identity(self.model, exact_inventory=True)
+
 
 @unittest.skipUnless(READY, util.__doc__)
 class RunIdentityTests(unittest.TestCase):

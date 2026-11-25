@@ -14,6 +14,28 @@ DECODING = "greedy (argmax of bf16 logits)"
 # Provisional gate of issue #1: chrF++ may not drop by more than this many points in any direction.
 MAX_CHRF_DROP = 1.0
 
+# The fixed real pilot plan (R14). This is the experiment of record: decide and report
+# verify the run directory against these constants, not against the mutable selection
+# file or CLI flags, so nothing can narrow the plan by editing both. The tiny rehearsal
+# fixture mirrors these counts (128 experts, top-8; 96/64 candidates), which is why one
+# plan governs both the rehearsal and the real run.
+PLAN = {
+    "experts": 128,                     # released expert count = the identity no-op candidate
+    "candidate_keeps": (96, 64),        # the real candidates, exactly these two
+    "trace_witness_per_direction": 8,   # held-out validation witnesses per mechanism check
+    "trace_split": "validation",        # held-out sentences, never the selection sentences
+    "stock_per_direction": 1,           # reference-runtime witness per direction
+    "stock_split": "validation",
+    "max_chrf_drop": MAX_CHRF_DROP,     # gate: chrF++ drop and the three diagnostics
+}
+
+# The exact pinned snapshot inventory: 13 shards + config + index + these 4 tokenizer
+# files (19 files in total, exactly what manifests/hf_manifest.tsv lists). A real run may
+# not qualify a directory that misses one of these or carries anything else a loader
+# could pick up; rehearsal checkpoints (synthetic/tiny fixtures) are exempt.
+PINNED_AUXILIARY_FILES = ("tokenizer.json", "tokenizer_config.json", "special_tokens_map.json",
+                          "chat_template.jinja")
+
 FLORES_URL = "https://dl.fbaipublicfiles.com/nllb/flores200_dataset.tar.gz"
 FLORES_LICENSE = "CC-BY-SA 4.0"
 FLORES_TARBALL_SHA256 = "b8b0b76783024b85797e5cc75064eb83fc5288b41e9654dabc7be6ae944011f6"

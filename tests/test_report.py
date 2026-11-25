@@ -161,7 +161,7 @@ class ReportCoverageTests(unittest.TestCase):
             self.assertIn(self.quality(built, name, "validation")["status"], ("REPORT_GATE_PASS", "REPORT_GATE_FAIL"))
             self.assertIsNone(self.quality(built, name, "validation")["problem"])
             held = self.quality(built, name, "test")
-            self.assertEqual((held["status"], held["reason"]), ("NOT_RUN", report.HELD))
+            self.assertEqual((held["status"], held["reason"]), ("NOT_RUN", report.FINAL_TEST_DISABLED))
         self.assertIn("HOLD", verdict["quality_result"])
         self.assertIs(verdict["production_acceptance"], False)
         self.assertFalse(built["exploratory"])
@@ -184,8 +184,9 @@ class ReportCoverageTests(unittest.TestCase):
         _, built = self.build(drop, keep_decision=False)
         self.assertEqual(self.quality(built, "96", "validation")["status"], "NOT_EVALUATED")
         self.assertIn("incomplete validation records", self.quality(built, "96", "validation")["problem"])
-        self.assertIn(self.quality(built, "64", "validation")["status"], ("REPORT_GATE_PASS", "REPORT_GATE_FAIL"))
-        self.assertNotIn("96", built["chrf_pp"][0]["candidates"])     # no partial row the gate could read
+        # with the decision withheld, no candidate is evaluated at all: no partial table
+        self.assertEqual(self.quality(built, "64", "validation")["status"], "NOT_EVALUATED")
+        self.assertEqual(built["chrf_pp"], [])
         self.assertNotIn("96 experts: validation REPORT_GATE", built["verdict"]["summary"])
 
     def test_duplicate_extra_and_misplaced_records_are_refused(self):
@@ -255,9 +256,13 @@ class ReportCoverageTests(unittest.TestCase):
         run = self.copy()
         decision = json.loads((run / "decision.json").read_text(encoding="utf-8"))
         self.assertEqual(sorted(decision["runs"]), ["baseline", "k64", "k96"])
+        self.assertEqual(sorted(decision["evidence"]["candidates"]), ["64", "96"])
+        self.assertEqual(decision["mode"], "rehearsal")
         built = report.build(run, self.world["manifest_sha256"])          # the binding holds as rehearsed
         self.assertIs(built["decision"]["test_execution_authorized"], False)
         self.assertEqual(built["decision"]["final_test"]["status"], "HOLD")
+        self.assertTrue(built["evidence_chain"]["decision_bound"])
+        self.assertTrue(built["verdict"]["mechanism_pass"])
         victim = 64 if decision["chosen_keep"] != 64 else 96
 
         def altered(run):    # the records the decision bound were edited afterwards
@@ -265,14 +270,42 @@ class ReportCoverageTests(unittest.TestCase):
             rows = lines(path)
             rows[1]["text"] = rows[1]["text"] + " later"
             write(path, rows)
-        with self.assertRaisesRegex(SystemExit, "no longer match the run directory"):
-            self.build(altered)
+        run = self.copy(altered)
+        built = report.build(run, self.world["manifest_sha256"])      # no subset pass: NOT_EVALUATED
+        self.assertFalse(built["verdict"]["mechanism_pass"])
+        self.assertFalse(built["evidence_chain"]["decision_bound"])
+        self.assertIn("no longer match the run directory", built["evidence_chain"]["decision_problems"][0])
+        self.assertEqual(self.quality(built, str(victim), "validation")["status"], "NOT_EVALUATED")
         run = self.copy()
         forged = json.loads((run / "decision.json").read_text(encoding="utf-8"))
         forged["identity"]["teacher"] = "0" * 64                          # a decision from another run
         (run / "decision.json").write_text(json.dumps(forged), encoding="utf-8")
-        with self.assertRaisesRegex(SystemExit, "made from another baseline run"):
-            report.build(run, self.world["manifest_sha256"])
+        built = report.build(run, self.world["manifest_sha256"])
+        self.assertFalse(built["verdict"]["mechanism_pass"])
+        self.assertIn("made from another baseline run", built["evidence_chain"]["decision_problems"][0])
+
+    def test_a_receipt_mutated_after_the_decision_is_not_qualified(self):
+        """R13-P1-03: replacing a receipt with a prior run's PASS after the decision must
+        turn the whole verdict into FAIL / NOT_EVALUATED - the report re-validates every
+        hash the decision bound."""
+        def swapped(run):
+            shutil.copy(run / "k96" / "equiv.json", run / "k64" / "equiv.json")
+        run, built = self.build(swapped)
+        self.assertFalse(built["verdict"]["mechanism_pass"])
+        self.assertFalse(built["evidence_chain"]["decision_bound"])
+        self.assertIn("k64 equiv", built["evidence_chain"]["decision_problems"][0])
+        for name in ("64", "96"):
+            self.assertEqual(self.quality(built, name, "validation")["status"], "NOT_EVALUATED")
+            self.assertEqual(self.quality(built, name, "test")["status"], "NOT_RUN")
+
+    def test_a_missing_decision_fails_the_mechanism(self):
+        run = self.copy()
+        (run / "decision.json").unlink()
+        built = report.build(run, self.world["manifest_sha256"])
+        self.assertFalse(built["verdict"]["mechanism_pass"])
+        self.assertIn("no provisional decision", built["evidence_chain"]["decision_problems"])
+        for name in ("64", "96"):
+            self.assertEqual(self.quality(built, name, "validation")["status"], "NOT_EVALUATED")
 
     def test_the_mechanism_needs_every_planned_receipt(self):
         def drop(run):       # one candidate's reference-runtime receipt is missing

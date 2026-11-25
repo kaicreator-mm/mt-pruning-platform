@@ -122,17 +122,40 @@ class StageTests(unittest.TestCase):
             database.commit()
             database.close()
 
-        def narrowed(run):   # deciding on fewer candidates than the selection planned
+        def narrowed(run):   # narrowing BOTH the selection file and the CLI list (R13-P1-03)
             data = json.loads((run / "selection.json").read_text(encoding="utf-8"))
             data["candidates"].pop("64")
             (run / "selection.json").write_text(json.dumps(data), encoding="utf-8")
-        for change, message in ((drop_equiv, "no masked-equivalence receipt"),
-                                (drop_stock, "no reference-runtime receipt"),
-                                (drop_noop, "no identity no-op evidence"),
-                                (swapped, "equivalence receipt does not belong"),
-                                (altered, "differ from what the journal holds"),
-                                (interrupted_journal, "journal changed after the records were exported"),
-                                (narrowed, "not exactly the planned ones")):
+
+        def verify_flag(run):    # the single-field counterexample: prune.verify.pass -> false
+            path = run / "k64" / "prune.json"
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["verify"]["pass"] = False
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+        def kept_ids(run):       # kept sets edited inside the selection file
+            data = json.loads((run / "selection.json").read_text(encoding="utf-8"))
+            kept = data["candidates"]["64"]["kept"]
+            kept["1"] = list(reversed(kept["1"]))
+            (run / "selection.json").write_text(json.dumps(data), encoding="utf-8")
+
+        def stale_noop(run):     # a prior run's no-op receipt in place of this one's
+            shutil.copy(run / "k96" / "equiv.json", run / "k128" / "equiv.json")
+
+        def witness_deleted(run):    # a retained witness trace damaged after the equivalence
+            path = next((run / "k64" / "masked" / "traces").glob("*.trace.npz"))
+            path.write_bytes(path.read_bytes()[:64])
+        for change, message in ((drop_equiv, "k64 equivalence receipt is missing"),
+                                (drop_stock, "k64 reference-runtime receipt is missing"),
+                                (drop_noop, "the identity no-op equivalence receipt is missing"),
+                                (swapped, "k64's equivalence receipt does not belong"),
+                                (stale_noop, "the identity no-op receipt does not belong"),
+                                (altered, "k64 validation replay"),
+                                (interrupted_journal, "k64 validation replay"),
+                                (narrowed, "are not exactly the plan's"),
+                                (verify_flag, "k64's prune reload did not pass"),
+                                (kept_ids, "kept set for 64 does not match the deterministic selection rule"),
+                                (witness_deleted, "k64 masked replay.*does not match the journal's record")):
             with self.subTest(message):
                 run = self.copy(change)
                 with self.assertRaisesRegex(SystemExit, message):
@@ -188,12 +211,93 @@ class StageTests(unittest.TestCase):
             rows[0]["splits"] = ["validation", "test"]
             write(path, rows)
         for change, message in ((mixed, "does not match the journal's identity: teacher"),
-                                (renamed, "not pruned the way the selection names"),
+                                (renamed, "not pruned the way the recomputed selection names"),
                                 (exposed, "reference-runtime receipt does not match")):
             with self.subTest(message):
                 run = self.copy(change)
                 with self.assertRaisesRegex(SystemExit, message):
                     util.cli(self.world, "decide", "--run-dir", run, "--candidates", "96,64", "--out", run / "never.json")
+
+    def test_decide_counts_the_witness_from_the_journal_not_the_summary(self):
+        """R13-P1-03: editing the summary's audit (zero->positive or positive->zero) changes
+        nothing - decide rebuilds the changed-route count from the committed journal."""
+        def zeroed(run):
+            path = run / "k64" / "masked" / "records.jsonl.summary.json"
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["mask_audit"] = {direction: {phase: {**values, "changed": 0} for phase, values in phases.items()}
+                                  for direction, phases in data["mask_audit"].items()}
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+        def inflated(run):
+            path = run / "k64" / "masked" / "records.jsonl.summary.json"
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["mask_audit"] = {direction: {phase: {**values, "changed": values["changed"] + 10_000}
+                                              for phase, values in phases.items()}
+                                  for direction, phases in data["mask_audit"].items()}
+            path.write_text(json.dumps(data), encoding="utf-8")
+        for change in (zeroed, inflated):
+            with self.subTest(change.__name__):
+                run = self.copy(change)
+                util.cli(self.world, "decide", "--run-dir", run, "--candidates", "96,64", "--out", run / "decision.json")
+                self.assertTrue((run / "decision.json").exists())
+
+    def test_stock_refuses_mislabeled_test_context_and_foreign_model_without_loading(self):
+        """R13-P1-04/P1-05: a frozen test-context sentence smuggled in under a validation row
+        label is refused by the journal replay (rows must equal journal payloads must equal
+        the frozen contexts) - and a stock-check whose model is not the records' candidate
+        is refused before anything is loaded. Both refusals happen with zero model loads."""
+        from unittest import mock
+
+        def forge(run):
+            from mtpruning.frozen import load_frozen_corpus
+            from mtpruning.pipeline import identity_of, journal_path
+            from mtpruning.reviewed import trace as reviewed_trace
+            records = run / "k64" / "records.jsonl"
+            binding = read_json(Path(str(records) + ".identity.json"))
+            full = identity_of(binding)
+            _, contexts = load_frozen_corpus(run / "corpus", self.world["manifest_sha256"])
+            test_id = next(i for i, c in contexts.items() if c["split"] == "test")
+            context = contexts[test_id]
+            tokens = len(context["prompt_ids"])
+            cells = {"layer": [1] * 8 + [2] * 8, "expert": list(range(8)) * 2,
+                     "count": [tokens] * 8 + [tokens] * 8, "mass": [1.0] * 16}
+            routing = {"prefill": {"tokens": tokens, **cells},
+                       "decode": {"tokens": 1, "layer": [1] * 8 + [2] * 8, "expert": list(range(8)) * 2,
+                                  "count": [1] * 16, "mass": [1.0] * 16}}
+            payload = {"identity_key": full["sample_keys"]["test"], "split": "test", "direction": context["direction"],
+                       "line": context["line"], "prompt_tokens": tokens, "new_tokens": 1,
+                       "finish": "eos", "tokens": [5], "text": "x", "routing": routing, "audit": None, "trace": None}
+            journal = reviewed_trace.Journal(journal_path(records), binding)
+            journal.put(test_id, payload)
+            journal.close()
+            rows = lines(records)
+            rows.append({"type": "sentence", "id": test_id, "split": "validation", "direction": context["direction"],
+                         "line": context["line"], "prompt_tokens": tokens, "new_tokens": 1,
+                         "finish": "eos", "tokens": [5], "text": "x", "identity_key": payload["identity_key"],
+                         "traced": False})
+            write(records, rows)
+            summary_path = Path(str(records) + ".summary.json")
+            summary = json.loads(summary_path.read_text(encoding="utf-8"))
+            summary["journal"]["sha256"] = util.sha256(journal_path(records))
+            summary_path.write_text(json.dumps(summary), encoding="utf-8")
+
+        def no_load(model_cls, path, **kwargs):
+            raise AssertionError("the reference runtime must not be loaded for a refused stock check")
+        for change, arguments, message in (
+                (forge, ["--model", self.world["root"] / "pruned" / "k64"],
+                 "differ from what the journal holds"),
+                (lambda run: None, ["--model", self.world["model"]],
+                 "is not the checkpoint whose records this reference check is defined for")):
+            with self.subTest(message):
+                run = self.copy(change)
+                with mock.patch("transformers.AutoModelForCausalLM.from_pretrained", side_effect=no_load), \
+                        mock.patch("transformers.AutoTokenizer.from_pretrained", side_effect=no_load):
+                    with self.assertRaisesRegex(SystemExit, message):
+                        util.cli(self.world, "stock-check", *arguments, "--corpus", self.world["corpus"],
+                                 "--records", run / "k64" / "records.jsonl", "--out", run / "never.json",
+                                 "--splits", "validation", "--limit", 1, "--max-new-tokens", 6, "--threads", 2,
+                                 "--cache-dir", self.world["cache"])
+                self.assertFalse((run / "never.json").exists())
 
     def test_selection_and_decision_are_bound_to_the_run_identity(self):
         run = self.world["run"]
@@ -209,24 +313,62 @@ class StageTests(unittest.TestCase):
         self.assertNotIn("test", decision["runs"]["k64"]["validation_key"])     # keys are hashes
         self.assertEqual(decision["runs"]["k64"]["records_sha256"], util.sha256(run / "k64" / "records.jsonl"))
 
-    def test_masked_equiv_requires_a_changed_route_witness(self):
-        def zeroed(run):
+    def test_the_editable_summary_never_drives_the_witness_gate(self):
+        """R13-P1-03: equiv and decide count the changed-route witness from the committed
+        journal, so editing the summary (zero->positive or positive->zero) changes nothing:
+        a real witness still passes with its summary zeroed, and a zero journal witness is
+        refused however positive the summary claims to be."""
+        from mtpruning import pipeline as pipeline_module
+
+        def edit_summary(run, value):
             path = run / "k96" / "masked" / "records.jsonl.summary.json"
             data = json.loads(path.read_text(encoding="utf-8"))
-            data["mask_audit"] = {direction: {phase: {**values, "changed": 0} for phase, values in phases.items()}
+            data["mask_audit"] = {direction: {phase: {**values, "changed": value} for phase, values in phases.items()}
                                   for direction, phases in data["mask_audit"].items()}
             path.write_text(json.dumps(data), encoding="utf-8")
-        run = self.copy(zeroed)
-        folder = run / "k96"
-        with self.assertRaisesRegex(SystemExit, "insufficient evidence"):
+
+        def equiv(run):
+            folder = run / "k96"
             util.cli(self.world, "equiv", "--kind", "masked", "--keep", 96, "--run-dir", run,
                      "--prune-record", folder / "prune.json", "--trace-n", 2,
                      "--candidate-traces", folder / "mechanism" / "traces",
                      "--candidate-records", folder / "mechanism" / "records.jsonl",
                      "--reference-traces", folder / "masked" / "traces",
                      "--reference-records", folder / "masked" / "records.jsonl",
-                     "--selection", run / "selection.json", "--out", run / "never.json")
-        self.assertFalse((run / "never.json").exists())
+                     "--selection", run / "selection.json", "--out", folder / "equiv.json")
+            return json.loads((folder / "equiv.json").read_text(encoding="utf-8"))["pass"]
+        run = self.copy(lambda run: edit_summary(run, 0))
+        self.assertTrue(equiv(run))                       # the journal's witness stands on its own
+        util.cli(self.world, "decide", "--run-dir", run, "--candidates", "96,64", "--out", run / "decision.json")
+        self.assertTrue((run / "decision.json").exists())
+        # a genuinely zero witness (identity mask) is refused however positive the summary is:
+        # the masked run's journal carries changed=0, and its physical no-op counterpart passes
+        util.cli(self.world, "select", "--run-dir", run, "--keep", "128", "--out", run / "sel128.json",
+                 "--cache-dir", self.world["cache"])
+        identity_mask = dict(splits=["validation"], limit=2, stats=None, trace_n=2,
+                             mask=str(run / "sel128.json"), mask_keep=128)
+        zero_folder = run / "zero"
+        pipeline_module.execute_run(util.options(self.world, out=zero_folder / "masked" / "records.jsonl",
+                                                 trace_dir=zero_folder / "masked" / "traces", **identity_mask))
+        summary_path = zero_folder / "masked" / "records.jsonl.summary.json"
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        forged = {**summary, "mask_audit": {direction: {phase: {**values, "changed": 99} for phase, values in
+                                                       phases.items()} for direction, phases in
+                                          (summary.get("mask_audit") or {}).items()}}
+        summary_path.write_text(json.dumps(forged), encoding="utf-8")      # claims 99 changes
+        pipeline_module.execute_run(util.options(self.world, model=self.world["root"] / "pruned" / "k128",
+                                                 out=zero_folder / "mechanism" / "records.jsonl",
+                                                 trace_dir=zero_folder / "mechanism" / "traces",
+                                                 splits=["validation"], limit=2, stats=None, trace_n=2))
+        with self.assertRaisesRegex(SystemExit, "insufficient evidence"):
+            util.cli(self.world, "equiv", "--kind", "masked", "--keep", 128, "--run-dir", run,
+                     "--prune-record", run / "k128" / "prune.json", "--trace-n", 2,
+                     "--candidate-traces", zero_folder / "mechanism" / "traces",
+                     "--candidate-records", zero_folder / "mechanism" / "records.jsonl",
+                     "--reference-traces", zero_folder / "masked" / "traces",
+                     "--reference-records", zero_folder / "masked" / "records.jsonl",
+                     "--selection", run / "sel128.json", "--out", run / "never2.json")
+        self.assertFalse((run / "never2.json").exists())
 
     def test_a_corrupt_or_missing_trace_is_regenerated_from_the_journal(self):
         run, p = self.world["run"], pipeline

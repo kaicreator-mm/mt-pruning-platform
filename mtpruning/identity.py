@@ -103,11 +103,14 @@ def _require(files: dict, expected: dict, what: str) -> None:
         raise ValueError(f"checkpoint content differs from its {what}: {wrong[:4]}")
 
 
-def checkpoint_identity(model_dir, cache_dir=None, fresh: bool = True) -> dict:
+def checkpoint_identity(model_dir, cache_dir=None, fresh: bool = True, exact_inventory: bool = False) -> dict:
     """Bind a checkpoint directory by content; refuse one that declares no provenance.
 
     ``fresh`` hashes the actual bytes; the trusted cache is only for stage-boundary
-    rechecks (see content_hashes).
+    rechecks (see content_hashes). With ``exact_inventory`` (real qualification), the
+    pinned snapshot must carry exactly the pinned listing's files - every shard, config,
+    index and all four tokenizer files, and nothing else a loader could pick up
+    (R13-P1-02). Rehearsal checkpoints keep the two-file tokenizer requirement.
     """
     from .spec import MODEL_REPO, MODEL_REVISION
     model_dir = Path(model_dir)
@@ -122,6 +125,12 @@ def checkpoint_identity(model_dir, cache_dir=None, fresh: bool = True) -> dict:
         _require(files, {**{f["name"]: f["sha256"] for f in manifest["files"]},
                          "model.safetensors.index.json": manifest["index_sha256"],
                          "config.json": manifest["config_sha256"]}, "prune manifest")
+        # The candidate's effective tokenizer bytes are bound separately: run_identity hashes
+        # them into the prompt field, and the shared identity fields refuse a candidate whose
+        # tokenizer differs from its baseline's (R13-P1-02).
+        missing = [name for name in REQUIRED_TOKENIZER_FILES if not (model_dir / name).exists()]
+        if missing:
+            raise ValueError(f"{model_dir} does not carry the tokenizer: {', '.join(missing)} missing")
         return {"kind": "pruned", "num_experts": num_experts, "files": files, "teacher": manifest["source"]["digest"],
                 "candidate": digest({"kind": "pruned", "num_experts": num_experts, "kept": manifest["kept"],
                                      "files": files})}
@@ -137,13 +146,22 @@ def checkpoint_identity(model_dir, cache_dir=None, fresh: bool = True) -> dict:
     if any(name not in pinned for name in names):
         raise ValueError("checkpoint provenance unknown: not the pinned revision and no manifest declares it")
     # The pinned snapshot's effective tokenizer bytes are pinned too: they are hashed and
-    # checked against the pinned listing like every shard (R11-P1-02).
+    # checked against the pinned listing like every shard (R11-P1-02). Real qualification
+    # requires all four and the exact pinned inventory - nothing extra, nothing missing.
     tokenizer = [name for name in TOKENIZER_FILES if (model_dir / name).exists()]
-    missing = [name for name in REQUIRED_TOKENIZER_FILES if name not in tokenizer]
-    if missing:
-        raise ValueError(f"{model_dir} does not carry the tokenizer: {', '.join(missing)} missing")
+    if sorted(tokenizer) != sorted(TOKENIZER_FILES):
+        missing = [name for name in TOKENIZER_FILES if name not in tokenizer]
+        raise ValueError(f"{model_dir} does not carry the complete pinned tokenizer: "
+                         f"{', '.join(missing)} missing")
     if any(name not in pinned for name in tokenizer):
         raise ValueError("the tokenizer files are not part of the pinned revision listing")
+    if exact_inventory:
+        on_disk = {name for name in os.listdir(model_dir) if not name.startswith(".")}
+        wanted = set(pinned)
+        if on_disk != wanted:
+            extra, missing = sorted(on_disk - wanted), sorted(wanted - on_disk)
+            raise ValueError(f"{model_dir} is not the exact pinned inventory (R13-P1-02): "
+                             f"extra={extra[:4]} missing={missing[:4]}")
     files.update(content_hashes(model_dir, tokenizer, cache_dir, trust_cache=not fresh))
     wrong = [name for name in names + tokenizer if not _pinned_match(model_dir / name, pinned[name], files[name])]
     if wrong:
@@ -212,7 +230,7 @@ def run_identity(*, model_dir, corpus_path, manifest_path, cache_dir=None, mask=
     if mode == "real":
         if tokenizer_dir.resolve() != model_dir.resolve():
             raise ValueError("a real run decodes with the checkpoint's own tokenizer: overrides are refused")
-    checkpoint = checkpoint_identity(model_dir, cache_dir, fresh=fresh)
+    checkpoint = checkpoint_identity(model_dir, cache_dir, fresh=fresh, exact_inventory=(mode == "real"))
     if mode == "real":
         if checkpoint["kind"] == "synthetic":
             raise ValueError("a synthetic checkpoint is only a rehearsal teacher, never a real one")

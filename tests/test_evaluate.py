@@ -2,12 +2,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import numpy as np
 import torch
 
 from mtpruning.corpus import FLORES_LANG, build_prompt, prompt_lang, sample_indices
 from mtpruning.evaluate import (EQUIV_ABS_TOL, chrf_pp, compare_runs, compare_trace,
-                                failure_flags, load_trace, paired_bootstrap, save_trace, score_from_stats,
-                                segment_stats, trace_complete, trace_path)
+                                failure_flags, load_trace, paired_bootstrap, read_trace, save_trace,
+                                score_from_stats, segment_stats, trace_complete, trace_path)
 
 
 def flags(source, reference, hyp, tgt="en", finish="eos", tokens=(1, 2, 3)):
@@ -163,6 +164,42 @@ class TraceTests(unittest.TestCase):
             path.write_bytes(path.read_bytes()[:64])     # an interrupted write: parses badly or not at all
             self.assertFalse(trace_complete(directory, "test:zh-my:12", record))
             self.assertIsNone(load_trace(directory, "test:zh-my:12"))
+
+    def test_a_rewritten_array_with_an_unchanged_stored_digest_is_not_evidence(self):
+        """R13-P1-01: the reader recomputes the digest from the actual arrays - a valid
+        container whose row hashes were altered keeps the stored digest and still fails."""
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            record = save_trace(directory, "s", self.trace(6, seed=3))
+            path = trace_path(directory, "s")
+            with np.load(path, allow_pickle=False) as data:
+                arrays = {name: data[name].copy() for name in data.files}
+            arrays["row_hash"][3, 0] ^= 0xFF                     # the full-logit fingerprints change ...
+            np.savez_compressed(path, digest=arrays.pop("digest"), **arrays)   # ... the stored one does not
+            self.assertIsNone(read_trace(directory, "s"))
+            self.assertFalse(trace_complete(directory, "s", record))
+            self.assertIsNone(load_trace(directory, "s"))
+            # a stub that only carries the digest and the argmax is not a trace either
+            np.savez_compressed(path, digest=np.array(record["sha256"]), argmax=arrays["argmax"])
+            self.assertIsNone(read_trace(directory, "s"))
+            # a wrong dtype for any required array is rejected before the digest
+            save_trace(directory, "s", self.trace(6, seed=3))
+            with np.load(path, allow_pickle=False) as data:
+                arrays = {name: data[name].copy() for name in data.files}
+            arrays["w"] = arrays["w"].astype(np.float64)
+            digest = arrays.pop("digest")
+            np.savez_compressed(path, digest=digest, **arrays)
+            self.assertIsNone(read_trace(directory, "s"))
+            # an extra array is rejected: the container layout itself is pinned
+            save_trace(directory, "s", self.trace(6, seed=3))
+            with np.load(path, allow_pickle=False) as data:
+                arrays = {name: data[name].copy() for name in data.files}
+            np.savez_compressed(path, spare=np.zeros(3, dtype=np.int32), **arrays)
+            self.assertIsNone(read_trace(directory, "s"))
+            # and the position count must match the generation record when given
+            save_trace(directory, "s", self.trace(6, seed=3))
+            self.assertTrue(trace_complete(directory, "s", record, expected_positions=6))
+            self.assertFalse(trace_complete(directory, "s", record, expected_positions=7))
 
     def test_a_length_mismatch_is_never_a_pass(self):
         a, b = self.trace(7, seed=1), self.trace(5, seed=1)      # the candidate stopped early

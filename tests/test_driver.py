@@ -51,8 +51,15 @@ class DriverTests(unittest.TestCase):
         evidence = self.world["root"] / "evidence"
         for name in ("corpus_receipt.json", "decision.json", "report.md", "selection.json",
                      "k128/equiv.json", "k96/equiv.json", "k64/equiv.json", "k96/prune.json", "k64/prune.json",
-                     "k96/masked/records.jsonl.summary.json", "inputs/checkpoint_content.json", "inputs/host.txt"):
+                     "k96/masked/records.jsonl.summary.json", "inputs/checkpoint_content.json", "inputs/host.txt",
+                     "inputs/disk_preflight.json", "retained_manifest.sha256"):
             self.assertTrue((evidence / name).exists(), name)
+        preflight = json.loads((evidence / "inputs" / "disk_preflight.json").read_text(encoding="utf-8"))
+        self.assertTrue(preflight["sufficient"])
+        self.assertTrue(preflight["assumptions"]["witness_count_never_reduced"])
+        # the retained manifest covers the run directory's evidence, witness traces included
+        retained = (evidence / "retained_manifest.sha256").read_text(encoding="utf-8").splitlines()
+        self.assertTrue(any("baseline/traces/" in line and line.endswith(".trace.npz") for line in retained), retained)
         # The journals and their identity bindings are evidence too: an independent reviewer
         # can reconstruct every aggregate and every trace digest from them (R11-P1-04).
         journals = sorted(p.relative_to(evidence).as_posix() for p in evidence.rglob("*.sqlite"))
