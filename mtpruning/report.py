@@ -12,6 +12,8 @@ from .evaluate import chrf_pp, failure_flags, paired_bootstrap, score_from_stats
 from .spec import MODEL_REVISION
 
 SPLITS_ORDER = [(split, d) for split in ("calibration", "validation", "test") for d in DIRECTIONS]
+# Failure flags a candidate must not add to, next to the chrF++ gate (issue #2).
+DIAGNOSTIC_FLAGS = ("empty", "truncated", "digits_differ_from_reference")
 NOT_RUN = [
     "80 experts per layer (the issue lists 96/80/64; this pilot ran 96 and 64)",
     "same-size random pruning baseline and the 7B dense model as quality anchors",
@@ -83,6 +85,8 @@ def quality_table(run: Path, variants: dict, gate: float, spot_n: int) -> tuple[
                     "sentences_better": int((deltas > 1e-9).sum()), "sentences_worse": int((deltas < -1e-9).sum()),
                     "worst_sentence_delta": float(deltas.min()), "flags": g["flags"], "finish": g["finish"],
                     "gate_pass": bool(score - row["baseline_chrf_pp"] <= gate),
+                    "diagnostics_not_worse": all(g["flags"].get(f, 0) <= base["flags"].get(f, 0)
+                                                 for f in DIAGNOSTIC_FLAGS),
                 }
                 if split == "test":
                     for i in np.argsort(deltas)[:spot_n]:
@@ -129,6 +133,8 @@ def decide(checks: dict, table: list, gate: float) -> dict:
             "test_pass": all(r["candidates"][name]["gate_pass"] for r in test_rows if name in r["candidates"]),
             "test_failing": [r["direction"] for r in test_rows if name in r["candidates"]
                              and not r["candidates"][name]["gate_pass"]],
+            "test_diagnostics_failing": [r["direction"] for r in test_rows if name in r["candidates"]
+                                         and not r["candidates"][name]["diagnostics_not_worse"]],
             "validation_pass": all(r["candidates"][name]["gate_pass"] for r in val_rows if name in r["candidates"]),
             "validation_failing": [r["direction"] for r in val_rows if name in r["candidates"]
                                    and not r["candidates"][name]["gate_pass"]],
@@ -141,8 +147,10 @@ def decide(checks: dict, table: list, gate: float) -> dict:
         "gate": f"chrF++ drop <= {gate} absolute per direction (provisional; pilot sample, not production acceptance)",
         "noop_pass": noop_pass, "masked_pass": masked_pass, "mechanism_pass": mechanism_pass,
         "quality": quality,
+        "diagnostics_rule": "no direction may have more empty, truncated or digit-mismatch flags than the baseline",
         "summary": ("mechanism PASS" if mechanism_pass else "mechanism FAIL")
-                   + "; " + "; ".join(f"{name}: quality {'PASS' if q['test_pass'] else 'FAIL'} on the pilot test set"
+                   + "; " + "; ".join(f"{name} experts: chrF++ gate {'PASS' if q['test_pass'] else 'FAIL'}, "
+                                      f"failure diagnostics {'PASS' if not q['test_diagnostics_failing'] else 'FAIL'}"
                                       for name, q in quality.items()),
     }
 
@@ -160,8 +168,9 @@ def build(run_dir: Path, variants: dict, gate: float, spot_n: int) -> dict:
         "metric": "sacrebleu CHRF(word_order=2), default settings; deltas are candidate minus baseline",
         "environment": baseline.get("environment"), "decoding": "greedy, max_new_tokens=%s" % baseline.get("max_new_tokens"),
         "corpus": {k: corpus_manifest.get(k) for k in
-                   ("corpus", "license", "url", "tarball_sha256", "corpus_sha256", "seed", "sizes_per_direction",
-                    "split_sizes", "prompt_policy", "records")},
+                   ("corpus", "release", "license", "url", "tarball_sha256", "corpus_sha256", "seed",
+                    "sizes_per_direction", "split_sizes", "language_codes", "duplicate_rule", "prompt_policy",
+                    "records")},
         "verdict": decide(checks, table, gate),
         "mechanism_checks": checks,
         "calibration": baseline.get("routing"),
@@ -211,10 +220,15 @@ def render_markdown(report: dict) -> str:
     for name, q in verdict["quality"].items():
         out.append(f"  - {name} experts: **{'PASS' if q['test_pass'] else 'FAIL'}** on the pilot test set"
                    f" (validation: {'PASS' if q['validation_pass'] else 'FAIL'})")
+        failing = ", ".join(arrow(d) for d in q["test_diagnostics_failing"])
+        out.append(f"  - {name} experts, no new empty / truncated / digit-mismatch flags in any direction: "
+                   f"**{'PASS' if not failing else 'FAIL'}**" + (f" ({failing})" if failing else ""))
     out += [ "", "Small sample: these numbers cannot support a production-acceptance claim.", "",
              "## Inputs and environment", "",
              f"- Model: `tencent/Hy-MT3-30B-A3B` at revision `{MODEL_REVISION}`; every shard sha256-verified against the HF listing.",
-             f"- Corpus: {report['corpus']['corpus']} ({report['corpus']['license']}), tarball sha256 "
+             f"- Corpus: {report['corpus']['corpus']} ({report['corpus']['license']}), codes "
+             f"{report['corpus']['language_codes']}. Duplicate rule: {report['corpus']['duplicate_rule']}. "
+             f"Tarball sha256 "
              f"`{report['corpus']['tarball_sha256']}`, sampled corpus sha256 `{report['corpus']['corpus_sha256']}`; "
              f"{report['corpus']['sizes_per_direction']} sentences per direction (seed {report['corpus']['seed']}).",
              f"- Prompt policy: {report['corpus']['prompt_policy']}.",
@@ -277,7 +291,8 @@ def render_markdown(report: dict) -> str:
                  "legitimately write a number differently from the single reference).", "" ]
 
     if report["spot_check_largest_test_drops"]:
-        out += ["## Sentences to look at first (largest per-sentence chrF++ drops on the pilot test set)", ""]
+        out += ["## Sentences to look at first (largest per-sentence chrF++ drops on the pilot test set)", "",
+                "Source and reference sentences: FLORES-200 (Meta AI), CC-BY-SA 4.0.", ""]
         for item in report["spot_check_largest_test_drops"]:
             out += [f"**{item['variant']} experts, {arrow(item['direction'])}, {item['id']}, Δ {item['sentence_chrf_pp_delta']:+.2f}**",
                     f"- source: {item['source']}", f"- reference: {item['reference']}",

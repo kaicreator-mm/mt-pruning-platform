@@ -110,12 +110,17 @@ class TraceTests(unittest.TestCase):
 
 
 class CorpusLogicTests(unittest.TestCase):
+    @staticmethod
+    def texts():
+        return {(split, code): [f"{split} {code} line {i}" for i in range(size)]
+                for split, size in (("dev", 997), ("devtest", 1012)) for code in FLORES_LANG.values()}
+
     def test_sample_is_disjoint_and_reproducible(self):
-        texts = {("dev", c): [""] * 997 for c in FLORES_LANG.values()}
-        texts.update({("devtest", c): [""] * 1012 for c in FLORES_LANG.values()})
-        first = sample_indices(texts, 24, 20, 20, seed=42)
-        self.assertEqual(first, sample_indices(texts, 24, 20, 20, seed=42))
-        self.assertNotEqual(first, sample_indices(texts, 24, 20, 20, seed=43))
+        texts = self.texts()
+        first, set_aside = sample_indices(texts, 24, 20, 20, seed=42)
+        self.assertEqual(first, sample_indices(texts, 24, 20, 20, seed=42)[0])
+        self.assertNotEqual(first, sample_indices(texts, 24, 20, 20, seed=43)[0])
+        self.assertEqual(set_aside, {lang: {"dev": 0, "devtest": 0} for lang in ("zh", "en", "my")})
         for lang, picks in first.items():
             self.assertEqual([len(picks[s]) for s in ("calibration", "validation", "test")], [24, 20, 20])
             self.assertFalse(set(picks["validation"]) & set(picks["test"]))
@@ -123,6 +128,20 @@ class CorpusLogicTests(unittest.TestCase):
             self.assertTrue(all(0 <= i < 1012 for i in picks["test"]))
         with self.assertRaises(ValueError):
             sample_indices(texts, 1000, 20, 20, seed=42)
+
+    def test_duplicates_across_splits_and_inside_a_sample_are_avoided(self):
+        texts = self.texts()
+        texts[("dev", "zho_Hans")][5] = texts[("devtest", "zho_Hans")][3]      # same source sentence, other split
+        texts[("dev", "eng_Latn")][9] = texts[("devtest", "mya_Mymr")][7]      # leaks through a target language
+        texts[("devtest", "eng_Latn")][12] = texts[("devtest", "eng_Latn")][11]
+        picks, set_aside = sample_indices(texts, 24, 20, 20, seed=42)
+        self.assertEqual(set_aside["zh"], {"dev": 2, "devtest": 2})
+        for groups in picks.values():
+            self.assertTrue({5, 9}.isdisjoint(groups["calibration"]))
+            held_out = groups["validation"] + groups["test"]
+            self.assertTrue({3, 7}.isdisjoint(held_out))
+            self.assertFalse({11, 12} <= set(held_out))
+            self.assertEqual(len(held_out), 40)
 
     def test_prompt_policy(self):
         text, lang = build_prompt("zh", "my", "你好")

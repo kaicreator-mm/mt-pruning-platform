@@ -23,6 +23,14 @@ GitHub 是事实源；采用有限实验、精确提交证据、失败闭锁。
 
 贪心解码。模型卡建议的采样参数（temperature 0.7）不用于本实验，否则剪枝前后的差异会和采样噪声混在一起。
 
+### 冻结语料
+
+`evidence/d01b/corpus/corpus_manifest.json` 记录每个源语言在各分割的行号、文件哈希和抽样规则；仓库不提交语料正文。
+用同一个 tarball 和种子重建，结果逐字节相同（corpus sha256 `9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4`）。
+抽样时排除了跨分割或在样本内重复的句子（三种语言任一、NFKC 归一化后比较）；FLORES-200 里这类重复为 0。
+语言代码是 FLORES-200 的 `zho_Hans` / `eng_Latn` / `mya_Mymr`，不要和 FLORES+（`cmn_Hans`）混用。
+后续任务直接复用这份冻结语料，不要回溯修改。
+
 ### 运行时
 
 `mtpruning/engine.py` 是一个 CPU bf16 推理引擎，逐算子镜像 transformers 5.24.1 对该模型的默认执行路径
