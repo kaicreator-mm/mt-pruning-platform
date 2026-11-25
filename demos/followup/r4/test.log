@@ -1,0 +1,16 @@
+test_alignment (test_trace.TestTrace.test_alignment) ... ok
+test_bad_mass (test_trace.TestTrace.test_bad_mass) ... ok
+test_change (test_trace.TestTrace.test_change) ... ok
+test_conflict (test_trace.TestTrace.test_conflict) ... ok
+test_corruption (test_trace.TestTrace.test_corruption) ... ok
+test_identity (test_trace.TestTrace.test_identity) ... ok
+test_mapping (test_trace.TestTrace.test_mapping) ... ok
+test_mapping_invalid (test_trace.TestTrace.test_mapping_invalid) ... ok
+test_resume (test_trace.TestTrace.test_resume) ... ok
+test_stability_invalid (test_trace.TestTrace.test_stability_invalid) ... ok
+test_stable (test_trace.TestTrace.test_stable) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.030s
+
+OK

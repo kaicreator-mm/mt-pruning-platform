@@ -1,0 +1,34 @@
+test_choose_smallest_pass (test_r3.Search.test_choose_smallest_pass) ... ok
+test_coactivation (test_r3.Search.test_coactivation) ... ok
+test_error_regression (test_r3.Search.test_error_regression) ... ok
+test_infeasible (test_r3.Search.test_infeasible) ... ok
+test_metrics_distinct (test_r3.Search.test_metrics_distinct) ... ok
+test_missing_direction (test_r3.Search.test_missing_direction) ... ok
+test_missing_group (test_r3.Search.test_missing_group) ... ok
+test_mixed_baseline (test_r3.Search.test_mixed_baseline) ... ok
+test_mixed_identity (test_r3.Search.test_mixed_identity) ... ok
+test_nan (test_r3.Search.test_nan) ... ok
+test_one_direction_failure (test_r3.Search.test_one_direction_failure) ... ok
+test_random_repeat (test_r3.Search.test_random_repeat) ... ok
+test_sensitivity (test_r3.Search.test_sensitivity) ... ok
+test_test_rejected (test_r3.Search.test_test_rejected) ... ok
+test_actual_safetensors_reload (test_r3.Streaming.test_actual_safetensors_reload) ... ok
+test_bad_axis (test_r3.Streaming.test_bad_axis) ... ok
+test_bad_ids (test_r3.Streaming.test_bad_ids) ... ok
+test_existing_output (test_r3.Streaming.test_existing_output) ... ok
+test_missing_role (test_r3.Streaming.test_missing_role) ... ok
+test_modified_teacher (test_r3.Streaming.test_modified_teacher) ... ok
+test_noop (test_r3.Streaming.test_noop) ... ok
+test_reproducible (test_r3.Streaming.test_reproducible) ... ok
+test_unknown_inventory (test_r3.Streaming.test_unknown_inventory) ... ok
+test_wrong_shape_rolls_back (test_r3.Streaming.test_wrong_shape_rolls_back) ... ok
+test_72_no_reference (test_stress.Stress.test_72_no_reference) ... ok
+test_duplicate_rejected (test_stress.Stress.test_duplicate_rejected) ... ok
+test_literal_loss (test_stress.Stress.test_literal_loss) ... ok
+test_wrong_contract (test_stress.Stress.test_wrong_contract) ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests in 0.031s
+
+OK
+tensor_payload_bytes 272960 140832

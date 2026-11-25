@@ -1,0 +1,12 @@
+{
+  "status": "DESIGN_ONLY_NOT_RUN",
+  "dependency": "D01b real physical pruning and selected candidate; clean BF16 GGUF reload",
+  "controls": ["teacher BF16 HF", "selected BF16 HF", "selected BF16 GGUF"],
+  "candidates": ["teacher Q4_K_M", "selected Q4_K_M", "selected Q6_K", "selected Q4_K_M + calibration imatrix", "selected Q4_K_M + verified tensor-level overrides"],
+  "source_precision": "BF16",
+  "per_expert_precision": "DEFERRED_IF_FUSED_TENSORS",
+  "selection": "validation only; separate final test; new holdout if previous final was seen",
+  "metrics": ["per-direction chrF++", "empty/truncated/numeric mismatch", "weight bytes", "GPU peak bytes", "actual residency evidence", "prompt/decode throughput", "p50/p95 latency"],
+  "contexts": [512,2048,8192],
+  "production_acceptance": false
+}

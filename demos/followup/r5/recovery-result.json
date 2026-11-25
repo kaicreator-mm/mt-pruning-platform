@@ -1,0 +1,71 @@
+[
+  {
+    "seed": 41,
+    "teacher": {
+      "correct": 170,
+      "teacher_agreement": 192,
+      "kl": -1.3789008823650306e-09
+    },
+    "pruned": {
+      "correct": 173,
+      "teacher_agreement": 171,
+      "kl": 0.24742750823497772
+    },
+    "recovered": {
+      "correct": 171,
+      "teacher_agreement": 172,
+      "kl": 0.3108266294002533
+    },
+    "changed": [
+      "blocks.0.router.weight",
+      "blocks.1.router.weight"
+    ],
+    "test_n": 192
+  },
+  {
+    "seed": 42,
+    "teacher": {
+      "correct": 163,
+      "teacher_agreement": 192,
+      "kl": -1.311060593423008e-09
+    },
+    "pruned": {
+      "correct": 169,
+      "teacher_agreement": 169,
+      "kl": 0.32638704776763916
+    },
+    "recovered": {
+      "correct": 158,
+      "teacher_agreement": 165,
+      "kl": 0.3276579976081848
+    },
+    "changed": [
+      "blocks.0.router.weight",
+      "blocks.1.router.weight"
+    ],
+    "test_n": 192
+  },
+  {
+    "seed": 43,
+    "teacher": {
+      "correct": 169,
+      "teacher_agreement": 192,
+      "kl": -2.7023472348730593e-10
+    },
+    "pruned": {
+      "correct": 167,
+      "teacher_agreement": 168,
+      "kl": 0.2304394692182541
+    },
+    "recovered": {
+      "correct": 165,
+      "teacher_agreement": 162,
+      "kl": 0.24512328207492828
+    },
+    "changed": [
+      "blocks.0.router.weight",
+      "blocks.1.router.weight"
+    ],
+    "test_n": 192
+  }
+]

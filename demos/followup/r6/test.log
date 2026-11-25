@@ -1,0 +1,23 @@
+test_axis_order (test_bridge.Adapter.test_axis_order) ... ok
+test_count (test_bridge.Adapter.test_count) ... ok
+test_duplicate (test_bridge.Adapter.test_duplicate) ... ok
+test_good (test_bridge.Adapter.test_good) ... ok
+test_masked (test_bridge.Adapter.test_masked) ... ok
+test_mass (test_bridge.Adapter.test_mass) ... ok
+test_partial_records (test_bridge.Adapter.test_partial_records) ... ok
+test_resume_stats_missing (test_bridge.Adapter.test_resume_stats_missing) ... ok
+test_resume_token_missing (test_bridge.Adapter.test_resume_token_missing) ... ok
+test_wrong_prompt_length (test_bridge.Adapter.test_wrong_prompt_length) ... ok
+test_boundary (test_bridge.Gate.test_boundary) ... ok
+test_candidate_missing (test_bridge.Gate.test_candidate_missing) ... ok
+test_delta_inconsistent (test_bridge.Gate.test_delta_inconsistent) ... ok
+test_drop (test_bridge.Gate.test_drop) ... ok
+test_duplicate (test_bridge.Gate.test_duplicate) ... ok
+test_error (test_bridge.Gate.test_error) ... ok
+test_improvement (test_bridge.Gate.test_improvement) ... ok
+test_incomplete (test_bridge.Gate.test_incomplete) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.016s
+
+OK
