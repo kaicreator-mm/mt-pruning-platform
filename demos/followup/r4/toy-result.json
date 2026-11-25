@@ -1,0 +1,76 @@
+{
+  "teacher_accuracy": 0.8645833134651184,
+  "pruned_accuracy": 0.8958333134651184,
+  "teacher_params": 2548,
+  "pruned_params": 1300,
+  "layers": [
+    {
+      "layer": 0,
+      "keep": [
+        0,
+        2,
+        3,
+        5
+      ],
+      "drift": {
+        "tokens": 192,
+        "mean_topk_overlap": 0.5677083333333334,
+        "changed_fraction": 0.7291666666666666
+      },
+      "stability": [
+        {
+          "size": 8,
+          "mean_jaccard": 0.4019047619047619,
+          "min_jaccard": 0.14285714285714285,
+          "mean_heldout_mass": 0.5617106679311348
+        },
+        {
+          "size": 32,
+          "mean_jaccard": 0.41333333333333333,
+          "min_jaccard": 0.3333333333333333,
+          "mean_heldout_mass": 0.573220876518831
+        },
+        {
+          "size": 96,
+          "mean_jaccard": 0.5466666666666666,
+          "min_jaccard": 0.3333333333333333,
+          "mean_heldout_mass": 0.5884844567109122
+        }
+      ]
+    },
+    {
+      "layer": 1,
+      "keep": [
+        1,
+        2,
+        5,
+        7
+      ],
+      "drift": {
+        "tokens": 192,
+        "mean_topk_overlap": 0.703125,
+        "changed_fraction": 0.5625
+      },
+      "stability": [
+        {
+          "size": 8,
+          "mean_jaccard": 0.72,
+          "min_jaccard": 0.6,
+          "mean_heldout_mass": 0.6966276961460405
+        },
+        {
+          "size": 32,
+          "mean_jaccard": 1.0,
+          "min_jaccard": 1.0,
+          "mean_heldout_mass": 0.7526416237360224
+        },
+        {
+          "size": 96,
+          "mean_jaccard": 1.0,
+          "min_jaccard": 1.0,
+          "mean_heldout_mass": 0.7579945686642039
+        }
+      ]
+    }
+  ]
+}

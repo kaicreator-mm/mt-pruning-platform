@@ -1,0 +1,740 @@
+[
+  {
+    "id": "r3-01:zh-en",
+    "direction": "zh-en",
+    "domain": "trade",
+    "source": "请在 {date} 前支付订单 {order_id} 的余额。",
+    "required_literals": [
+      "{date}",
+      "{order_id}"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-01:zh-my",
+    "direction": "zh-my",
+    "domain": "trade",
+    "source": "请在 {date} 前支付订单 {order_id} 的余额。",
+    "required_literals": [
+      "{date}",
+      "{order_id}"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-01:en-zh",
+    "direction": "en-zh",
+    "domain": "trade",
+    "source": "Please pay the outstanding balance for order {order_id} before {date}.",
+    "required_literals": [
+      "{date}",
+      "{order_id}"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-01:en-my",
+    "direction": "en-my",
+    "domain": "trade",
+    "source": "Please pay the outstanding balance for order {order_id} before {date}.",
+    "required_literals": [
+      "{date}",
+      "{order_id}"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-01:my-zh",
+    "direction": "my-zh",
+    "domain": "trade",
+    "source": "{date} မတိုင်မီ အမှာစာ {order_id} ၏ ကျန်ငွေကို ပေးချေပါ။",
+    "required_literals": [
+      "{date}",
+      "{order_id}"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-01:my-en",
+    "direction": "my-en",
+    "domain": "trade",
+    "source": "{date} မတိုင်မီ အမှာစာ {order_id} ၏ ကျန်ငွေကို ပေးချေပါ။",
+    "required_literals": [
+      "{date}",
+      "{order_id}"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-02:zh-en",
+    "direction": "zh-en",
+    "domain": "negation",
+    "source": "没有收到付款，不代表订单已经取消。",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-02:zh-my",
+    "direction": "zh-my",
+    "domain": "negation",
+    "source": "没有收到付款，不代表订单已经取消。",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-02:en-zh",
+    "direction": "en-zh",
+    "domain": "negation",
+    "source": "Not receiving the payment does not mean the order has been canceled.",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-02:en-my",
+    "direction": "en-my",
+    "domain": "negation",
+    "source": "Not receiving the payment does not mean the order has been canceled.",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-02:my-zh",
+    "direction": "my-zh",
+    "domain": "negation",
+    "source": "ငွေပေးချေမှု မရရှိသေးခြင်းသည် အမှာစာကို ပယ်ဖျက်ပြီးဖြစ်သည်ဟု မဆိုလိုပါ။",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-02:my-en",
+    "direction": "my-en",
+    "domain": "negation",
+    "source": "ငွေပေးချေမှု မရရှိသေးခြင်းသည် အမှာစာကို ပယ်ဖျက်ပြီးဖြစ်သည်ဟု မဆိုလိုပါ။",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-03:zh-en",
+    "direction": "zh-en",
+    "domain": "technical",
+    "source": "设备编号 SN-A03 不得更改；错误代码 E042 必须保留。",
+    "required_literals": [
+      "SN-A03",
+      "E042"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-03:zh-my",
+    "direction": "zh-my",
+    "domain": "technical",
+    "source": "设备编号 SN-A03 不得更改；错误代码 E042 必须保留。",
+    "required_literals": [
+      "SN-A03",
+      "E042"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-03:en-zh",
+    "direction": "en-zh",
+    "domain": "technical",
+    "source": "Do not change device ID SN-A03; preserve error code E042.",
+    "required_literals": [
+      "SN-A03",
+      "E042"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-03:en-my",
+    "direction": "en-my",
+    "domain": "technical",
+    "source": "Do not change device ID SN-A03; preserve error code E042.",
+    "required_literals": [
+      "SN-A03",
+      "E042"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-03:my-zh",
+    "direction": "my-zh",
+    "domain": "technical",
+    "source": "စက်ပစ္စည်း ID SN-A03 ကို မပြောင်းပါနှင့်။ အမှားကုဒ် E042 ကို ထိန်းသိမ်းထားပါ။",
+    "required_literals": [
+      "SN-A03",
+      "E042"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-03:my-en",
+    "direction": "my-en",
+    "domain": "technical",
+    "source": "စက်ပစ္စည်း ID SN-A03 ကို မပြောင်းပါနှင့်။ အမှားကုဒ် E042 ကို ထိန်းသိမ်းထားပါ။",
+    "required_literals": [
+      "SN-A03",
+      "E042"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-04:zh-en",
+    "direction": "zh-en",
+    "domain": "markup",
+    "source": "<b>请确认</b>，然后点击 <i>提交</i>。",
+    "required_literals": [
+      "<b>",
+      "</b>",
+      "<i>",
+      "</i>"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-04:zh-my",
+    "direction": "zh-my",
+    "domain": "markup",
+    "source": "<b>请确认</b>，然后点击 <i>提交</i>。",
+    "required_literals": [
+      "<b>",
+      "</b>",
+      "<i>",
+      "</i>"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-04:en-zh",
+    "direction": "en-zh",
+    "domain": "markup",
+    "source": "<b>Please confirm</b>, then click <i>Submit</i>.",
+    "required_literals": [
+      "<b>",
+      "</b>",
+      "<i>",
+      "</i>"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-04:en-my",
+    "direction": "en-my",
+    "domain": "markup",
+    "source": "<b>Please confirm</b>, then click <i>Submit</i>.",
+    "required_literals": [
+      "<b>",
+      "</b>",
+      "<i>",
+      "</i>"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-04:my-zh",
+    "direction": "my-zh",
+    "domain": "markup",
+    "source": "<b>အတည်ပြုပါ</b>၊ ထို့နောက် <i>တင်သွင်းရန်</i> ကို နှိပ်ပါ။",
+    "required_literals": [
+      "<b>",
+      "</b>",
+      "<i>",
+      "</i>"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-04:my-en",
+    "direction": "my-en",
+    "domain": "markup",
+    "source": "<b>အတည်ပြုပါ</b>၊ ထို့နောက် <i>တင်သွင်းရန်</i> ကို နှိပ်ပါ။",
+    "required_literals": [
+      "<b>",
+      "</b>",
+      "<i>",
+      "</i>"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-05:zh-en",
+    "direction": "zh-en",
+    "domain": "quantities",
+    "source": "实际重量为 12.5 kg，允许偏差为 ±0.2 kg。",
+    "required_literals": [
+      "12.5 kg",
+      "±0.2 kg"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-05:zh-my",
+    "direction": "zh-my",
+    "domain": "quantities",
+    "source": "实际重量为 12.5 kg，允许偏差为 ±0.2 kg。",
+    "required_literals": [
+      "12.5 kg",
+      "±0.2 kg"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-05:en-zh",
+    "direction": "en-zh",
+    "domain": "quantities",
+    "source": "The actual weight is 12.5 kg, with an allowed deviation of ±0.2 kg.",
+    "required_literals": [
+      "12.5 kg",
+      "±0.2 kg"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-05:en-my",
+    "direction": "en-my",
+    "domain": "quantities",
+    "source": "The actual weight is 12.5 kg, with an allowed deviation of ±0.2 kg.",
+    "required_literals": [
+      "12.5 kg",
+      "±0.2 kg"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-05:my-zh",
+    "direction": "my-zh",
+    "domain": "quantities",
+    "source": "အမှန်တကယ် အလေးချိန်မှာ 12.5 kg ဖြစ်ပြီး ခွင့်ပြုထားသော ကွာဟချက်မှာ ±0.2 kg ဖြစ်သည်။",
+    "required_literals": [
+      "12.5 kg",
+      "±0.2 kg"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-05:my-en",
+    "direction": "my-en",
+    "domain": "quantities",
+    "source": "အမှန်တကယ် အလေးချိန်မှာ 12.5 kg ဖြစ်ပြီး ခွင့်ပြုထားသော ကွာဟချက်မှာ ±0.2 kg ဖြစ်သည်။",
+    "required_literals": [
+      "12.5 kg",
+      "±0.2 kg"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-06:zh-en",
+    "direction": "zh-en",
+    "domain": "software",
+    "source": "命令 `git status` 只查看状态，不会提交文件。",
+    "required_literals": [
+      "`git status`"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-06:zh-my",
+    "direction": "zh-my",
+    "domain": "software",
+    "source": "命令 `git status` 只查看状态，不会提交文件。",
+    "required_literals": [
+      "`git status`"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-06:en-zh",
+    "direction": "en-zh",
+    "domain": "software",
+    "source": "The command `git status` only displays the status; it does not commit files.",
+    "required_literals": [
+      "`git status`"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-06:en-my",
+    "direction": "en-my",
+    "domain": "software",
+    "source": "The command `git status` only displays the status; it does not commit files.",
+    "required_literals": [
+      "`git status`"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-06:my-zh",
+    "direction": "my-zh",
+    "domain": "software",
+    "source": "`git status` အမိန့်သည် အခြေအနေကိုသာ ပြသပြီး ဖိုင်များကို commit မလုပ်ပါ။",
+    "required_literals": [
+      "`git status`"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-06:my-en",
+    "direction": "my-en",
+    "domain": "software",
+    "source": "`git status` အမိန့်သည် အခြေအနေကိုသာ ပြသပြီး ဖိုင်များကို commit မလုပ်ပါ။",
+    "required_literals": [
+      "`git status`"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-07:zh-en",
+    "direction": "zh-en",
+    "domain": "condition",
+    "source": "只有在主管批准之后，才能发货。",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-07:zh-my",
+    "direction": "zh-my",
+    "domain": "condition",
+    "source": "只有在主管批准之后，才能发货。",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-07:en-zh",
+    "direction": "en-zh",
+    "domain": "condition",
+    "source": "Ship the goods only after the supervisor approves.",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-07:en-my",
+    "direction": "en-my",
+    "domain": "condition",
+    "source": "Ship the goods only after the supervisor approves.",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-07:my-zh",
+    "direction": "my-zh",
+    "domain": "condition",
+    "source": "ကြီးကြပ်သူ အတည်ပြုပြီးမှသာ ကုန်ပစ္စည်းကို ပို့ဆောင်ပါ။",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-07:my-en",
+    "direction": "my-en",
+    "domain": "condition",
+    "source": "ကြီးကြပ်သူ အတည်ပြုပြီးမှသာ ကုန်ပစ္စည်းကို ပို့ဆောင်ပါ။",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-08:zh-en",
+    "direction": "zh-en",
+    "domain": "address",
+    "source": "将包裹送到仓库 WH-02，联系人为 {contact}。",
+    "required_literals": [
+      "WH-02",
+      "{contact}"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-08:zh-my",
+    "direction": "zh-my",
+    "domain": "address",
+    "source": "将包裹送到仓库 WH-02，联系人为 {contact}。",
+    "required_literals": [
+      "WH-02",
+      "{contact}"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-08:en-zh",
+    "direction": "en-zh",
+    "domain": "address",
+    "source": "Deliver the parcel to warehouse WH-02; the contact is {contact}.",
+    "required_literals": [
+      "WH-02",
+      "{contact}"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-08:en-my",
+    "direction": "en-my",
+    "domain": "address",
+    "source": "Deliver the parcel to warehouse WH-02; the contact is {contact}.",
+    "required_literals": [
+      "WH-02",
+      "{contact}"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-08:my-zh",
+    "direction": "my-zh",
+    "domain": "address",
+    "source": "ပါဆယ်ထုပ်ကို ဂိုဒေါင် WH-02 သို့ ပို့ပေးပါ။ ဆက်သွယ်ရန်မှာ {contact} ဖြစ်သည်။",
+    "required_literals": [
+      "WH-02",
+      "{contact}"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-08:my-en",
+    "direction": "my-en",
+    "domain": "address",
+    "source": "ပါဆယ်ထုပ်ကို ဂိုဒေါင် WH-02 သို့ ပို့ပေးပါ။ ဆက်သွယ်ရန်မှာ {contact} ဖြစ်သည်။",
+    "required_literals": [
+      "WH-02",
+      "{contact}"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-09:zh-en",
+    "direction": "zh-en",
+    "domain": "mixed_script",
+    "source": "请勿修改 API 参数 user_id，也不要翻译 NULL。",
+    "required_literals": [
+      "API",
+      "user_id",
+      "NULL"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-09:zh-my",
+    "direction": "zh-my",
+    "domain": "mixed_script",
+    "source": "请勿修改 API 参数 user_id，也不要翻译 NULL。",
+    "required_literals": [
+      "API",
+      "user_id",
+      "NULL"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-09:en-zh",
+    "direction": "en-zh",
+    "domain": "mixed_script",
+    "source": "Do not modify the API parameter user_id or translate NULL.",
+    "required_literals": [
+      "API",
+      "user_id",
+      "NULL"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-09:en-my",
+    "direction": "en-my",
+    "domain": "mixed_script",
+    "source": "Do not modify the API parameter user_id or translate NULL.",
+    "required_literals": [
+      "API",
+      "user_id",
+      "NULL"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-09:my-zh",
+    "direction": "my-zh",
+    "domain": "mixed_script",
+    "source": "API ပါရာမီတာ user_id ကို မပြောင်းပါနှင့်၊ NULL ကိုလည်း ဘာသာမပြန်ပါနှင့်။",
+    "required_literals": [
+      "API",
+      "user_id",
+      "NULL"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-09:my-en",
+    "direction": "my-en",
+    "domain": "mixed_script",
+    "source": "API ပါရာမီတာ user_id ကို မပြောင်းပါနှင့်၊ NULL ကိုလည်း ဘာသာမပြန်ပါနှင့်။",
+    "required_literals": [
+      "API",
+      "user_id",
+      "NULL"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-10:zh-en",
+    "direction": "zh-en",
+    "domain": "ambiguity",
+    "source": "银行今天没有开门，所以我改天再去。",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-10:zh-my",
+    "direction": "zh-my",
+    "domain": "ambiguity",
+    "source": "银行今天没有开门，所以我改天再去。",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-10:en-zh",
+    "direction": "en-zh",
+    "domain": "ambiguity",
+    "source": "The bank is closed today, so I will go another day.",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-10:en-my",
+    "direction": "en-my",
+    "domain": "ambiguity",
+    "source": "The bank is closed today, so I will go another day.",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-10:my-zh",
+    "direction": "my-zh",
+    "domain": "ambiguity",
+    "source": "ဘဏ်က ဒီနေ့ မဖွင့်တဲ့အတွက် နောက်တစ်နေ့မှ သွားမယ်။",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-10:my-en",
+    "direction": "my-en",
+    "domain": "ambiguity",
+    "source": "ဘဏ်က ဒီနေ့ မဖွင့်တဲ့အတွက် နောက်တစ်နေ့မှ သွားမယ်။",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-11:zh-en",
+    "direction": "zh-en",
+    "domain": "format",
+    "source": "第一行：{name}\n第二行：{phone}",
+    "required_literals": [
+      "{name}",
+      "{phone}",
+      "\n"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-11:zh-my",
+    "direction": "zh-my",
+    "domain": "format",
+    "source": "第一行：{name}\n第二行：{phone}",
+    "required_literals": [
+      "{name}",
+      "{phone}",
+      "\n"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-11:en-zh",
+    "direction": "en-zh",
+    "domain": "format",
+    "source": "Line one: {name}\nLine two: {phone}",
+    "required_literals": [
+      "{name}",
+      "{phone}",
+      "\n"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-11:en-my",
+    "direction": "en-my",
+    "domain": "format",
+    "source": "Line one: {name}\nLine two: {phone}",
+    "required_literals": [
+      "{name}",
+      "{phone}",
+      "\n"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-11:my-zh",
+    "direction": "my-zh",
+    "domain": "format",
+    "source": "ပထမစာကြောင်း - {name}\nဒုတိယစာကြောင်း - {phone}",
+    "required_literals": [
+      "{name}",
+      "{phone}",
+      "\n"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-11:my-en",
+    "direction": "my-en",
+    "domain": "format",
+    "source": "ပထမစာကြောင်း - {name}\nဒုတိယစာကြောင်း - {phone}",
+    "required_literals": [
+      "{name}",
+      "{phone}",
+      "\n"
+    ],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-12:zh-en",
+    "direction": "zh-en",
+    "domain": "long_dependency",
+    "source": "如果供应商不能按约定时间交付，请先通知客户；只有客户同意新的交付时间，才可以修改订单。",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-12:zh-my",
+    "direction": "zh-my",
+    "domain": "long_dependency",
+    "source": "如果供应商不能按约定时间交付，请先通知客户；只有客户同意新的交付时间，才可以修改订单。",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-12:en-zh",
+    "direction": "en-zh",
+    "domain": "long_dependency",
+    "source": "If the supplier cannot deliver on time, notify the customer first; change the order only if the customer agrees to the new delivery time.",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-12:en-my",
+    "direction": "en-my",
+    "domain": "long_dependency",
+    "source": "If the supplier cannot deliver on time, notify the customer first; change the order only if the customer agrees to the new delivery time.",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-12:my-zh",
+    "direction": "my-zh",
+    "domain": "long_dependency",
+    "source": "ပေးသွင်းသူက သတ်မှတ်ချိန်အတွင်း မပို့နိုင်လျှင် ဖောက်သည်ကို အရင် အသိပေးပါ။ ဖောက်သည်က ပို့ဆောင်မည့်အချိန်အသစ်ကို သဘောတူမှသာ အမှာစာကို ပြင်ဆင်နိုင်သည်။",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  },
+  {
+    "id": "r3-12:my-en",
+    "direction": "my-en",
+    "domain": "long_dependency",
+    "source": "ပေးသွင်းသူက သတ်မှတ်ချိန်အတွင်း မပို့နိုင်လျှင် ဖောက်သည်ကို အရင် အသိပေးပါ။ ဖောက်သည်က ပို့ဆောင်မည့်အချိန်အသစ်ကို သဘောတူမှသာ အမှာစာကို ပြင်ဆင်နိုင်သည်။",
+    "required_literals": [],
+    "status": "DRAFT_MANUAL_REVIEW_ONLY"
+  }
+]

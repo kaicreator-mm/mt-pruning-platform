@@ -1,0 +1,136 @@
+r1 test_alignment (test_prep.DemoTests.test_alignment) ... ok
+test_budget (test_prep.DemoTests.test_budget) ... ok
+test_cross_split_duplicate (test_prep.DemoTests.test_cross_split_duplicate) ... ok
+test_gate (test_prep.DemoTests.test_gate) ... ok
+test_invalid_profile (test_prep.DemoTests.test_invalid_profile) ... ok
+test_number (test_prep.DemoTests.test_number) ... ok
+test_plan (test_prep.DemoTests.test_plan) ... ok
+test_split (test_prep.DemoTests.test_split) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.029s
+
+OK
+
+r2 test_complete (test_demo.Preflight.test_complete) ... ok
+test_index (test_demo.Preflight.test_index) ... ok
+test_missing (test_demo.Preflight.test_missing) ... ok
+test_partial (test_demo.Preflight.test_partial) ... ok
+test_path (test_demo.Preflight.test_path) ... ok
+test_shape (test_demo.Preflight.test_shape) ... ok
+test_trailing (test_demo.Preflight.test_trailing) ... ok
+test_candidate (test_demo.Reuse.test_candidate) ... ok
+test_identity (test_demo.Reuse.test_identity) ... ok
+test_invalid (test_demo.Reuse.test_invalid) ... ok
+test_missing (test_demo.Reuse.test_missing) ... ok
+test_reuse (test_demo.Reuse.test_reuse) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.005s
+
+OK
+
+r3 test_choose_smallest_pass (test_r3.Search.test_choose_smallest_pass) ... ok
+test_coactivation (test_r3.Search.test_coactivation) ... ok
+test_error_regression (test_r3.Search.test_error_regression) ... ok
+test_infeasible (test_r3.Search.test_infeasible) ... ok
+test_metrics_distinct (test_r3.Search.test_metrics_distinct) ... ok
+test_missing_direction (test_r3.Search.test_missing_direction) ... ok
+test_missing_group (test_r3.Search.test_missing_group) ... ok
+test_mixed_baseline (test_r3.Search.test_mixed_baseline) ... ok
+test_mixed_identity (test_r3.Search.test_mixed_identity) ... ok
+test_nan (test_r3.Search.test_nan) ... ok
+test_one_direction_failure (test_r3.Search.test_one_direction_failure) ... ok
+test_random_repeat (test_r3.Search.test_random_repeat) ... ok
+test_sensitivity (test_r3.Search.test_sensitivity) ... ok
+test_test_rejected (test_r3.Search.test_test_rejected) ... ok
+test_actual_safetensors_reload (test_r3.Streaming.test_actual_safetensors_reload) ... ok
+test_bad_axis (test_r3.Streaming.test_bad_axis) ... ok
+test_bad_ids (test_r3.Streaming.test_bad_ids) ... ok
+test_existing_output (test_r3.Streaming.test_existing_output) ... ok
+test_missing_role (test_r3.Streaming.test_missing_role) ... ok
+test_modified_teacher (test_r3.Streaming.test_modified_teacher) ... ok
+test_noop (test_r3.Streaming.test_noop) ... ok
+test_reproducible (test_r3.Streaming.test_reproducible) ... ok
+test_unknown_inventory (test_r3.Streaming.test_unknown_inventory) ... ok
+test_wrong_shape_rolls_back (test_r3.Streaming.test_wrong_shape_rolls_back) ... ok
+test_72_no_reference (test_stress.Stress.test_72_no_reference) ... ok
+test_duplicate_rejected (test_stress.Stress.test_duplicate_rejected) ... ok
+test_literal_loss (test_stress.Stress.test_literal_loss) ... ok
+test_wrong_contract (test_stress.Stress.test_wrong_contract) ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests in 0.029s
+
+OK
+tensor_payload_bytes 272960 140832
+
+r4 test_alignment (test_trace.TestTrace.test_alignment) ... ok
+test_bad_mass (test_trace.TestTrace.test_bad_mass) ... ok
+test_change (test_trace.TestTrace.test_change) ... ok
+test_conflict (test_trace.TestTrace.test_conflict) ... ok
+test_corruption (test_trace.TestTrace.test_corruption) ... ok
+test_identity (test_trace.TestTrace.test_identity) ... ok
+test_mapping (test_trace.TestTrace.test_mapping) ... ok
+test_mapping_invalid (test_trace.TestTrace.test_mapping_invalid) ... ok
+test_resume (test_trace.TestTrace.test_resume) ... ok
+test_stability_invalid (test_trace.TestTrace.test_stability_invalid) ... ok
+test_stable (test_trace.TestTrace.test_stable) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.035s
+
+OK
+
+r5 test_changed_artifact (test_cache_plan.CacheTests.test_changed_artifact) ... ok
+test_conflict (test_cache_plan.CacheTests.test_conflict) ... ok
+test_corrupt_receipt (test_cache_plan.CacheTests.test_corrupt_receipt) ... ok
+test_hit_reopen (test_cache_plan.CacheTests.test_hit_reopen) ... ok
+test_identity_change (test_cache_plan.CacheTests.test_identity_change) ... ok
+test_missing_artifact (test_cache_plan.CacheTests.test_missing_artifact) ... ok
+test_missing_field (test_cache_plan.CacheTests.test_missing_field) ... ok
+test_partial (test_cache_plan.CacheTests.test_partial) ... ok
+test_split (test_cache_plan.CacheTests.test_split) ... ok
+test_budget (test_cache_plan.DiskTests.test_budget) ... ok
+test_invalid (test_cache_plan.DiskTests.test_invalid) ... ok
+test_layer_limit (test_cache_plan.DiskTests.test_layer_limit) ... ok
+test_over_budget (test_cache_plan.DiskTests.test_over_budget) ... ok
+test_shape (test_cache_plan.DiskTests.test_shape) ... ok
+test_topk (test_cache_plan.DiskTests.test_topk) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.026s
+
+OK
+
+r6 test_adapter_to_selection (test_bridge.Adapter.test_adapter_to_selection) ... ok
+test_axis_order (test_bridge.Adapter.test_axis_order) ... ok
+test_count (test_bridge.Adapter.test_count) ... ok
+test_duplicate (test_bridge.Adapter.test_duplicate) ... ok
+test_good (test_bridge.Adapter.test_good) ... ok
+test_masked (test_bridge.Adapter.test_masked) ... ok
+test_mass (test_bridge.Adapter.test_mass) ... ok
+test_partial_records (test_bridge.Adapter.test_partial_records) ... ok
+test_resume_stats_missing (test_bridge.Adapter.test_resume_stats_missing) ... ok
+test_resume_token_missing (test_bridge.Adapter.test_resume_token_missing) ... ok
+test_wrong_prompt_length (test_bridge.Adapter.test_wrong_prompt_length) ... ok
+test_boundary (test_bridge.Gate.test_boundary) ... ok
+test_candidate_missing (test_bridge.Gate.test_candidate_missing) ... ok
+test_delta_inconsistent (test_bridge.Gate.test_delta_inconsistent) ... ok
+test_drop (test_bridge.Gate.test_drop) ... ok
+test_duplicate (test_bridge.Gate.test_duplicate) ... ok
+test_error (test_bridge.Gate.test_error) ... ok
+test_improvement (test_bridge.Gate.test_improvement) ... ok
+test_incomplete (test_bridge.Gate.test_incomplete) ... ok
+test_export (test_prepare_candidates.Plan.test_export) ... ok
+test_invalid (test_prepare_candidates.Plan.test_invalid) ... ok
+test_missing_group (test_prepare_candidates.Plan.test_missing_group) ... ok
+test_random (test_prepare_candidates.Plan.test_random) ... ok
+test_worst (test_prepare_candidates.Plan.test_worst) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.017s
+
+OK
+
+{"r1": {"compiled": 3, "status": "PASS_CPU_TESTS_ONLY", "tests": 8}, "r2": {"compiled": 3, "status": "PASS_CPU_TESTS_ONLY", "tests": 12}, "r3": {"compiled": 5, "status": "PASS_CPU_TESTS_ONLY", "tests": 28}, "r4": {"compiled": 3, "status": "PASS_CPU_TESTS_ONLY", "tests": 11}, "r5": {"compiled": 3, "status": "PASS_CPU_TESTS_ONLY", "tests": 15}, "r6": {"compiled": 4, "status": "PASS_CPU_TESTS_ONLY", "tests": 24}}

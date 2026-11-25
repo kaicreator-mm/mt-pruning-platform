@@ -1,0 +1,2 @@
+# Git checkout scope
+R5 README describes the complete offline archive, not this partial checkout. Here run `python -m unittest discover -v` and `python recovery.py` from demos/followup/r5; r4 is its sibling. R1–R3 and the regression runner are available in the conversation archive, pending Git import. Do not claim the 74-test run was performed against this partial Git checkout. See #2 for exact archive hashes and results.

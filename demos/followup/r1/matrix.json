@@ -1,0 +1,9 @@
+{
+  "status":"PROPOSED_EXPERIMENT_MATRIX_NOT_EXECUTION",
+  "directions":["zh-en","en-zh","zh-my","my-zh","en-my","my-en"],
+  "pilot_counts_per_direction":{"calibration":24,"validation":20,"test":20},
+  "quality":{"max_chrfpp_absolute_loss":1.0,"no_increase":["empty","truncated","number_mismatch"],"manual_native_review_required_for_production":true},
+  "candidates":[{"id":"teacher","keep":128},{"id":"balanced96","keep":96,"method":"balanced"},{"id":"balanced64","keep":64,"method":"balanced"},{"id":"random64","keep":64,"method":"random"},{"id":"balanced80","keep":80,"method":"balanced","conditional":"64 fails"},{"id":"worst64","keep":64,"method":"worst_first","conditional":"direction imbalance"},{"id":"dense7b","model":"tencent/Hy-MT3-7B"}],
+  "deployment":{"quants":["Q4_K_M","Q6_K"],"contexts":[512,2048,8192],"gpu_budget_gib":16,"full_offload_requires_runtime_evidence":true},
+  "selection":"validation only; final test selected candidate once; no cross-direction averaging for gate"
+}

@@ -1,0 +1,13 @@
+test_alignment (test_prep.DemoTests.test_alignment) ... ok
+test_budget (test_prep.DemoTests.test_budget) ... ok
+test_cross_split_duplicate (test_prep.DemoTests.test_cross_split_duplicate) ... ok
+test_gate (test_prep.DemoTests.test_gate) ... ok
+test_invalid_profile (test_prep.DemoTests.test_invalid_profile) ... ok
+test_number (test_prep.DemoTests.test_number) ... ok
+test_plan (test_prep.DemoTests.test_plan) ... ok
+test_split (test_prep.DemoTests.test_split) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.035s
+
+OK
