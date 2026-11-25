@@ -5,6 +5,7 @@ from collections import Counter
 
 DIRS = ('zh-my','my-zh','zh-en','en-zh','en-my','my-en')
 SPLITS = ('calibration','validation','test')
+DECODING = 'greedy (argmax of bf16 logits)'
 
 
 def need(ok, msg):
@@ -21,7 +22,7 @@ def lines(path):
 
 
 def norm(text):
-    return ' '.join(unicodedata.normalize('NFKC', text).casefold().split())
+    return ' '.join(unicodedata.normalize('NFKC', text).split()).casefold()
 
 
 def corpus(manifest_path, manifest_sha, corpus_path):
@@ -51,7 +52,11 @@ def corpus(manifest_path, manifest_sha, corpus_path):
         need(isinstance(r['prompt_ids'],list) and r['prompt_ids'] and all(type(t) is int and t >= 0 for t in r['prompt_ids']), 'invalid prompt tokens')
         for lang, field in ((r['src_lang'],'source'),(r['tgt_lang'],'reference')):
             v = norm(r[field]); need(bool(v), 'empty corpus text')
-            key = (lang,v); previous = forms.setdefault(key,r['split']); need(previous == r['split'], 'normalized text crosses splits')
+            # Across all languages, permit repetitions only on the same sampled parallel line.
+            identity = (r['split'],r['flores_split'],r['line'])
+            previous = forms.setdefault(v,identity)
+            need(previous[0] == identity[0], 'normalized text crosses splits')
+            need(previous == identity, 'normalized text repeats on distinct sampled lines')
             key = (r['flores_split'],r['line'],lang); need(aligned.setdefault(key,r[field]) == r[field], 'parallel line text mismatch')
         records[i] = r
     need(set(records) == set(expected) and len(records) == m['records'], 'incomplete corpus')
@@ -63,7 +68,7 @@ def records(path, m, contexts, keep, *, candidate):
     h = rr[0]
     need(h.get('corpus_sha256') == m['corpus_sha256'] and h.get('num_experts') == keep and 'masked_keep' in h and h['masked_keep'] is None, 'wrong run identity')
     need(isinstance(h.get('splits'),list) and 'validation' in h['splits'] and set(h['splits']) <= set(SPLITS), 'wrong split scope')
-    need(type(h.get('max_new_tokens')) is int and h['max_new_tokens'] > 0 and isinstance(h.get('decoding'),str) and h['decoding'], 'bad decoding contract')
+    need(type(h.get('max_new_tokens')) is int and h['max_new_tokens'] > 0 and h.get('decoding') == DECODING, 'bad decoding contract')
     need(not candidate or 'test' not in h['splits'], 'candidate test already exposed')
     out = {}; seen = set()
     for r in rr[1:]:

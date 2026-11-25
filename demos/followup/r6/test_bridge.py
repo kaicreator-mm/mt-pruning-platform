@@ -72,4 +72,19 @@ class Gate(unittest.TestCase):
     def test_delta_inconsistent(self):
         r=self.table(0.); r[0]['candidates']['64']['delta']=1.
         with self.assertRaises(ValueError): self.gate(r)
+    def test_sparse_flags(self):
+        r=self.table(0.); r[0]['candidates']['64']['flags']['wrong_script']=1
+        self.assertEqual(self.gate(r),'REPORT_GATE_PASS')
+    def test_unknown_candidate_flag(self):
+        r=self.table(0.); r[0]['candidates']['64']['flags']['typo']=20
+        with self.assertRaisesRegex(ValueError,'diagnostic flags'): self.gate(r)
+    def test_unknown_baseline_flag(self):
+        r=self.table(0.); r[0]['baseline_flags']['typo']=0
+        with self.assertRaisesRegex(ValueError,'diagnostic flags'): self.gate(r)
+    def test_missing_flags(self):
+        for side in ('baseline','candidate'):
+            r=self.table(0.)
+            if side=='baseline': del r[0]['baseline_flags']
+            else: del r[0]['candidates']['64']['flags']
+            with self.assertRaisesRegex(ValueError,'diagnostic flags'): self.gate(r)
 if __name__=='__main__': unittest.main()

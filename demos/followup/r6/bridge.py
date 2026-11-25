@@ -6,6 +6,7 @@ import numpy as np
 
 DIRS = ('zh-my', 'my-zh', 'zh-en', 'en-zh', 'en-my', 'my-en')
 PHASES = ('prefill', 'decode')
+FAILURE_FLAGS = frozenset(('empty','truncated','untranslated_copy','wrong_script','digits_differ_from_reference','length_ratio_outlier','degenerate_repetition'))
 
 def need(ok, message):
     if not ok:
@@ -93,8 +94,8 @@ def quality_gate(table, split, candidate, expected_n, max_drop=1.0):
         delta = b-a
         need(type(c['delta']) in (float,int) and math.isfinite(c['delta']) and math.isclose(c['delta'], delta, abs_tol=1e-9), 'inconsistent score delta')
         flags = ('empty','truncated','digits_differ_from_reference')
-        errors = (r['baseline_flags'], c['flags'])
-        need(all(isinstance(f,dict) and all(type(v) is int and 0 <= v <= expected_n for v in f.values()) for f in errors), 'invalid error counts')
+        errors = (r.get('baseline_flags'), c.get('flags'))
+        need(all(isinstance(f,dict) and set(f) <= FAILURE_FLAGS and all(type(v) is int and 0 <= v <= expected_n for v in f.values()) for f in errors), 'invalid or missing diagnostic flags/counts')
         diagnostic = all(errors[1].get(f,0) <= errors[0].get(f,0) for f in flags)
         verdict[r['direction']] = {'delta':delta,'quality_pass':delta >= -max_drop,'diagnostics_pass':diagnostic}
     return {'status':'REPORT_GATE_PASS' if all(v['quality_pass'] and v['diagnostics_pass'] for v in verdict.values()) else 'REPORT_GATE_FAIL','split':split,'candidate':candidate,'directions':verdict,'raw_sample_coverage_verified':False,'production_acceptance':False}

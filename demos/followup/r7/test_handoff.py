@@ -1,6 +1,6 @@
 import tempfile, unittest, json
 from pathlib import Path
-from handoff import DIRS, SPLITS, sha, corpus, evaluate, digits
+from handoff import DIRS, SPLITS, DECODING, sha, corpus, evaluate, digits, norm
 
 
 class HandoffTests(unittest.TestCase):
@@ -18,7 +18,7 @@ class HandoffTests(unittest.TestCase):
     def freeze(self):
         self.cp=self.write('corpus',self.context); self.m['corpus_sha256']=sha(self.cp); self.mp=self.p/'manifest'; self.mp.write_text(json.dumps(self.m)); self.msha=sha(self.mp)
     def runfile(self,name,keep,split='validation',bad=False):
-        h=dict(type='run',corpus_sha256=self.m['corpus_sha256'],num_experts=keep,masked_keep=None,splits=[split],max_new_tokens=10,decoding='greedy')
+        h=dict(type='run',corpus_sha256=self.m['corpus_sha256'],num_experts=keep,masked_keep=None,splits=[split],max_new_tokens=10,decoding=DECODING)
         rs=[dict(type='sentence',id=c['id'],split=c['split'],direction=c['direction'],line=c['line'],prompt_tokens=2,new_tokens=1,tokens=[4],finish='eos',text='wrong' if bad else c['reference']) for c in self.context if c['split']==split]
         return self.write(name,[h]+rs)
     def calc(self,cs=None,metric=None):
@@ -71,6 +71,39 @@ class HandoffTests(unittest.TestCase):
         self.assertFalse(self.calc()['test_execution_authorized'])
     def test_prompt_count(self):
         self.alter(self.cand,lambda r:r[1].update(prompt_tokens=1)); self.assertRaises(ValueError,self.calc)
+
+    def test_cross_language_cross_split(self):
+        for r in self.context:
+            if r['split']=='test':
+                for lang,field in ((r['src_lang'],'source'),(r['tgt_lang'],'reference')):
+                    if lang=='en': r[field]=' ＺＨ-VALIDATION  '
+        self.freeze()
+        with self.assertRaisesRegex(ValueError,'normalized text crosses splits'):
+            corpus(self.mp,self.msha,self.cp)
+    def test_same_split_distinct_lines(self):
+        self.m['indices']['zh']['validation']=[4]
+        for r in self.context:
+            if r['split']=='validation' and r['src_lang']=='zh':
+                r.update(line=4,id=f"validation:{r['direction']}:4")
+        self.freeze()
+        with self.assertRaisesRegex(ValueError,'distinct sampled lines'):
+            corpus(self.mp,self.msha,self.cp)
+    def test_shared_text_same_parallel_line(self):
+        for r in self.context:
+            if r['split']=='validation':
+                r.update(source='123',reference='123')
+        self.freeze()
+        self.assertEqual(len(corpus(self.mp,self.msha,self.cp)[1]),18)
+    def test_matching_unsupported_decoding(self):
+        for decoding in ('sampling','greedy','unknown'):
+            for path in (self.base,self.cand):
+                self.alter(path,lambda r:r[0].update(decoding=decoding))
+            with self.assertRaisesRegex(ValueError,'bad decoding contract'): self.calc()
+    def test_exact_authorized_decoding(self):
+        self.assertEqual(DECODING,'greedy (argmax of bf16 logits)')
+        self.assertEqual(self.calc()['chosen_keep'],64)
+    def test_normalization(self):
+        self.assertEqual(norm('  Ａ  Straße\t１２  '),'a strasse 12')
 
 
 if __name__=='__main__': unittest.main()
