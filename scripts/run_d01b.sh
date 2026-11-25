@@ -100,7 +100,7 @@ EOF
     "$PY" -m mtpruning equiv --reference-traces "$RUN/baseline/traces" --candidate-traces "$D/traces" \
       --reference-records "$RUN/baseline/records.jsonl" --candidate-records "$D/records.jsonl" \
       --out "$D/equiv.json" || { step "k$K no-op check FAILED: stopping"; exit 1; }
-    rm -rf "$D/traces"
+    rm -rf "$D/traces" "$RUN/baseline/traces"    # ~2.3 GB per run; the comparisons keep their summaries
   else
     step "k$K: masked original (traces)"
     "$PY" -m mtpruning run --model "$MODEL_DIR" --out "$D/masked/records.jsonl" \
@@ -130,7 +130,6 @@ VARIANTS="{\"baseline\": \"baseline\""
 for K in $CANDIDATES; do VARIANTS="$VARIANTS, \"$K\": \"k$K\""; done
 VARIANTS="$VARIANTS}"
 "$PY" -m mtpruning report --run-dir "$RUN" --variants "$VARIANTS"
-rm -rf "$RUN/baseline/traces"
 
 step "collect evidence"
 ( cd "$RUN" && find . -type f \( -name "*.json" -o -name "*.jsonl" -o -name "*.npz" \) -not -path "*/traces/*" ) | while read -r f; do
