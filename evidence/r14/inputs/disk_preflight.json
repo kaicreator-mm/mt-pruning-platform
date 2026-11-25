@@ -1,0 +1,13 @@
+{
+  "assumptions": {
+    "evidence_budget_bytes": 1000000000,
+    "journal_budget_bytes": 5505024,
+    "prune_peak_bytes": 50351952748,
+    "trace_budget_bytes": 395182080,
+    "witness_count_never_reduced": true
+  },
+  "free_bytes": 284396032000,
+  "label": "R14 disk preflight (no inference, no stage started)",
+  "needed_bytes": 51752639852,
+  "sufficient": true
+}

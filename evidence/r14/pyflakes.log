@@ -1,0 +1,4 @@
+# command: PYTHONPATH=pyflakes-lib python -m pyflakes mtpruning/*.py tests/*.py (pyflakes 4.1.0, scratch install outside the pinned env)
+# host: cc  cwd: /home/cc/mt-pruning-platform  tree = HEAD 2b2e920 (clean working tree)
+2026-11-25T23:38:51Z
+PYFLAKES_EXIT=0

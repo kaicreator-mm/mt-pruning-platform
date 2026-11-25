@@ -1,0 +1,96 @@
+{
+  "checks": {
+    "checkpoint_check": {
+      "command": "python -m mtpruning checkpoint-check --model <pinned snapshot> --cache-dir <content-hashes> --out evidence/r14/inputs/checkpoint_content.json",
+      "exit_code": 0,
+      "fresh_full_hash_seconds": 45.5,
+      "inference": "none",
+      "raw_log": "evidence/r14/checkpoint-check.log",
+      "raw_log_sha256": "7bd0d83c945a8de5261eabb2406f968d5260a5a2f56de3a4a1542d0884617e78",
+      "result": "CHECKPOINT_CONTENT_VERIFIED, kind pinned-snapshot, 128 experts, exact pinned 19-file inventory enforced"
+    },
+    "compileall": {
+      "command": "python -m compileall -q mtpruning tests",
+      "exit_code": 0,
+      "raw_log": "evidence/r14/compileall.log",
+      "raw_log_sha256": "b859505a3b282687ecf9dc74121878e4efc40661c28164327f0ab1fce6163f2f"
+    },
+    "disk_preflight": {
+      "free_bytes": 284396032000,
+      "needed_bytes": 51752639852,
+      "result": "evidence/r14/inputs/disk_preflight.json",
+      "sufficient": true
+    },
+    "env_preflight": {
+      "result": "evidence/r14/inputs/env_preflight.txt"
+    },
+    "pyflakes": {
+      "command": "python -m pyflakes mtpruning/*.py tests/*.py",
+      "exit_code": 0,
+      "findings": "none",
+      "raw_log": "evidence/r14/pyflakes.log",
+      "raw_log_sha256": "cde78cacce7322297d7f0e19b0cafb53e6417ccff18eebab027acfbb33dbc409"
+    },
+    "unittest": {
+      "command": "MTPRUNING_TOKENIZER_DIR=<snapshot> MTPRUNING_FLORES_TARBALL=<tarball> TMPDIR=<disk> python -m unittest discover -s tests -t . -v",
+      "exit_code": 0,
+      "ran": "102 tests, OK, none skipped",
+      "raw_log": "evidence/r14/unittest-full.log",
+      "raw_log_sha256": "9cbf8627442d97d067f7f9f86f5ede7c2e2e8146321a2165325e94730625878c"
+    }
+  },
+  "code_files_sha256": {
+    "demos/followup/r4/trace.py": "5efb59d5ff98fe20bcb4b4a59c1507a3a42628b4984a83899c156383708f64d0",
+    "demos/followup/r5/cache_plan.py": "dcb41f692cadcd5b064b764ab936e9392d19fd15035de60172382e62e7724a5b",
+    "demos/followup/r6/bridge.py": "11b60c9c7989da454586c193208b9c7707d33d37d7a0af70a34266d9e8a28d8c",
+    "demos/followup/r7/handoff.py": "cfb98954182758250e5c1b457cec2f5bb576a22ce1284f3406d81cdd3748c658",
+    "mtpruning/__init__.py": "2fcf4f7d88130653a31a727d2a50d0bb2a0cb0e1f45e822a1efa67ee42b44dd4",
+    "mtpruning/__main__.py": "363057c4a6bc8d495829f2e00c7c8fd0a0f27a7f4de7b29b2c80e025fe2d19d7",
+    "mtpruning/calibration.py": "e860069bee57a10de16fc626d302ddf35278c79771bcace9c15a5f783c1bfa96",
+    "mtpruning/corpus.py": "5d536eaa8cd5e1a1b6798dbc89469349033ede228b083f88ef0bbd95b1c3d183",
+    "mtpruning/engine.py": "69338052f1d1f1bd72e81ee71251a330593eae143f5813fa69f8c4d70354add6",
+    "mtpruning/evaluate.py": "36785960eda65063fe6d599c3743e7c618e797cc9b40da7b7993fc9d5ac24953",
+    "mtpruning/frozen.py": "9b03266f5e5d36d2fa9a2c09935b3b3d88d7cb3a343077ae498ddfe0fee0864a",
+    "mtpruning/identity.py": "c71335dcde8ff7f55cdd6e18f617baa26561483fdee6649bc15bf53394ddaf06",
+    "mtpruning/pipeline.py": "2968a069be7181bedbd3d43e557d10f5500584f1983e5d35174b2507f41f800d",
+    "mtpruning/prune.py": "72837bad19e57a0c897259fe07fb1489f2fcd31386bf150eedaddbd4393ed029",
+    "mtpruning/report.py": "f8f8f5c6cc24105f9e1ea4f7d57755b8987ab4780bab376b368951c0a54085a3",
+    "mtpruning/reviewed.py": "602488f742f76ab1a3c2579dbb56d328140ae158c09078135ab7b6027e036474",
+    "mtpruning/spec.py": "8c5f3f43fd0097b6f1fd30173c6a0a50bf311201a18452bdadacb5a88a2f5bc5",
+    "mtpruning/testing.py": "196394fba600cbb0ced9b276057b78c6c602347da8a5b94d3d529ccda1784d0a",
+    "scripts/download_hf.sh": "116c7437819443d80718c9a17b97014a77514c7da652e664c860d046c50f20be",
+    "scripts/run_d01b.sh": "0b6efe3dee263c783effeff0fa4dab5738a1cce3baeeec0298b2c993592290ff",
+    "scripts/setup_env.sh": "8e9f2003b3eaf34f32a1fccc8811cfd3fd9c1e9304c8250d616c0ebbb4286e7a",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/test_audit.py": "8ceff61c351ae285bfb23537d6ec3f137c26b55cd20bb61dbfb823bfc5185330",
+    "tests/test_driver.py": "9a41635acb7707f94deb549a9e6e85a673682e273b0ace7a749f81942e7a9b14",
+    "tests/test_engine.py": "9ff9fa312b8710fe83a6c84949e0a52e040f5e5656497430a473e7d03af774fd",
+    "tests/test_evaluate.py": "18593e9e0fea4615bd94d508130c307c5a582430068b9344410104d86f41bedf",
+    "tests/test_identity.py": "8db2b5c0989ed55182d39510c0830e2a75371125d9011ccbdebde9a5602bdac0",
+    "tests/test_journal.py": "0bd31eb26cb347f1cbe229146d6ecb5c8aa06ebf299847d615f16c5cc2190e58",
+    "tests/test_pipeline.py": "119475b87592b97df2ba5a6c33b7219278886cfaed7e24ce6b849d6844c9506d",
+    "tests/test_prune.py": "95aeae6b124944518111d97028dbf84d4d5fb748468a68addd6bb8405f637f5c",
+    "tests/test_report.py": "c1c546de0a687551a084d67f09a0ec7a3dbdc3d8c184f6735c33551f3bbe928b",
+    "tests/util.py": "4bf18c32caa7e88df651d5d378e2761aeee9fe2539badc792962fa190993a2be"
+  },
+  "commit": {
+    "head": "2b2e9209e8d1081762109c1ef27e3576d858ca30",
+    "note": "commit 2b2e9209e8d1 holds the R14 corrections; its tree is exactly the tree the raw logs ran on (clean working tree); the successor evidence commit adds files under evidence/r14 only",
+    "parent": "dc7e11991d53006fb441249a2282a5410f212c56",
+    "tree": "d6886feac3cc6ec43b4f91b20aab8b6d14d2aa9b"
+  },
+  "environment": {
+    "host": "CC-LAN200",
+    "numpy": "2.5.5",
+    "pip_check": "No broken requirements found",
+    "pyflakes": "4.1.0 (scratch install outside the pinned env)",
+    "python": "3.13.18",
+    "sacrebleu": "2.6.0",
+    "safetensors": "0.8.0",
+    "torch": "2.10.0+cpu",
+    "transformers": "5.24.1"
+  },
+  "generated_utc": "2026-11-25T23:44:56+00:00",
+  "label": "MT_PRUNING_D01B_R14_R13_FIXED_PILOT_EVIDENCE_CORRECTION",
+  "test_data_note": "all tests are synthetic (random-weight 128-expert checkpoint, small FLORES-200 sample); they prove the protocol and checks, not translation quality; the real checkpoint was only hashed (checkpoint-check), never loaded for inference"
+}
