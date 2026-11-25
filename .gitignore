@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+# per-position logits of the traced sentences: ~1.4 GB per run, rebuilt by scripts/run_d01b.sh
+evidence/**/traces/
+*.npy

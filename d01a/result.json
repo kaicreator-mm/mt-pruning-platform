@@ -1,0 +1,166 @@
+{
+  "scope": "SYNTHETIC_ONLY",
+  "torch": "2.10.0+cpu",
+  "seed": 42,
+  "original_bytes": 20416,
+  "candidates": [
+    {
+      "keep": 16,
+      "ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "tensor_bytes": 20416,
+      "file_bytes": 20848,
+      "sha256": "975d39b8adc9aaa5ec5d0b1e654343f8182420e7f5bf3e6c1672ef3a13ac337c",
+      "directions": {
+        "zh-en": {
+          "retained_routing_mass": 1.0,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.0
+        },
+        "en-zh": {
+          "retained_routing_mass": 1.0,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.0
+        },
+        "zh-my": {
+          "retained_routing_mass": 1.0,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.0
+        },
+        "my-zh": {
+          "retained_routing_mass": 1.0,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.0
+        },
+        "en-my": {
+          "retained_routing_mass": 1.0,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.0
+        },
+        "my-en": {
+          "retained_routing_mass": 1.0,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.0
+        }
+      }
+    },
+    {
+      "keep": 12,
+      "ids": [
+        0,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8,
+        9,
+        12,
+        13,
+        14,
+        15
+      ],
+      "tensor_bytes": 15600,
+      "file_bytes": 16032,
+      "sha256": "bfbeaca098bbcf5f6ae9b95ab075e81420a073e6ab6e5a09ddfe9c0f503ab560",
+      "directions": {
+        "zh-en": {
+          "retained_routing_mass": 0.988051,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.1459026038646698
+        },
+        "en-zh": {
+          "retained_routing_mass": 1.0,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.0
+        },
+        "zh-my": {
+          "retained_routing_mass": 1.0,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.0
+        },
+        "my-zh": {
+          "retained_routing_mass": 1.0,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.0
+        },
+        "en-my": {
+          "retained_routing_mass": 0.985825,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.1167760044336319
+        },
+        "my-en": {
+          "retained_routing_mass": 1.0,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.0
+        }
+      }
+    },
+    {
+      "keep": 8,
+      "ids": [
+        0,
+        2,
+        5,
+        7,
+        8,
+        9,
+        13,
+        14
+      ],
+      "tensor_bytes": 10784,
+      "file_bytes": 11208,
+      "sha256": "bd258cc03d1a94bb614fa97a8a8fd3da4250fec72c6a26494ad164f960106721",
+      "directions": {
+        "zh-en": {
+          "retained_routing_mass": 0.904004,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.7929916381835938
+        },
+        "en-zh": {
+          "retained_routing_mass": 0.968096,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.31867802143096924
+        },
+        "zh-my": {
+          "retained_routing_mass": 0.965773,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.33484411239624023
+        },
+        "my-zh": {
+          "retained_routing_mass": 0.892484,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.8566897511482239
+        },
+        "en-my": {
+          "retained_routing_mass": 0.880695,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 1.281227469444275
+        },
+        "my-en": {
+          "retained_routing_mass": 0.938009,
+          "masked_max_abs_error": 0.0,
+          "original_max_abs_error": 0.8270667791366577
+        }
+      }
+    }
+  ],
+  "negative_tests_passed": 5,
+  "result": "PASS_SYNTHETIC_MECHANISM_ONLY"
+}
