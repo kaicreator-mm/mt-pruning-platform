@@ -1,0 +1,10 @@
+# Exact runtime of the recorded evidence (see evidence/env/pip-freeze.txt for every transitive package).
+# torch is the CPU-only wheel, which lives on the PyTorch index, not PyPI:
+#   pip install --extra-index-url https://mirrors.nju.edu.cn/pytorch/whl/cpu -r requirements.txt
+torch==2.10.0+cpu
+transformers==5.24.1
+safetensors==0.8.0
+sacrebleu==2.6.0
+numpy==2.5.5
+tokenizers==0.23.3
+huggingface-hub==2.4.0
