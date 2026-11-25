@@ -1,0 +1,17 @@
+test_changed_artifact (test_cache_plan.CacheTests.test_changed_artifact) ... ok
+test_conflict (test_cache_plan.CacheTests.test_conflict) ... ok
+test_corrupt_receipt (test_cache_plan.CacheTests.test_corrupt_receipt) ... ok
+test_hit_reopen (test_cache_plan.CacheTests.test_hit_reopen) ... ok
+test_identity_change (test_cache_plan.CacheTests.test_identity_change) ... ok
+test_missing_artifact (test_cache_plan.CacheTests.test_missing_artifact) ... ok
+test_missing_field (test_cache_plan.CacheTests.test_missing_field) ... ok
+test_partial (test_cache_plan.CacheTests.test_partial) ... ok
+test_budget (test_cache_plan.DiskTests.test_budget) ... ok
+test_invalid (test_cache_plan.DiskTests.test_invalid) ... ok
+test_over_budget (test_cache_plan.DiskTests.test_over_budget) ... ok
+test_shape (test_cache_plan.DiskTests.test_shape) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.039s
+
+OK

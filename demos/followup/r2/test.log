@@ -1,0 +1,17 @@
+test_complete (test_demo.Preflight.test_complete) ... ok
+test_index (test_demo.Preflight.test_index) ... ok
+test_missing (test_demo.Preflight.test_missing) ... ok
+test_partial (test_demo.Preflight.test_partial) ... ok
+test_path (test_demo.Preflight.test_path) ... ok
+test_shape (test_demo.Preflight.test_shape) ... ok
+test_trailing (test_demo.Preflight.test_trailing) ... ok
+test_candidate (test_demo.Reuse.test_candidate) ... ok
+test_identity (test_demo.Reuse.test_identity) ... ok
+test_invalid (test_demo.Reuse.test_invalid) ... ok
+test_missing (test_demo.Reuse.test_missing) ... ok
+test_reuse (test_demo.Reuse.test_reuse) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.009s
+
+OK

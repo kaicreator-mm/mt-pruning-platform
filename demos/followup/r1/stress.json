@@ -1,0 +1,13 @@
+{
+  "status": "AUTHOR_DRAFT_NO_NATIVE_REVIEW_NOT_BENCHMARK_REFERENCE",
+  "cases": [
+    {"id":"S01","domain":"commerce","zh":"订单 AB-1042 包含 12 件商品，总价 150000 MMK。","en":"Order AB-1042 contains 12 items and costs 150000 MMK in total.","my":"အော်ဒါ AB-1042 တွင် ပစ္စည်း 12 ခု ပါဝင်ပြီး စုစုပေါင်း 150000 MMK ကျသင့်ပါသည်။","invariants":["AB-1042","12","150000","MMK"]},
+    {"id":"S02","domain":"logistics","zh":"请在 2026-12-01 之前发货。","en":"Please ship before 2026-12-01.","my":"2026-12-01 မတိုင်မီ ပစ္စည်းပို့ပေးပါ။","invariants":["2026-12-01"]},
+    {"id":"S03","domain":"technical","zh":"请将设备编号 {device_id} 写入日志，不要修改它。","en":"Write device ID {device_id} to the log without changing it.","my":"စက်နံပါတ် {device_id} ကို မပြောင်းလဲဘဲ မှတ်တမ်းတွင် ရေးပါ။","invariants":["{device_id}"]},
+    {"id":"S04","domain":"negation","zh":"不要关闭电源，除非屏幕显示 OK。","en":"Do not turn off the power unless the screen shows OK.","my":"မျက်နှာပြင်တွင် OK ဟု မပြမချင်း ပါဝါမပိတ်ပါနှင့်။","invariants":["OK"]},
+    {"id":"S05","domain":"daily","zh":"你好，请问洗手间在哪里？","en":"Hello, where is the restroom?","my":"မင်္ဂလာပါ၊ အိမ်သာ ဘယ်မှာရှိပါသလဲ။","invariants":[]},
+    {"id":"S06","domain":"format","zh":"<b>注意</b>：文件 %s 不存在。","en":"<b>Note</b>: File %s does not exist.","my":"<b>သတိပြုရန်</b> - ဖိုင် %s မရှိပါ။","invariants":["<b>","</b>","%s"]},
+    {"id":"S07","domain":"units","zh":"重量 2.5 kg，长度 120 mm。","en":"Weight: 2.5 kg; length: 120 mm.","my":"အလေးချိန် 2.5 kg၊ အလျား 120 mm ဖြစ်သည်။","invariants":["2.5","kg","120","mm"]},
+    {"id":"S08","domain":"ambiguity","zh":"这个零件不是新的，但可以使用。","en":"This part is not new, but it is usable.","my":"ဤအစိတ်အပိုင်းသည် အသစ်မဟုတ်သော်လည်း အသုံးပြုနိုင်ပါသည်။","invariants":[]}
+  ]
+}

@@ -1,0 +1,3 @@
+# Install only in a dedicated env; pin resolved transitive versions in execution receipt.
+datasets==4.4.1
+sacrebleu==2.5.1
