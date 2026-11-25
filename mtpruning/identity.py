@@ -23,6 +23,7 @@ REPO = Path(__file__).resolve().parents[1]
 FIELDS = ("teacher", "candidate", "corpus", "prompt", "runtime", "protocol", "code")
 TOKENIZER_FILES = ("tokenizer.json", "tokenizer_config.json", "special_tokens_map.json", "chat_template.jinja")
 REQUIRED_TOKENIZER_FILES = ("tokenizer.json", "tokenizer_config.json")
+MODES = ("real", "rehearsal")
 CHUNK = 8 << 20
 
 
@@ -43,8 +44,17 @@ def key(identity: dict, split: str) -> str:
     return cache_plan.key({**{name: identity[name] for name in FIELDS}, "split": split})
 
 
-def content_hashes(model_dir, names, cache_dir=None) -> dict[str, str]:
-    """sha256 of each file; an earlier result is reused while size and mtime are unchanged."""
+def content_hashes(model_dir, names, cache_dir=None, trust_cache=False) -> dict[str, str]:
+    """sha256 of each file.
+
+    With ``trust_cache`` (stage-boundary rechecks of immutable inputs) an earlier
+    result is reused only while every identity the filesystem tracks for the file
+    is unchanged: size, mtime, ctime, inode and device. ctime cannot be set by
+    user code, so an edit that restores size and mtime is still rehashed - a
+    size+mtime-only cache would trust an unverifiable digest (R11-P1-02).
+    Without ``trust_cache`` (qualification) the actual bytes are always hashed;
+    the cache is only refreshed.
+    """
     model_dir = Path(model_dir)
     cache, cache_file = {}, None
     if cache_dir is not None:
@@ -53,9 +63,11 @@ def content_hashes(model_dir, names, cache_dir=None) -> dict[str, str]:
     files, changed = {}, False
     for name in names:
         status = (model_dir / name).stat()
+        fingerprint = {"bytes": status.st_size, "mtime_ns": status.st_mtime_ns, "ctime_ns": status.st_ctime_ns,
+                       "ino": status.st_ino, "device": status.st_dev}
         entry = cache.get(name)
-        if not entry or entry["bytes"] != status.st_size or entry["mtime_ns"] != status.st_mtime_ns:
-            entry = {"bytes": status.st_size, "mtime_ns": status.st_mtime_ns, "sha256": sha256_file(model_dir / name)}
+        if not trust_cache or entry is None or any(entry.get(field) != value for field, value in fingerprint.items()):
+            entry = {**fingerprint, "sha256": sha256_file(model_dir / name)}
             cache[name], changed = entry, True
         files[name] = entry["sha256"]
     if cache_file is not None and changed:
@@ -91,14 +103,18 @@ def _require(files: dict, expected: dict, what: str) -> None:
         raise ValueError(f"checkpoint content differs from its {what}: {wrong[:4]}")
 
 
-def checkpoint_identity(model_dir, cache_dir=None) -> dict:
-    """Bind a checkpoint directory by content; refuse one that declares no provenance."""
+def checkpoint_identity(model_dir, cache_dir=None, fresh: bool = True) -> dict:
+    """Bind a checkpoint directory by content; refuse one that declares no provenance.
+
+    ``fresh`` hashes the actual bytes; the trusted cache is only for stage-boundary
+    rechecks (see content_hashes).
+    """
     from .spec import MODEL_REPO, MODEL_REVISION
     model_dir = Path(model_dir)
     config = json.loads((model_dir / "config.json").read_text(encoding="utf-8"))
     index = json.loads((model_dir / "model.safetensors.index.json").read_text(encoding="utf-8"))
     names = ["config.json", "model.safetensors.index.json", *sorted(set(index["weight_map"].values()))]
-    files = content_hashes(model_dir, names, cache_dir)
+    files = content_hashes(model_dir, names, cache_dir, trust_cache=not fresh)
     num_experts = config["num_experts"]
     prune, provenance = model_dir / "prune_manifest.json", model_dir / "checkpoint_provenance.json"
     if prune.exists():
@@ -120,7 +136,16 @@ def checkpoint_identity(model_dir, cache_dir=None) -> dict:
     pinned = pinned_manifest()
     if any(name not in pinned for name in names):
         raise ValueError("checkpoint provenance unknown: not the pinned revision and no manifest declares it")
-    wrong = [name for name in names if not _pinned_match(model_dir / name, pinned[name], files[name])]
+    # The pinned snapshot's effective tokenizer bytes are pinned too: they are hashed and
+    # checked against the pinned listing like every shard (R11-P1-02).
+    tokenizer = [name for name in TOKENIZER_FILES if (model_dir / name).exists()]
+    missing = [name for name in REQUIRED_TOKENIZER_FILES if name not in tokenizer]
+    if missing:
+        raise ValueError(f"{model_dir} does not carry the tokenizer: {', '.join(missing)} missing")
+    if any(name not in pinned for name in tokenizer):
+        raise ValueError("the tokenizer files are not part of the pinned revision listing")
+    files.update(content_hashes(model_dir, tokenizer, cache_dir, trust_cache=not fresh))
+    wrong = [name for name in names + tokenizer if not _pinned_match(model_dir / name, pinned[name], files[name])]
     if wrong:
         raise ValueError(f"checkpoint content differs from the pinned revision: {wrong[:4]}")
     teacher = digest({"kind": "pinned-snapshot", "repo": MODEL_REPO, "revision": MODEL_REVISION, "files": files})
@@ -166,23 +191,44 @@ def runtime_identity(threads) -> dict:
 
 
 def run_identity(*, model_dir, corpus_path, manifest_path, cache_dir=None, mask=None, selection_sha256=None,
-                 decoding, max_new_tokens, protocol, threads) -> dict:
+                 decoding, max_new_tokens, protocol, threads, tokenizer_dir=None, mode="rehearsal",
+                 fresh: bool = True) -> dict:
     """``protocol`` carries whatever else two runs must agree on to share a journal.
+
+    The identity binds the *effective* tokenizer (``tokenizer_dir``), not a declared
+    one: whatever bytes decode the outputs are hashed here (R11-P1-02). ``mode`` is
+    explicit: a real run refuses a tokenizer override and a synthetic teacher; a
+    synthetic checkpoint is only ever a rehearsal teacher. ``fresh`` qualifies the
+    checkpoint bytes by hashing them; a resume may trust the content-keyed cache.
 
     ``decoding`` and ``max_new_tokens`` are kept outside the protocol hash as well: they
     must match across the baseline and every candidate even when the runs differ in
     which sentences they trace or how many they cover.
     """
-    checkpoint = checkpoint_identity(model_dir, cache_dir)
+    if mode not in MODES:
+        raise ValueError(f"unknown run mode: {mode!r}")
+    model_dir = Path(model_dir)
+    tokenizer_dir = Path(tokenizer_dir) if tokenizer_dir else model_dir
+    if mode == "real":
+        if tokenizer_dir.resolve() != model_dir.resolve():
+            raise ValueError("a real run decodes with the checkpoint's own tokenizer: overrides are refused")
+    checkpoint = checkpoint_identity(model_dir, cache_dir, fresh=fresh)
+    if mode == "real":
+        if checkpoint["kind"] == "synthetic":
+            raise ValueError("a synthetic checkpoint is only a rehearsal teacher, never a real one")
+        if checkpoint["kind"] == "pruned":
+            manifest = json.loads((model_dir / "prune_manifest.json").read_text(encoding="utf-8"))
+            if manifest["source"]["kind"] != "pinned-snapshot":
+                raise ValueError("a real candidate must be pruned from the pinned teacher")
     manifest = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
     corpus_sha256 = sha256_file(corpus_path)
     if corpus_sha256 != manifest["corpus_sha256"]:
         raise ValueError("corpus bytes differ from the manifest")
-    tokenizer = {name: sha256_file(Path(model_dir) / name) for name in TOKENIZER_FILES
-                 if (Path(model_dir) / name).exists()}
+    tokenizer = {name: sha256_file(tokenizer_dir / name) for name in TOKENIZER_FILES
+                 if (tokenizer_dir / name).exists()}
     missing = [name for name in REQUIRED_TOKENIZER_FILES if name not in tokenizer]
     if missing:
-        raise ValueError(f"{model_dir} does not carry the tokenizer: {', '.join(missing)} missing")
+        raise ValueError(f"{tokenizer_dir} does not carry the tokenizer: {', '.join(missing)} missing")
     if mask is not None:
         candidate = digest({"kind": "masked", "kept": {str(k): v for k, v in sorted(mask.items())},
                             "selection_sha256": selection_sha256})
@@ -197,7 +243,8 @@ def run_identity(*, model_dir, corpus_path, manifest_path, cache_dir=None, mask=
         # The decoding settings are part of the protocol hash, so they are part of every sample key.
         "protocol": digest({"run": protocol, "decoding": decoding, "max_new_tokens": max_new_tokens}),
         "decoding": digest({"decoding": decoding, "max_new_tokens": max_new_tokens}),
-        "detail": {"checkpoint": {k: checkpoint[k] for k in ("kind", "num_experts", "files")}, "tokenizer": tokenizer,
+        "detail": {"checkpoint": {k: checkpoint[k] for k in ("kind", "num_experts", "files")},
+                   "tokenizer": tokenizer, "tokenizer_dir": str(tokenizer_dir.resolve()), "mode": mode,
                    "runtime": runtime, "protocol": protocol, "code": code,
                    "decoding": decoding, "max_new_tokens": max_new_tokens},
     }

@@ -1,6 +1,7 @@
 """Stage-level checks of the pipeline on a dry-run world (see tests/util.py)."""
 import json
 import shutil
+import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
@@ -25,7 +26,7 @@ class StageTests(unittest.TestCase):
     def setUpClass(cls):
         cls.tmp = tempfile.TemporaryDirectory()
         cls.world = util.make_world(Path(cls.tmp.name))
-        util.rehearse(cls.world, stock_check=False)
+        util.rehearse(cls.world)                    # with the reference-runtime receipts
         pipeline.CRASH_AFTER = 0
 
     @classmethod
@@ -65,10 +66,78 @@ class StageTests(unittest.TestCase):
         self.assertEqual(data["teacher"], read_json(self.world["run"] / "baseline" / "records.jsonl.identity.json")["teacher"])
 
     def test_run_refuses_the_test_split_outside_the_final_test_stage(self):
-        with self.assertRaisesRegex(SystemExit, "belongs to the final-test stage"):
+        with self.assertRaisesRegex(SystemExit, "FINAL_TEST_DISABLED"):
             pipeline.execute_run(util.options(self.world, splits=["test"]))
-        with self.assertRaisesRegex(SystemExit, "belongs to the final-test stage"):
+        with self.assertRaisesRegex(SystemExit, "FINAL_TEST_DISABLED"):
             pipeline.execute_run(util.options(self.world, splits=["validation", "test"]))
+        with self.assertRaises(SystemExit) as stopped:   # the final-test command itself is gone
+            pipeline.main(["final-test", "--run-dir", str(self.world["run"]), "--decision-sha256", "0" * 64,
+                           "--review-ref", "any string"])
+        self.assertEqual(stopped.exception.code, 2)      # argparse: no such command
+        with self.assertRaisesRegex(SystemExit, "FINAL_TEST_DISABLED"):
+            util.cli(self.world, "stock-check", "--model", self.world["model"], "--corpus", self.world["corpus"],
+                     "--records", self.world["run"] / "k64" / "records.jsonl", "--out", self.world["run"] / "never.json",
+                     "--splits", "test", "--limit", 1, "--max-new-tokens", 6, "--threads", 2)
+        self.assertFalse((self.world["run"] / "never.json").exists())
+
+    def test_real_mode_boundaries(self):
+        with self.assertRaisesRegex(SystemExit, "frozen corpus manifest only"):
+            pipeline.execute_run(util.options(self.world, mode="real"))
+        selection = self.world["run"] / "selection.json"
+        with self.assertRaisesRegex(SystemExit, "tokenizer override"):
+            pipeline.execute_run(util.options(self.world, mode="real", tokenizer=str(selection)))
+        with self.assertRaisesRegex(SystemExit, "refuses --limit"):
+            pipeline.execute_run(util.options(self.world, mode="real", limit=1))
+        from mtpruning.identity import run_identity
+        arguments = dict(model_dir=self.world["model"], corpus_path=self.world["corpus"],
+                         manifest_path=self.world["run"] / "corpus" / "corpus_manifest.json",
+                         decoding="greedy (argmax of bf16 logits)", max_new_tokens=6,
+                         protocol={"splits": ["validation"]}, threads=2, mode="real")
+        with self.assertRaisesRegex(ValueError, "synthetic checkpoint is only a rehearsal teacher"):
+            run_identity(**arguments)
+
+    def test_decide_requires_the_full_receipt_chain(self):
+        def drop_equiv(run):
+            (run / "k64" / "equiv.json").unlink()
+
+        def drop_stock(run):
+            (run / "k64" / "stock_check.json").unlink()
+
+        def drop_noop(run):
+            (run / "k128" / "equiv.json").unlink()
+
+        def swapped(run):    # a prior run's receipt in place of this one's
+            shutil.copy(run / "k96" / "equiv.json", run / "k64" / "equiv.json")
+
+        def altered(run):    # records edited after the receipts were written
+            path = run / "k64" / "records.jsonl"
+            rows = lines(path)
+            rows[1]["text"] = rows[1]["text"] + " later"
+            write(path, rows)
+
+        def interrupted_journal(run):    # the journal moved on after the records were exported
+            database = sqlite3.connect(str(run / "k64" / "records.jsonl") + ".sqlite")
+            victim = lines(run / "k64" / "records.jsonl")[1]["id"]
+            database.execute("DELETE FROM samples WHERE id = ?", (victim,))
+            database.commit()
+            database.close()
+
+        def narrowed(run):   # deciding on fewer candidates than the selection planned
+            data = json.loads((run / "selection.json").read_text(encoding="utf-8"))
+            data["candidates"].pop("64")
+            (run / "selection.json").write_text(json.dumps(data), encoding="utf-8")
+        for change, message in ((drop_equiv, "no masked-equivalence receipt"),
+                                (drop_stock, "no reference-runtime receipt"),
+                                (drop_noop, "no identity no-op evidence"),
+                                (swapped, "equivalence receipt does not belong"),
+                                (altered, "differ from what the journal holds"),
+                                (interrupted_journal, "journal changed after the records were exported"),
+                                (narrowed, "not exactly the planned ones")):
+            with self.subTest(message):
+                run = self.copy(change)
+                with self.assertRaisesRegex(SystemExit, message):
+                    util.cli(self.world, "decide", "--run-dir", run, "--candidates", "96,64", "--out", run / "never.json")
+                self.assertFalse((run / "never.json").exists())
 
     def test_equiv_refuses_pairs_it_is_not_defined_for(self):
         run = self.world["run"]
@@ -91,7 +160,7 @@ class StageTests(unittest.TestCase):
                      "--reference-records", masked / "records.jsonl", "--reference-traces", masked / "traces",
                      "--selection", run / "selection.json", *candidate(96))
         incomplete = self.copy(lambda run: next((run / "baseline" / "traces").glob("*.trace.npz")).unlink())
-        with self.assertRaisesRegex(ValueError, "reference traces cover"):
+        with self.assertRaisesRegex(SystemExit, "does not match the journal's record"):
             util.cli(self.world, "equiv", "--run-dir", incomplete, "--kind", "noop", "--keep", 128, "--trace-n", 2,
                      "--reference-records", incomplete / "baseline" / "records.jsonl",
                      "--reference-traces", incomplete / "baseline" / "traces",
@@ -118,8 +187,9 @@ class StageTests(unittest.TestCase):
             rows = lines(path)
             rows[0]["splits"] = ["validation", "test"]
             write(path, rows)
-        for change, message in ((mixed, "differs in teacher"), (renamed, "not pruned the way the selection names"),
-                                (exposed, "candidate test already exposed")):
+        for change, message in ((mixed, "does not match the journal's identity: teacher"),
+                                (renamed, "not pruned the way the selection names"),
+                                (exposed, "reference-runtime receipt does not match")):
             with self.subTest(message):
                 run = self.copy(change)
                 with self.assertRaisesRegex(SystemExit, message):
@@ -138,6 +208,43 @@ class StageTests(unittest.TestCase):
         self.assertEqual(decision["identity"]["corpus"], selection["identity"]["corpus"])
         self.assertNotIn("test", decision["runs"]["k64"]["validation_key"])     # keys are hashes
         self.assertEqual(decision["runs"]["k64"]["records_sha256"], util.sha256(run / "k64" / "records.jsonl"))
+
+    def test_masked_equiv_requires_a_changed_route_witness(self):
+        def zeroed(run):
+            path = run / "k96" / "masked" / "records.jsonl.summary.json"
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["mask_audit"] = {direction: {phase: {**values, "changed": 0} for phase, values in phases.items()}
+                                  for direction, phases in data["mask_audit"].items()}
+            path.write_text(json.dumps(data), encoding="utf-8")
+        run = self.copy(zeroed)
+        folder = run / "k96"
+        with self.assertRaisesRegex(SystemExit, "insufficient evidence"):
+            util.cli(self.world, "equiv", "--kind", "masked", "--keep", 96, "--run-dir", run,
+                     "--prune-record", folder / "prune.json", "--trace-n", 2,
+                     "--candidate-traces", folder / "mechanism" / "traces",
+                     "--candidate-records", folder / "mechanism" / "records.jsonl",
+                     "--reference-traces", folder / "masked" / "traces",
+                     "--reference-records", folder / "masked" / "records.jsonl",
+                     "--selection", run / "selection.json", "--out", run / "never.json")
+        self.assertFalse((run / "never.json").exists())
+
+    def test_a_corrupt_or_missing_trace_is_regenerated_from_the_journal(self):
+        run, p = self.world["run"], pipeline
+        rows = [json.loads(line) for line in (run / "baseline" / "records.jsonl").read_text(encoding="utf-8").splitlines()
+                if line.strip()]
+        traced_id = next(row["id"] for row in rows[1:] if row.get("traced"))
+        from mtpruning.evaluate import trace_path
+        target = trace_path(run / "baseline" / "traces", traced_id)
+        before, journal_before = util.sha256(target), util.sha256(run / "baseline" / "records.jsonl")
+        target.write_bytes(b"corrupted")                    # an interrupted or damaged witness file
+        summary = p.execute_run(util.options(self.world))
+        self.assertEqual(util.sha256(target), before)       # regenerated bit for bit
+        self.assertEqual(util.sha256(run / "baseline" / "records.jsonl"), journal_before)
+        self.assertEqual(summary["commits_this_invocation"], 1)   # exactly the damaged sample reran
+        target.unlink()                                     # and a fully missing one comes back too
+        summary = p.execute_run(util.options(self.world))
+        self.assertEqual(util.sha256(target), before)
+        self.assertEqual(summary["commits_this_invocation"], 1)
 
     def test_the_dry_run_really_routes_around_pruned_experts(self):
         """The masked equivalence would prove nothing if the mask never changed a routing decision.

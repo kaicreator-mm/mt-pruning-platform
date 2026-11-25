@@ -7,11 +7,16 @@ import torch
 from mtpruning.corpus import FLORES_LANG, build_prompt, prompt_lang, sample_indices
 from mtpruning.evaluate import (EQUIV_ABS_TOL, chrf_pp, compare_runs, compare_trace,
                                 failure_flags, load_trace, paired_bootstrap, save_trace, score_from_stats,
-                                segment_stats, trace_complete)
+                                segment_stats, trace_complete, trace_path)
 
 
 def flags(source, reference, hyp, tgt="en", finish="eos", tokens=(1, 2, 3)):
     return failure_flags(source, reference, hyp, tgt, finish, list(tokens))
+
+
+def dir_with(trace, sentence_id: str, directory):
+    save_trace(directory, sentence_id, trace)
+    return directory
 
 
 class FailureFlagTests(unittest.TestCase):
@@ -119,16 +124,21 @@ class TraceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             a, b = Path(tmp) / "a", Path(tmp) / "b"
             first = self.trace(6, seed=3)
-            save_trace(a, "test:zh-my:12", first)
+            record = save_trace(a, "test:zh-my:12", first)
+            self.assertEqual(sorted(record), ["positions", "sha256"])
+            self.assertEqual(record["positions"], 6)
             self.assertTrue(trace_complete(a, "test:zh-my:12"))
+            self.assertTrue(trace_complete(a, "test:zh-my:12", record))
             loaded = load_trace(a, "test:zh-my:12")
+            self.assertEqual(loaded["digest"], record["sha256"])
             for name in ("top_values", "top_index", "argmax", "row_hash", "route_ids", "route_w"):
                 self.assertTrue(torch.equal(loaded[name], first[name]), name)
             save_trace(b, "test:zh-my:12", {k: v.clone() for k, v in first.items()})
             text = {"test:zh-my:12": "same"}
             passing = compare_runs(a, b, text, text, ["test:zh-my:12"])
             self.assertTrue(passing["pass"])
-            self.assertEqual((passing["bitwise_identical_logits"], passing["positions_compared"]), (1, 6))
+            self.assertEqual((passing["bitwise_identical_logits"], passing["positions_compared"],
+                              passing["route_weights_bitwise_equal"]), (1, 6, 1))
             sentence = passing["per_sentence"][0]
             self.assertEqual(sentence["reference_trace_sha256"], sentence["candidate_trace_sha256"])
             with self.assertRaisesRegex(ValueError, "expected sentences"):
@@ -139,6 +149,65 @@ class TraceTests(unittest.TestCase):
             self.assertNotEqual(failing["per_sentence"][0]["reference_trace_sha256"],
                                 failing["per_sentence"][0]["candidate_trace_sha256"])
         self.assertEqual(EQUIV_ABS_TOL, 0.125)
+
+    def test_trace_records_are_checked_against_the_journal_and_published_atomically(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            first = self.trace(6, seed=3)
+            record = save_trace(directory, "test:zh-my:12", first)
+            self.assertEqual([p.name for p in directory.iterdir()], ["test__zh-my__12.trace.npz"])  # no .tmp left
+            self.assertFalse(trace_complete(directory, "test:zh-my:12",
+                                            {**record, "sha256": "0" * 64}))   # a foreign digest is not complete
+            self.assertFalse(trace_complete(directory, "test:zh-my:12", {**record, "positions": 5}))
+            path = trace_path(directory, "test:zh-my:12")
+            path.write_bytes(path.read_bytes()[:64])     # an interrupted write: parses badly or not at all
+            self.assertFalse(trace_complete(directory, "test:zh-my:12", record))
+            self.assertIsNone(load_trace(directory, "test:zh-my:12"))
+
+    def test_a_length_mismatch_is_never_a_pass(self):
+        a, b = self.trace(7, seed=1), self.trace(5, seed=1)      # the candidate stopped early
+        result = compare_trace(a, b)
+        self.assertFalse(result["length_match"])
+        self.assertEqual(result["positions_compared"], 5)
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp) / "c"
+            save_trace(directory, "s", b)
+            text = {"s": "same"}
+            failing = compare_runs(dir_with(self.trace(7, seed=1), "s", Path(tmp) / "r"), directory, text, text, ["s"])
+            self.assertFalse(failing["pass"])
+            self.assertEqual((failing["length_match"], failing["bitwise_identical_logits"]), (0, 0))
+
+    def test_route_weights_are_aligned_by_sorted_id_and_must_match(self):
+        a = self.trace(5, seed=2)
+        b = {k: v.clone() for k, v in a.items()}
+        permuted = torch.tensor([1, 0])                           # same pairs, swapped slot order
+        b["route_ids"] = a["route_ids"][:, :, permuted]
+        b["route_w"] = a["route_w"][:, :, permuted]
+        result = compare_trace(a, b)
+        self.assertEqual((result["route_id_mismatches"], result["route_weight_max_abs_diff"]), (0, 0.0))
+        self.assertTrue(result["route_weights_bitwise_equal"])
+        b["route_w"][:, :, 0] += 1e-3                              # a real weight difference
+        result = compare_trace(a, b)
+        self.assertGreater(result["route_weight_max_abs_diff"], 0.0)
+        self.assertFalse(result["route_weights_bitwise_equal"])
+        text = {"s": "same"}
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            failing = compare_runs(dir_with(a, "s", root / "r"), dir_with(b, "s", root / "c"), text, text, ["s"])
+            self.assertFalse(failing["pass"])                      # weights are part of the verdict
+            self.assertEqual((failing["all_route_ids_agree"], failing["route_weights_bitwise_equal"]), (1, 0))
+
+    def test_the_candidate_side_must_cover_exactly_the_expected_sentences(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            text = {"s": "same", "t": "same"}
+            reference = dir_with(self.trace(3, seed=5), "s", root / "r")
+            save_trace(reference, "t", self.trace(3, seed=6))
+            candidate = dir_with(self.trace(3, seed=5), "s", root / "c")
+            with self.assertRaisesRegex(ValueError, "candidate traces cover"):
+                compare_runs(reference, candidate, text, text, ["s", "t"])
+            save_trace(candidate, "t", self.trace(3, seed=6))
+            self.assertTrue(compare_runs(reference, candidate, text, text, ["s", "t"])["pass"])
 
 
 class CorpusLogicTests(unittest.TestCase):

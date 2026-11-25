@@ -34,7 +34,7 @@ class DriverTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, self.output(result))
         for stage in ("frozen corpus contract", "checkpoint content", "selection from the calibration routing",
                       "identity reload of the unpruned checkpoint", "k96: masked original", "k64: validation outputs",
-                      "provisional decision from validation records only", "final test: HOLD"):
+                      "provisional decision from validation records only", "final test: DISABLED"):
             self.assertIn(stage, result.stdout)
         self.assertNotIn("final test for the reviewed candidate", result.stdout)
         for path in run.rglob("records.jsonl"):
@@ -43,6 +43,7 @@ class DriverTests(unittest.TestCase):
         self.assertFalse((run / "test_exposure.json").exists())
         decision = json.loads((run / "decision.json").read_text(encoding="utf-8"))
         self.assertIs(decision["test_execution_authorized"], False)
+        self.assertEqual(decision["final_test"]["status"], "HOLD")
         self.assertEqual(sorted(decision["runs"]), ["baseline", "k64", "k96"])
         self.assertEqual(decision["identity"]["teacher"],
                          json.loads((run / "baseline" / "records.jsonl.identity.json").read_text(encoding="utf-8"))["teacher"])
@@ -52,40 +53,38 @@ class DriverTests(unittest.TestCase):
                      "k128/equiv.json", "k96/equiv.json", "k64/equiv.json", "k96/prune.json", "k64/prune.json",
                      "k96/masked/records.jsonl.summary.json", "inputs/checkpoint_content.json", "inputs/host.txt"):
             self.assertTrue((evidence / name).exists(), name)
-        self.assertEqual(list(evidence.rglob("*.sqlite")), [])       # journals stay in the run directory
+        # The journals and their identity bindings are evidence too: an independent reviewer
+        # can reconstruct every aggregate and every trace digest from them (R11-P1-04).
+        journals = sorted(p.relative_to(evidence).as_posix() for p in evidence.rglob("*.sqlite"))
+        self.assertIn("baseline/records.jsonl.sqlite", journals)
+        self.assertTrue((evidence / "baseline" / "records.jsonl.identity.json").exists())
         self.assertTrue(json.loads((evidence / "k128" / "equiv.json").read_text(encoding="utf-8"))["pass"])
 
-    def test_03_final_test_refuses_to_run_without_the_review(self):
+    def test_03_final_test_is_disabled_before_any_stage_runs(self):
         decision = util.sha256(self.world["run"] / "decision.json")
-        missing = util.driver(self.world, {"FINAL_TEST": "1", "REVIEWED_DECISION_SHA256": decision})
-        self.assertNotEqual(missing.returncode, 0)
-        self.assertIn("needs REVIEWED_DECISION_SHA256 and REVIEW_REF", missing.stdout + missing.stderr)
-        self.assertNotIn("baseline: calibration", missing.stdout)       # refused before any stage ran
+        # Even with a decision hash and a review reference, nothing runs: this build has no
+        # final-test execution path, and no review-reference string re-enables one (R11-P1-05).
+        refused = util.driver(self.world, {"FINAL_TEST": "1", "REVIEWED_DECISION_SHA256": decision,
+                                           "REVIEW_REF": "driver test review"})
+        self.assertNotEqual(refused.returncode, 0)
+        self.assertIn("FINAL_TEST is disabled", refused.stdout + refused.stderr)
+        self.assertNotIn("baseline: calibration", refused.stdout)       # refused before any stage ran
         self.assertFalse((self.world["run"] / "final_test").exists())
 
-    def test_04_final_test_runs_once_with_the_review(self):
-        run, decision_path = self.world["run"], self.world["run"] / "decision.json"
-        decision = json.loads(decision_path.read_text(encoding="utf-8"))
-        if decision["chosen_keep"] is None:
-            self.skipTest("the random checkpoint produced FALLBACK_TO_TEACHER on validation")
-        reviewed = util.sha256(decision_path)
-        environment = {"FINAL_TEST": "1", "REVIEWED_DECISION_SHA256": reviewed, "REVIEW_REF": "driver test review"}
-        first = util.driver(self.world, environment)
-        self.assertEqual(first.returncode, 0, self.output(first))
-        self.assertIn("final test for the reviewed candidate", first.stdout)
-        ledger = json.loads((run / "test_exposure.json").read_text(encoding="utf-8"))
-        self.assertEqual([(e["keep"], e["status"], e["review_ref"]) for e in ledger["entries"]],
-                         [(decision["chosen_keep"], "completed", "driver test review")])
-        tested = sorted(p.relative_to(run).as_posix() for p in run.rglob("records.jsonl")
-                        if "test" in lines(p)[0]["splits"])
-        self.assertEqual(tested, ["final_test/baseline/records.jsonl", f"final_test/k{decision['chosen_keep']}/records.jsonl"])
-        self.assertIn(f"{decision['chosen_keep']} experts, test: **REPORT_GATE_", (run / "report.md").read_text(encoding="utf-8"))
-        before = {p.relative_to(run).as_posix(): util.sha256(p) for p in (run / "final_test").rglob("records.jsonl")}
-        again = util.driver(self.world, environment)                      # a rerun resumes and changes nothing
-        self.assertEqual(again.returncode, 0, self.output(again))
-        self.assertEqual(len(json.loads((run / "test_exposure.json").read_text(encoding="utf-8"))["entries"]), 1)
-        self.assertEqual(before, {p.relative_to(run).as_posix(): util.sha256(p)
-                                  for p in (run / "final_test").rglob("records.jsonl")})
+    def test_04_final_test_execution_paths_are_removed(self):
+        from mtpruning import pipeline
+        with self.assertRaises(SystemExit) as stopped:                  # the CLI command is gone
+            pipeline.main(["final-test", "--run-dir", str(self.world["run"]), "--decision-sha256", "0" * 64,
+                           "--review-ref", "unit test review"])
+        self.assertEqual(stopped.exception.code, 2)                     # argparse: no such command
+        with self.assertRaisesRegex(SystemExit, "FINAL_TEST_DISABLED"):
+            pipeline.execute_run(util.options(self.world, splits=["test"]))
+        with self.assertRaisesRegex(SystemExit, "FINAL_TEST_DISABLED"):
+            util.cli(self.world, "stock-check", "--model", self.world["model"], "--corpus", self.world["corpus"],
+                     "--records", self.world["run"] / "k64" / "records.jsonl",
+                     "--out", self.world["run"] / "never.json", "--splits", "validation,test",
+                     "--limit", 1, "--max-new-tokens", 6, "--threads", 2)
+        self.assertFalse((self.world["run"] / "never.json").exists())
 
     def test_02_changed_corpus_blocks_the_driver_before_any_run(self):
         world = dict(self.world)

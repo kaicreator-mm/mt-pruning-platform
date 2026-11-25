@@ -145,7 +145,7 @@ class JournalResumeTests(unittest.TestCase):
         selection.write_text(json.dumps({"candidates": {"96": {"kept": MASK}}}))
         changes = [("decoding settings", dict(max_new_tokens=5)), ("sample limit", dict(limit=1)),
                    ("traced sentences", dict(trace_n=1)), ("statistics collection", dict(stats=None)),
-                   ("split scope", dict(splits=["calibration", "validation", "test"], test_authorized=True)),
+                   ("trace split", dict(trace_split="calibration")),
                    ("mask", dict(mask=str(selection), mask_keep=96))]
         for what, change in changes:
             with self.subTest(what), self.assertRaisesRegex(ValueError, "identity mismatch"):
@@ -246,6 +246,26 @@ class JournalResumeTests(unittest.TestCase):
             self.assertGreater(phases["prefill"]["decisions"], 0)
             for phase in ("prefill", "decode"):
                 self.assertLessEqual(phases[phase]["changed"], phases[phase]["decisions"])
+        # Independent expected totals: summed by hand from the committed payloads, in pure
+        # Python, they must equal the per-direction aggregates of the exported summary.
+        from mtpruning.pipeline import journal_path
+        from mtpruning.reviewed import trace as reviewed_trace
+        binding = read_json(Path(str(whole / "records.jsonl") + ".identity.json"))
+        journal = reviewed_trace.Journal(journal_path(whole / "records.jsonl"), binding)
+        totals = {}
+        for _, payload in journal.records():
+            per_direction = totals.setdefault(payload["direction"], {p: [0, 0, 0.0] for p in ("prefill", "decode")})
+            for phase, entry in payload["audit"].items():
+                per_direction[phase][0] += entry["decisions"]
+                per_direction[phase][1] += entry["changed"]
+                per_direction[phase][2] += entry["lost_mass"]
+        journal.close()
+        self.assertEqual(set(totals), set(audit))
+        for direction, phases in audit.items():
+            for phase, values in phases.items():
+                self.assertEqual(values["decisions"], totals[direction][phase][0], direction)
+                self.assertEqual(values["changed"], totals[direction][phase][1], direction)
+                self.assertAlmostEqual(values["lost_weight_mass"], round(totals[direction][phase][2], 4), msg=direction)
 
 
 @unittest.skipUnless(READY, util.__doc__)

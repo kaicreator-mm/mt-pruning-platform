@@ -121,27 +121,31 @@ class GateSignTests(unittest.TestCase):
 
 @unittest.skipUnless(READY, util.__doc__)
 class ReportCoverageTests(unittest.TestCase):
-    """P1-03: strict coverage on a rehearsed run directory. Every test gets its own copy."""
+    """P1-03/P1-04: strict coverage and bound receipts on a rehearsed run directory."""
 
     @classmethod
     def setUpClass(cls):
         cls.tmp = tempfile.TemporaryDirectory()
         cls.world = util.make_world(Path(cls.tmp.name))
-        util.rehearse(cls.world, stock_check=False)
+        util.rehearse(cls.world)          # with the reference-runtime receipts the chain requires
 
     @classmethod
     def tearDownClass(cls):
         cls.tmp.cleanup()
 
-    def copy(self, change=None):
+    def copy(self, change=None, keep_decision=True):
         run = Path(tempfile.mkdtemp(dir=self.world["root"])) / "run"
         shutil.copytree(self.world["run"], run)
         if change:
             change(run)
+        if not keep_decision:
+            # The damaged-record scenarios below exercise the coverage gate, not the decision
+            # binding: a decision bound to the intact bytes would rightly refuse to build.
+            (run / "decision.json").unlink()
         return run
 
-    def build(self, change=None):
-        run = self.copy(change)
+    def build(self, change=None, keep_decision=True):
+        run = self.copy(change, keep_decision)
         return run, report.build(run, self.world["manifest_sha256"])
 
     def quality(self, built, candidate, split):
@@ -177,7 +181,7 @@ class ReportCoverageTests(unittest.TestCase):
         def drop(run):
             path = run / "k96" / "records.jsonl"
             write(path, [row for row in lines(path) if row.get("direction") != "zh-my"])
-        _, built = self.build(drop)
+        _, built = self.build(drop, keep_decision=False)
         self.assertEqual(self.quality(built, "96", "validation")["status"], "NOT_EVALUATED")
         self.assertIn("incomplete validation records", self.quality(built, "96", "validation")["problem"])
         self.assertIn(self.quality(built, "64", "validation")["status"], ("REPORT_GATE_PASS", "REPORT_GATE_FAIL"))
@@ -208,7 +212,7 @@ class ReportCoverageTests(unittest.TestCase):
                                (misplaced, "run sample mismatch"), (reshaped, "bad generation record"),
                                (header_only, "incomplete validation records")):
             with self.subTest(reason=reason, change=change.__name__):
-                _, built = self.build(change)
+                _, built = self.build(change, keep_decision=False)
                 self.assertEqual(self.quality(built, "64", "validation")["status"], "NOT_EVALUATED")
                 self.assertIn(reason, self.quality(built, "64", "validation")["problem"])
 
@@ -218,7 +222,7 @@ class ReportCoverageTests(unittest.TestCase):
             rows = lines(path)
             rows[0]["splits"] = ["validation", "test"]
             write(path, rows)
-        _, built = self.build(expose)
+        _, built = self.build(expose, keep_decision=False)
         self.assertEqual(self.quality(built, "64", "validation")["status"], "NOT_EVALUATED")
         self.assertIn("candidate test already exposed", self.quality(built, "64", "validation")["problem"])
         self.assertTrue(built["exploratory"])
@@ -230,7 +234,7 @@ class ReportCoverageTests(unittest.TestCase):
             rows = lines(path)
             missing = next(row["id"] for row in rows[1:] if row["split"] == "validation")
             write(path, [row for row in rows if row.get("id") != missing])
-        _, built = self.build(drop)
+        _, built = self.build(drop, keep_decision=False)
         self.assertEqual(built["chrf_pp"], [])
         for name in ("96", "64"):
             self.assertEqual(self.quality(built, name, "validation")["status"], "NOT_EVALUATED")
@@ -247,32 +251,38 @@ class ReportCoverageTests(unittest.TestCase):
         run = self.copy(tamper)
         self.assertFalse((run / "report.json").exists())
 
-    def test_final_test_needs_the_reviewed_decision_and_runs_once(self):
+    def test_the_decision_is_bound_to_the_records_it_was_made_from(self):
         run = self.copy()
         decision = json.loads((run / "decision.json").read_text(encoding="utf-8"))
-        chosen = decision["chosen_keep"]
-        if chosen is None:
-            self.skipTest("the random checkpoint produced FALLBACK_TO_TEACHER on validation")
-        other = 64 if chosen == 96 else 96
-        reviewed = util.sha256(run / "decision.json")
-        final = ["final-test", "--run-dir", run, "--threads", 2, "--cache-dir", self.world["cache"]]
-        with self.assertRaises(SystemExit) as stopped:
-            util.cli(self.world, *final, "--decision-sha256", "0" * 64, "--review-ref", "unit test")
-        self.assertIn("does not hash", str(stopped.exception))
-        with self.assertRaises(SystemExit):
-            util.cli(self.world, *final, "--decision-sha256", reviewed)        # no reference to a review
-        self.assertFalse((run / "final_test").exists())
-        util.cli(self.world, *final, "--decision-sha256", reviewed, "--review-ref", "unit test review")
-        ledger = json.loads((run / "test_exposure.json").read_text(encoding="utf-8"))
-        self.assertEqual([(e["keep"], e["status"]) for e in ledger["entries"]], [(chosen, "completed")])
-        built = report.build(run, self.world["manifest_sha256"])
-        self.assertIn(self.quality(built, str(chosen), "test")["status"], ("REPORT_GATE_PASS", "REPORT_GATE_FAIL"))
-        self.assertEqual(self.quality(built, str(other), "test")["status"], "NOT_RUN")
-        self.assertEqual([(row["direction"], row["n"]) for row in built["chrf_pp_test"]], [(d, 3) for d in DIRECTIONS])
-        self.assertFalse(built["exploratory"])
-        self.assertIs(built["verdict"]["production_acceptance"], False)
-        forged = {**decision, "chosen_keep": other}
+        self.assertEqual(sorted(decision["runs"]), ["baseline", "k64", "k96"])
+        built = report.build(run, self.world["manifest_sha256"])          # the binding holds as rehearsed
+        self.assertIs(built["decision"]["test_execution_authorized"], False)
+        self.assertEqual(built["decision"]["final_test"]["status"], "HOLD")
+        victim = 64 if decision["chosen_keep"] != 64 else 96
+
+        def altered(run):    # the records the decision bound were edited afterwards
+            path = run / f"k{victim}" / "records.jsonl"
+            rows = lines(path)
+            rows[1]["text"] = rows[1]["text"] + " later"
+            write(path, rows)
+        with self.assertRaisesRegex(SystemExit, "no longer match the run directory"):
+            self.build(altered)
+        run = self.copy()
+        forged = json.loads((run / "decision.json").read_text(encoding="utf-8"))
+        forged["identity"]["teacher"] = "0" * 64                          # a decision from another run
         (run / "decision.json").write_text(json.dumps(forged), encoding="utf-8")
-        with self.assertRaisesRegex(SystemExit, "already exposed to another candidate"):
-            util.cli(self.world, *final, "--decision-sha256", util.sha256(run / "decision.json"),
-                     "--review-ref", "unit test review")
+        with self.assertRaisesRegex(SystemExit, "made from another baseline run"):
+            report.build(run, self.world["manifest_sha256"])
+
+    def test_the_mechanism_needs_every_planned_receipt(self):
+        def drop(run):       # one candidate's reference-runtime receipt is missing
+            (run / "k64" / "stock_check.json").unlink()
+        run, built = self.build(drop)
+        self.assertFalse(built["verdict"]["mechanism_pass"])
+        self.assertEqual(built["verdict"]["masked_pass"]["k64"], False)
+        self.assertIn("64: FAIL", built["verdict"]["summary"])
+        def gone(run):       # a whole candidate folder is missing
+            shutil.rmtree(run / "k64")
+        run, built = self.build(gone, keep_decision=False)
+        self.assertFalse(built["verdict"]["mechanism_pass"])
+        self.assertIn("missing evidence for k64", built["verdict"]["summary"])

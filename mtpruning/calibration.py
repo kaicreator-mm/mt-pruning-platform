@@ -86,8 +86,13 @@ class SampleAudit:
 
 
 def validate_payload(payload, context: dict, sparse_layers: list[int], num_experts: int, top_k: int,
-                     max_new_tokens: int) -> None:
-    """Raise ValueError unless a committed sample is well formed and is the corpus record it names."""
+                     max_new_tokens: int, audit_required: bool | None = None) -> None:
+    """Raise ValueError unless a committed sample is well formed and is the corpus record it names.
+
+    ``audit_required`` states the run kind: True = a masked run, whose every sample must
+    carry a mask audit; False = an unmasked run, where none may; None = either, but the
+    aggregate must never mix the two (checked again across samples by rebuild).
+    """
     need = handoff.need
     need(isinstance(payload, dict) and isinstance(payload.get("identity_key"), str), "malformed sample payload")
     need(all(payload.get(k) == context[k] for k in ("split", "direction", "line")), "sample identity mismatch")
@@ -121,22 +126,38 @@ def validate_payload(payload, context: dict, sparse_layers: list[int], num_exper
         # every token selects exactly top_k experts in every sparse layer
         need(len(per_layer) == (len(sparse_layers) if cells["tokens"] else 0)
              and all(count == cells["tokens"] * top_k for count in per_layer.values()), "incomplete routing coverage")
+    trace_record = payload.get("trace")
+    need(trace_record is None or (isinstance(trace_record, dict) and set(trace_record) == {"sha256", "positions"}
+         and type(trace_record["positions"]) is int and trace_record["positions"] > 0
+         and type(trace_record["sha256"]) is str and len(trace_record["sha256"]) == 64
+         and all(c in "0123456789abcdef" for c in trace_record["sha256"])), "malformed trace record")
     audit = payload.get("audit")
+    if audit_required is not None:
+        need((audit is not None) is audit_required, "mask audit presence does not match the run kind")
     if audit is not None:
+        depth = len(sparse_layers)
         need(isinstance(audit, dict) and set(audit) == set(PHASES), "malformed mask audit")
         for phase in PHASES:
             entry = audit[phase]
-            need(set(entry) == set(AUDIT_FIELDS) and all(
-                type(entry[name]) in (int, float) and math.isfinite(entry[name]) and entry[name] >= 0
-                for name in AUDIT_FIELDS), "invalid mask audit")
+            need(set(entry) == set(AUDIT_FIELDS) and type(entry["decisions"]) is int
+                 and type(entry["changed"]) is int and type(entry["lost_mass"]) is float
+                 and math.isfinite(entry["lost_mass"]), "invalid mask audit")
+            need(all(entry[name] >= 0 for name in AUDIT_FIELDS), "invalid mask audit")
+            # the audit is per phase: a mask sees exactly tokens * sparse-layer-count decisions,
+            # changes no more than that, and each changed position contributes at most one weight
+            need(entry["decisions"] == routing[phase]["tokens"] * depth,
+                 "mask audit decisions disagree with the run's token counts")
             need(entry["changed"] <= entry["decisions"], "mask audit changed more decisions than it saw")
+            need(entry["lost_mass"] <= entry["changed"], "mask audit lost more weight than changed decisions exist")
 
 
 def rebuild(samples: list[dict], sparse_layers: list[int], num_experts: int, top_k: int,
-            max_new_tokens: int, contexts: dict) -> dict:
+            max_new_tokens: int, contexts: dict, audit_required: bool | None = None) -> dict:
     """Per-direction statistics of the committed ``samples`` (in the order given).
 
-    With the audit, every sample must carry one; without it, none may.
+    Every statistic accumulates over the samples in the order given; nothing is
+    overwritten. ``audit_required`` is the run kind (see validate_payload): with
+    the audit, every sample must carry one and none may in an unmasked run.
     """
     shape = (len(DIRECTIONS), len(sparse_layers), num_experts)
     stats = {"count": {phase: torch.zeros(shape, dtype=torch.int64) for phase in PHASES},
@@ -148,8 +169,12 @@ def rebuild(samples: list[dict], sparse_layers: list[int], num_experts: int, top
     audited = [sample["audit"] is not None for sample in samples]
     if any(audited) and not all(audited):
         raise ValueError("mixed masked and unmasked samples")
+    if audit_required is not None and audited and all(audited) != audit_required:
+        raise ValueError("mask audit presence does not match the run kind")
+    depth = len(sparse_layers)
     for sample in samples:
-        validate_payload(sample, contexts[sample["id"]], sparse_layers, num_experts, top_k, max_new_tokens)
+        validate_payload(sample, contexts[sample["id"]], sparse_layers, num_experts, top_k, max_new_tokens,
+                         audit_required)
         row = DIRECTIONS.index(sample["direction"])
         stats["sentences"][row] += 1
         for phase_index, phase in enumerate(PHASES):
@@ -165,8 +190,16 @@ def rebuild(samples: list[dict], sparse_layers: list[int], num_experts: int, top
                                                 accumulate=True)
             stats["tokens"][phase][row] += cells["tokens"]
             if sample["audit"] is not None:
-                stats["audit"][row, phase_index] = torch.tensor(
+                # accumulate the audit across samples in the order given; overwriting one row
+                # per sample would silently keep only the last sample's counts (R11-P1-01)
+                stats["audit"][row, phase_index] += torch.tensor(
                     [sample["audit"][phase][name] for name in AUDIT_FIELDS], dtype=torch.float64)
+    if audited and all(audited):
+        # independent aggregate check: the audit's decisions column must be exactly the
+        # routing token counts it was accumulated from, times the sparse layer count
+        for phase_index, phase in enumerate(PHASES):
+            if bool((stats["audit"][:, phase_index, 0] != stats["tokens"][phase] * depth).any()):
+                raise ValueError("mask audit decisions disagree with the routing token counts")
     return stats
 
 

@@ -7,15 +7,16 @@
   equiv          identity no-op and masked equivalence, position by position
   stock-check    the unmodified reference runtime on the pruned checkpoint
   decide         provisional candidate, from validation records only
-  final-test     baseline and the chosen candidate on test, once, after review
   report
 
-A ``run`` commits each sample (output, routing statistics, mask audit) to a
-SQLite journal together with the run identity, and every aggregate is rebuilt
-from the committed samples. So an interrupted run resumes without losing
-anything and a finished run is never overwritten. The test split can only be
-run by ``final-test``, which needs the hash of the reviewed decision and a
-reference to that review.
+A ``run`` commits each sample (output, routing statistics, mask audit, trace
+record) to a SQLite journal together with the run identity, and every aggregate
+is rebuilt from the committed samples. So an interrupted run resumes without
+losing anything and a finished run is never overwritten.
+
+There is deliberately no final-test command in this build (R11-P1-05): the test
+split is not exposed to any model before a separately authorized execution
+design exists. ``decide`` keeps ``test_execution_authorized`` false.
 """
 from __future__ import annotations
 
@@ -49,6 +50,13 @@ from .spec import CORPUS_MANIFEST_SHA256, DECODING, MAX_CHRF_DROP
 CRASH_AFTER = int(os.environ.get("MTPRUNING_TEST_CRASH_AFTER", "0"))
 # Identity fields the baseline and every candidate must share; "decoding" covers decoding and max tokens.
 SHARED_FIELDS = ("teacher", "corpus", "prompt", "runtime", "code", "decoding")
+# R11-P1-05: every final-test execution path is removed in this pre-real-run build. No
+# review reference or decision hash can re-enable them; the exact external authorization
+# (decision, candidate, corpus and protocol bound, atomic one-candidate ledger) is a
+# separate later task, after a reviewed real validation decision exists.
+FINAL_TEST_DISABLED = ("FINAL_TEST_DISABLED (R12): the test split is not executable in this pre-real-run "
+                       "build. External, decision/candidate/corpus/protocol-bound authorization is deferred "
+                       "to a later task and stays test_execution_authorized=false.")
 
 
 class SimulatedCrash(RuntimeError):
@@ -130,7 +138,8 @@ def identity_of(binding: dict) -> dict:
     return {**binding, "sample_keys": {split: key(binding, split) for split in SPLITS}}
 
 
-def committed_samples(journal, contexts: dict, identity: dict, checkpoint: Checkpoint, max_new_tokens: int) -> list[dict]:
+def committed_samples(journal, contexts: dict, identity: dict, checkpoint: Checkpoint, max_new_tokens: int,
+                      audit_required: bool | None = None) -> list[dict]:
     """Every committed sample of ``journal`` in ID order, each checked to be the corpus record it names."""
     top_k = int(checkpoint.config["num_experts_per_tok"])
     samples = []
@@ -141,9 +150,71 @@ def committed_samples(journal, contexts: dict, identity: dict, checkpoint: Check
         if payload.get("identity_key") != identity["sample_keys"][contexts[sample_id]["split"]]:
             raise ValueError(f"{sample_id} was committed under another run identity")
         validate_payload(sample, contexts[sample_id], checkpoint.sparse_layers, checkpoint.num_experts, top_k,
-                         max_new_tokens)
+                         max_new_tokens, audit_required)
         samples.append(sample)
     return samples
+
+
+def run_provenance(records_path: Path, contexts: dict, expected_traced: list[str] | None = None,
+                   traces_dir: Path | None = None, checkpoint: Checkpoint | None = None) -> dict:
+    """Replay a run's journal against its exported records, and its traces against the journal.
+
+    The records export must be exactly what the journal replays to, the journal file
+    must be the one the summary recorded, the exported header must be the journal's own
+    identity, and - with ``expected_traced`` - exactly those sentences may carry traces,
+    each matching the digest committed with its sample (R11-P1-03/P1-04). Every payload
+    is checked against its stored digest and the run's sample keys even without
+    ``checkpoint``; with it, every payload is also validated in full. A checkpoint is
+    only available while its bytes are on disk - the driver deletes a pruned checkpoint
+    after its receipts, which is why later stages replay without one.
+    """
+    records_path = Path(records_path)
+    header, rows = read_run(records_path)
+    if header is None:
+        raise SystemExit(f"{records_path} has no run header")
+    journal_file = journal_path(records_path)
+    if not journal_file.exists():
+        raise SystemExit(f"{records_path}: the run journal is missing")
+    summary = read_json(Path(str(records_path) + ".summary.json"))
+    if summary.get("journal", {}).get("sha256") != sha256_file(journal_file):
+        raise SystemExit(f"{records_path}: the journal changed after the records were exported")
+    binding = read_json(binding_path(records_path))
+    differ = [name for name in (*FIELDS, "decoding") if header["identity"].get(name) != binding.get(name)]
+    if differ:
+        raise SystemExit(f"{records_path}: the exported header does not match the journal's identity: "
+                         f"{', '.join(differ)}")
+    full = identity_of(binding)
+    journal = trace.Journal(journal_file, binding)
+    samples = []
+    for sample_id, payload in journal.records():        # verifies every payload against its stored digest
+        if sample_id not in contexts:
+            raise SystemExit(f"the journal holds {sample_id}, which is not in the frozen corpus")
+        if payload.get("identity_key") != full["sample_keys"][contexts[sample_id]["split"]]:
+            raise SystemExit(f"{sample_id} was committed under another run identity")
+        sample = {"id": sample_id, **payload}
+        if checkpoint is not None:
+            validate_payload(sample, contexts[sample_id], checkpoint.sparse_layers, checkpoint.num_experts,
+                             int(checkpoint.config["num_experts_per_tok"]), header["max_new_tokens"])
+        samples.append(sample)
+    journal.close()
+    by_id = {row["id"]: row for row in rows}
+    if set(by_id) != {sample["id"] for sample in samples} or any(
+            any(by_id[sample["id"]][name] != sample[name]
+                for name in ("prompt_tokens", "new_tokens", "finish", "tokens", "text"))
+            for sample in samples):
+        raise SystemExit(f"{records_path}: the exported records differ from what the journal holds")
+    traced = sorted(row["id"] for row in rows if row.get("traced"))
+    if expected_traced is not None and traced != sorted(expected_traced):
+        raise SystemExit(f"{records_path}: traced sentences {len(traced)} do not cover exactly the expected "
+                         f"{len(expected_traced)}")
+    if traces_dir is not None:
+        for sample in samples:
+            if sample["id"] in (expected_traced or traced):
+                if not sample.get("trace") or not trace_complete(traces_dir, sample["id"], sample["trace"]):
+                    raise SystemExit(f"{sample['id']}: the trace on disk does not match the journal's record")
+    return {"records_sha256": sha256_file(records_path), "journal_sha256": sha256_file(journal_file),
+            "teacher": header["identity"]["teacher"], "corpus": header["identity"]["corpus"],
+            "code": header["identity"]["code"], "candidate": header["identity"]["candidate"], "traced": traced}
 
 
 def first_per_direction(contexts: dict, split: str, count: int) -> list[str]:
@@ -176,15 +247,25 @@ class RunOptions:
     limit: int | None = None
     manifest_sha256: str | None = None
     cache_dir: str | None = None
-    test_authorized: bool = False
+    mode: str = "rehearsal"          # "real": pinned teacher only, no overrides (P2-02)
 
 
 def execute_run(options: RunOptions) -> dict:
     """Translate, commit each sample, rebuild the aggregates, export the records. Resumable."""
     from transformers import AutoTokenizer
     splits = list(options.splits)
-    if "test" in splits and not options.test_authorized:
-        raise SystemExit("the test split belongs to the final-test stage: it needs a reviewed decision")
+    if "test" in splits:
+        raise SystemExit(FINAL_TEST_DISABLED)          # no path may expose the test split (R11-P1-05)
+    if options.mode == "real":
+        # P2-02: real-mode boundaries. A real run decodes with the checkpoint's own tokenizer,
+        # covers every sentence of its splits (bounded witness runs are validation-only), and
+        # runs the frozen corpus manifest only.
+        if options.tokenizer is not None:
+            raise SystemExit("real mode refuses a tokenizer override: the checkpoint's own tokenizer is used")
+        if options.limit is not None and "calibration" in splits:
+            raise SystemExit("real mode refuses --limit: a calibration run covers every calibration sentence")
+        if options.manifest_sha256 not in (None, CORPUS_MANIFEST_SHA256):
+            raise SystemExit("real mode runs the frozen corpus manifest only")
     manifest, contexts = frozen_dir(Path(options.corpus).parent, options.manifest_sha256)
     todo = [record for record in contexts.values() if record["split"] in splits]
     if options.limit is not None:
@@ -207,17 +288,18 @@ def execute_run(options: RunOptions) -> dict:
             if record["split"] == options.trace_split and seen[record["direction"]] < options.trace_n:
                 traced.add(record["id"])
                 seen[record["direction"]] += 1
-    identity = run_identity(
+    out = Path(options.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    fresh = not journal_path(out).exists()             # qualification hashes the actual bytes; a resume
+    identity = run_identity(                           # may trust the content-keyed cache (R11-P1-02)
         model_dir=options.model, corpus_path=options.corpus,
         manifest_path=Path(options.corpus).parent / "corpus_manifest.json", cache_dir=options.cache_dir, mask=mask,
         selection_sha256=selection_sha256, decoding=DECODING, max_new_tokens=options.max_new_tokens,
-        protocol={"splits": splits, "limit": options.limit, "traced_ids": sorted(traced),
+        protocol={"mode": options.mode, "splits": splits, "limit": options.limit, "traced_ids": sorted(traced),
                   "collects_routing": bool(options.stats), "stats_splits": ["calibration"] if options.stats else []},
-        threads=options.threads)
-    out = Path(options.out)
-    out.parent.mkdir(parents=True, exist_ok=True)
+        threads=options.threads, tokenizer_dir=options.tokenizer, mode=options.mode, fresh=fresh)
     current = binding_of(identity)
-    if not journal_path(out).exists():                 # nothing committed yet: this run defines the identity
+    if fresh:                                          # nothing committed yet: this run defines the identity
         dump(binding_path(out), current)
     binding = read_json(binding_path(out))
     # A journal continues only under the identity it was started with: checkpoint content, corpus,
@@ -228,12 +310,21 @@ def execute_run(options: RunOptions) -> dict:
     journal = trace.Journal(journal_path(out), binding)   # and the stored identity must match the database
     full = identity_of(binding)
     top_k, depth = engine.top_k, len(checkpoint.sparse_layers)
-    done = {sample["id"] for sample in committed_samples(journal, contexts, full, checkpoint, options.max_new_tokens)}
+    audit_required = mask is not None
+    done = {sample["id"]: sample for sample in committed_samples(journal, contexts, full, checkpoint,
+                                                                 options.max_new_tokens, audit_required)}
     started, commits = time.perf_counter(), 0
     with open(Path(str(out) + ".timings.jsonl"), "a", encoding="utf-8", newline="\n") as timing_log:
         for record in todo:
-            missing_trace = bool(options.trace_dir) and record["id"] in traced and not trace_complete(options.trace_dir, record["id"])
-            if record["id"] in done and not missing_trace:
+            committed = done.get(record["id"])
+            if committed is not None and record["id"] in traced:
+                # A committed witness sentence must still have exactly the trace its payload binds:
+                # missing, corrupt or stale files are regenerated identically, not trusted (R11-P1-03).
+                expected = committed.get("trace") or {"sha256": "", "positions": -1}
+                if trace_complete(options.trace_dir, record["id"], expected):
+                    continue
+                committed = None                       # fall through: regenerate with the same outcome
+            elif committed is not None:
                 continue
             routing, audit = SampleRouting(engine), SampleAudit() if mask is not None else None
             engine.on_route, engine.audit = routing.hook, audit.hook if audit is not None else None
@@ -246,9 +337,9 @@ def execute_run(options: RunOptions) -> dict:
                 "finish": generated.finish, "tokens": generated.tokens,
                 "text": tokenizer.decode(generated.tokens, skip_special_tokens=True),
                 "routing": cells, "audit": audit.payload(cells, depth) if audit is not None else None,
+                "trace": save_trace(options.trace_dir, record["id"], generated.trace)
+                         if record["id"] in traced else None,
             }
-            if record["id"] in traced:
-                save_trace(options.trace_dir, record["id"], generated.trace)
             journal.put(record["id"], payload)        # 'conflicting sample' if a committed copy differs
             timing_log.write(json.dumps({"id": record["id"], "at": utc_now(),
                                          "prefill_seconds": round(generated.prefill_seconds, 3),
@@ -257,32 +348,34 @@ def execute_run(options: RunOptions) -> dict:
             commits += 1
             if CRASH_AFTER and commits >= CRASH_AFTER:
                 raise SimulatedCrash(f"stopped after {commits} commits, as the test asked")
-    samples = committed_samples(journal, contexts, full, checkpoint, options.max_new_tokens)
+    samples = committed_samples(journal, contexts, full, checkpoint, options.max_new_tokens, audit_required)
     summary = {
         "model": str(Path(options.model).resolve()), "num_experts": checkpoint.num_experts,
         "masked_keep": options.mask_keep if mask is not None else None, "splits": splits,
         "max_new_tokens": options.max_new_tokens, "decoding": DECODING, "exported": utc_now(),
         "identity": {name: binding[name] for name in (*FIELDS, "decoding")},
         "identity_keys": full["sample_keys"], "checkpoint_kind": binding["detail"]["checkpoint"]["kind"],
-        "synthetic": binding["detail"]["checkpoint"]["kind"] == "synthetic",
+        "synthetic": binding["detail"]["checkpoint"]["kind"] == "synthetic", "mode": binding["detail"]["mode"],
         "environment": environment(), "commits_this_invocation": commits,
         "seconds_this_invocation": round(time.perf_counter() - started, 1), "sentences": len(samples),
         "per_split_direction": {f"{split}:{direction}": n for (split, direction), n in sorted(
             Counter((s["split"], s["direction"]) for s in samples).items())},
         "finish": dict(Counter(s["finish"] for s in samples)),
         "new_tokens": sum(s["new_tokens"] for s in samples),
-        "traced": sum(bool(options.trace_dir) and trace_complete(options.trace_dir, s["id"]) for s in samples),
+        "traced": sum(bool(options.trace_dir)
+                      and trace_complete(options.trace_dir, s["id"], s.get("trace")) for s in samples),
         "journal": {"path": str(journal_path(out)), "sha256": sha256_file(journal_path(out))},
         "routing": None, "mask_audit": None,
     }
     if samples:
         rebuilt = rebuild(samples, checkpoint.sparse_layers, checkpoint.num_experts, top_k,
-                          options.max_new_tokens, contexts)
+                          options.max_new_tokens, contexts, audit_required=audit_required)
         if options.stats:
             calibration = [sample for sample in samples if sample["split"] == "calibration"]
             summary["routing"] = save_stats(options.stats, rebuild(calibration, checkpoint.sparse_layers,
                                                                    checkpoint.num_experts, top_k,
-                                                                   options.max_new_tokens, contexts),
+                                                                   options.max_new_tokens, contexts,
+                                                                   audit_required=audit_required),
                                             checkpoint.sparse_layers)
         if mask is not None:
             summary["mask_audit"] = mask_audit_report(rebuilt)
@@ -297,7 +390,7 @@ def execute_run(options: RunOptions) -> dict:
             "line": sample["line"], "prompt_tokens": sample["prompt_tokens"], "new_tokens": sample["new_tokens"],
             "finish": sample["finish"], "tokens": sample["tokens"], "text": sample["text"],
             "identity_key": sample["identity_key"],
-            "traced": bool(options.trace_dir) and trace_complete(options.trace_dir, sample["id"]),
+            "traced": bool(options.trace_dir) and trace_complete(options.trace_dir, sample["id"], sample.get("trace")),
         }, ensure_ascii=False))
     write_text_atomic(out, "\n".join(body) + "\n")
     dump(Path(str(out) + ".summary.json"), summary)
@@ -329,7 +422,10 @@ def prune_candidate(source_dir: str, selection_path: str | None, keep: int, out_
         kept = {layer: list(range(source.num_experts)) for layer in source.sparse_layers}
     else:
         kept = {int(layer): ids for layer, ids in read_json(selection_path)["candidates"][str(keep)]["kept"].items()}
-    manifest = write_pruned(source, kept, out_dir, source_identity=checkpoint_identity(source_dir, cache_dir))
+    # Stage-boundary recheck: the trusted cache avoids rehashing unchanged shards; any byte
+    # that changed still gets a fresh hash and refuses against the pinned listing or manifest.
+    manifest = write_pruned(source, kept, out_dir, source_identity=checkpoint_identity(source_dir, cache_dir,
+                                                                                      fresh=False))
     record = {"manifest": manifest, "verify": verify_pruned(source, Checkpoint(out_dir)),
               "candidate_digest": pruned_candidate_digest(manifest)}
     dump(record_path, record)
@@ -376,15 +472,21 @@ def cmd_select(args) -> None:
     header, rows = read_run(out)
     if header is None:
         raise SystemExit("no baseline run to select from")
-    checkpoint = Checkpoint(header["model"])
+    # The teacher on disk must still be the one the journal bound: content, not just the
+    # path. A changed checkpoint refuses selection instead of selecting on stale bytes.
+    current = checkpoint_identity(header["model"], args.cache_dir, fresh=False)
     binding = read_json(binding_path(out))
+    if current["teacher"] != binding["teacher"]:
+        raise SystemExit("the baseline checkpoint on disk is no longer the teacher the journal recorded")
+    checkpoint = Checkpoint(header["model"])
     top_k = int(checkpoint.config["num_experts_per_tok"])
     max_new_tokens = binding["detail"]["max_new_tokens"]
     journal = trace.Journal(journal_path(out), binding)
-    samples = committed_samples(journal, contexts, identity_of(binding), checkpoint, max_new_tokens)
+    samples = committed_samples(journal, contexts, identity_of(binding), checkpoint, max_new_tokens,
+                                audit_required=False)
     # The selection is built from calibration routing only.
     stats = rebuild([sample for sample in samples if sample["split"] == "calibration"], checkpoint.sparse_layers,
-                    checkpoint.num_experts, top_k, max_new_tokens, contexts)
+                    checkpoint.num_experts, top_k, max_new_tokens, contexts, audit_required=False)
     base = run / "baseline" / "stats"
     if not (base.with_name(base.name + ".npz").exists() and base.with_name(base.name + ".json").exists()):
         raise SystemExit("the baseline stage has not exported its statistics (interrupted?): rerun it")
@@ -488,9 +590,31 @@ def cmd_equiv(args) -> None:
             and {int(k): v for k, v in prune["manifest"]["kept"].items()} == mask
     if not pair:
         raise SystemExit("these are not the two runs this check is defined for")
+    # Both runs must still be exactly the committed journals the records were exported from,
+    # and every witness trace must match the digest committed with its sample (R11-P1-03).
+    # Both checkpoints are on disk at this point, so the payload validation is full.
+    provenance = {}
+    for label, records_path, traces_dir in (("reference", args.reference_records, args.reference_traces),
+                                            ("candidate", args.candidate_records, args.candidate_traces)):
+        header, _ = read_run(records_path)
+        if header is None:
+            raise SystemExit(f"{records_path} has no run header")
+        provenance[label] = run_provenance(records_path, contexts, expected, Path(traces_dir),
+                                           checkpoint=Checkpoint(header["model"]))
+    if args.kind == "masked":
+        # A masked mechanism check without a real changed-route witness proves nothing:
+        # zero changes are insufficient evidence, not an automatic pass (R11-P1-03).
+        audit = read_json(Path(str(args.reference_records) + ".summary.json")).get("mask_audit")
+        if not audit:
+            raise SystemExit("the masked run carries no mask audit: nothing records what the mask changed")
+        changed = sum(phase["changed"] for phases in audit.values() for phase in phases.values())
+        if changed == 0:
+            raise SystemExit("the mask changed no routing decision on this witness: zero changes are "
+                             "insufficient evidence, not an automatic pass")
     result = compare_runs(Path(args.reference_traces), Path(args.candidate_traces),
                           {row["id"]: row["text"] for row in reference_rows},
                           {row["id"]: row["text"] for row in candidate_rows}, expected)
+    result["binding"] = provenance
     dump(args.out, result)
     print(json.dumps({k: result[k] for k in result if k != "per_sentence"}))
     if not result["pass"]:
@@ -501,8 +625,12 @@ def cmd_stock_check(args) -> None:
     """Re-translate a few sentences with the unmodified reference loader and implementation."""
     import transformers
     from transformers import AutoModelForCausalLM, AutoTokenizer
+    if "test" in set(args.splits.split(",")):
+        raise SystemExit(FINAL_TEST_DISABLED)          # no path may expose the test split (R11-P1-05)
     _, contexts = frozen_dir(Path(args.corpus).parent, args.manifest_sha256)
-    _, rows = read_run(args.records)
+    header, rows = read_run(args.records)
+    if header is None:
+        raise SystemExit(f"{args.records} has no run header")
     wanted, seen, picked = set(args.splits.split(",")), Counter(), []
     for row in rows:                       # records are exported in ID order
         if row["split"] in wanted and seen[row["direction"]] < args.limit:
@@ -521,8 +649,12 @@ def cmd_stock_check(args) -> None:
         results.append({"id": row["id"], "engine": row["text"], "reference_runtime": text,
                         "text_equal": text == row["text"]})
     same = sum(r["text_equal"] for r in results)
+    # The receipt binds the run it checked: which candidate, which exact records bytes (R11-P1-04).
+    binding = {"candidate": header["identity"]["candidate"], "teacher": header["identity"]["teacher"],
+               "corpus": header["identity"]["corpus"], "records_sha256": sha256_file(args.records),
+               "picked_ids": [r["id"] for r in results]}
     dump(args.out, {"model": str(Path(args.model).resolve()), "sentences": len(results), "text_equal": same,
-                    "transformers": transformers.__version__, "attention": "eager",
+                    "transformers": transformers.__version__, "attention": "eager", "binding": binding,
                     "pass": same == len(results) and bool(results), "results": results})
     print(json.dumps({"sentences": len(results), "text_equal": same}))
     if same != len(results) or not results:
@@ -540,15 +672,58 @@ def shared_identity(headers: dict, where: str) -> dict:
 
 
 def cmd_decide(args) -> None:
-    """Provisional candidate from validation records only. Never opens a test record."""
+    """Provisional candidate from validation records only. Never opens a test record.
+
+    Before anything qualifies, the whole evidence chain must be present and current
+    (R11-P1-04): baseline journal -> aggregate -> selection -> prune/manifests -> identity
+    no-op and per-candidate masked equivalence and reference-runtime receipts -> complete
+    validation records. A missing, stale, cross-run, subset or mixed receipt blocks the
+    decision instead of qualifying a subset.
+    """
     import sacrebleu
     run = Path(args.run_dir)
     keeps = [int(k) for k in args.candidates.split(",")]
     manifest_sha256 = args.manifest_sha256 or CORPUS_MANIFEST_SHA256
-    frozen(run, manifest_sha256)
+    manifest, contexts = frozen(run, manifest_sha256)
     baseline = run / "baseline" / "records.jsonl"
     paths = {keep: run / f"k{keep}" / "records.jsonl" for keep in keeps}
     selection = read_json(run / "selection.json")
+    planned = sorted(int(k) for k in selection["candidates"])
+    if sorted(keeps) != planned:
+        raise SystemExit(f"the candidates to decide on {sorted(keeps)} are not exactly the planned ones {planned}")
+    baseline_header, _ = read_run(baseline)
+    if baseline_header is None:
+        raise SystemExit(f"{baseline} has no run header")
+    binding = read_json(binding_path(baseline))
+    # The teacher on disk must still be the one the baseline journal bound, and the selection
+    # must still be the one made from this baseline's checked aggregate.
+    current = checkpoint_identity(baseline_header["model"], args.cache_dir, fresh=False)
+    if current["teacher"] != binding["teacher"]:
+        raise SystemExit("the baseline checkpoint on disk is no longer the teacher the journal recorded")
+    baseline_checkpoint = Checkpoint(baseline_header["model"])
+    if selection["identity"]["teacher"] != binding["teacher"] \
+            or selection["identity"]["calibration_key"] != baseline_header["identity_keys"]["calibration"]:
+        raise SystemExit("the selection was not made from this baseline run")
+    stats_base = run / "baseline" / "stats"
+    for name, path in (("corpus", corpus_paths(run)[1]), ("records", baseline),
+                       ("stats_json", Path(str(stats_base) + ".json")), ("stats_npz", Path(str(stats_base) + ".npz"))):
+        if selection["aggregate_hashes"].get(name) != sha256_file(path):
+            raise SystemExit(f"the selection's {name} hash does not match the run directory: rerun select")
+    run_provenance(baseline, contexts, checkpoint=baseline_checkpoint)
+    # The identity no-op receipt of the unpruned checkpoint is part of the chain.
+    noop_keep = baseline_header["num_experts"]
+    noop_prune_path = run / f"k{noop_keep}" / "prune.json"
+    noop_equiv_path = run / f"k{noop_keep}" / "equiv.json"
+    if not noop_prune_path.exists() or not noop_equiv_path.exists():
+        raise SystemExit(f"no identity no-op evidence at {noop_prune_path.parent}")
+    noop_prune = read_json(noop_prune_path)
+    if not (noop_prune["verify"]["pass"] and noop_prune["verify"]["identity_mapping"]):
+        raise SystemExit("the identity no-op prune did not verify")
+    noop_equiv = read_json(noop_equiv_path)
+    if not noop_equiv.get("pass") \
+            or noop_equiv["binding"]["reference"]["journal_sha256"] != sha256_file(journal_path(baseline)) \
+            or noop_equiv["binding"]["reference"]["teacher"] != binding["teacher"]:
+        raise SystemExit("the identity no-op receipt does not belong to the current baseline")
     headers = {}
     for keep, path in ((None, baseline), *paths.items()):
         header, _ = read_run(path)
@@ -561,6 +736,29 @@ def cmd_decide(args) -> None:
             if ({int(k): v for k, v in prune["manifest"]["kept"].items()} != named
                     or header["identity"]["candidate"] != prune["candidate_digest"]):
                 raise SystemExit(f"k{keep} was not pruned the way the selection names")
+            # The masked-equivalence and reference-runtime receipts must exist, pass, and describe
+            # exactly the files on disk now: a prior run's receipt or an altered record blocks.
+            equiv_path, stock_path = run / f"k{keep}" / "equiv.json", run / f"k{keep}" / "stock_check.json"
+            if not equiv_path.exists():
+                raise SystemExit(f"k{keep} has no masked-equivalence receipt")
+            equiv = read_json(equiv_path)
+            if not equiv.get("pass"):
+                raise SystemExit(f"k{keep} did not pass the masked-equivalence check")
+            reference = run_provenance(run / f"k{keep}" / "masked" / "records.jsonl", contexts)
+            candidate_provenance = run_provenance(run / f"k{keep}" / "mechanism" / "records.jsonl", contexts)
+            if equiv["binding"]["reference"] != reference or equiv["binding"]["candidate"] != candidate_provenance \
+                    or reference["teacher"] != binding["teacher"]:
+                raise SystemExit(f"k{keep}'s equivalence receipt does not belong to the current runs")
+            run_provenance(path, contexts)             # journal and exported records must agree
+            if not stock_path.exists():
+                raise SystemExit(f"k{keep} has no reference-runtime receipt")
+            stock = read_json(stock_path)
+            if not stock.get("pass"):
+                raise SystemExit(f"k{keep} did not pass the reference-runtime check")
+            if stock["binding"]["records_sha256"] != sha256_file(path) \
+                    or stock["binding"]["candidate"] != header["identity"]["candidate"] \
+                    or stock["binding"]["teacher"] != binding["teacher"]:
+                raise SystemExit(f"k{keep}'s reference-runtime receipt does not match the current records")
         headers[keep] = header
     if sacrebleu.__version__ != "2.6.0":
         raise SystemExit(f"expected the pinned sacrebleu 2.6.0, found {sacrebleu.__version__}")
@@ -580,55 +778,17 @@ def cmd_decide(args) -> None:
         for (keep, path), header in zip(((None, baseline), *paths.items()), headers.values())}
     result["synthetic"] = headers[None]["synthetic"]
     result["max_new_tokens"] = headers[None]["max_new_tokens"]
+    # Every binding above was checked against current content: the provisional decision's
+    # provenance is verified, unlike the reviewed helper's conservative default.
+    result["checkpoint_provenance_verified"] = True
+    result["final_test"] = {"status": "HOLD", "reason": FINAL_TEST_DISABLED}
+    if result["test_execution_authorized"] is not False:
+        raise SystemExit("a provisional decision must keep test_execution_authorized false")
     result["note"] = ("provisional: validation sentences only; the test split has not been run for any candidate; "
                       "not a quality result until the selection identity and evidence are independently reviewed")
     dump(args.out, result)
     print(json.dumps({"status": result["status"], "chosen_keep": result["chosen_keep"],
                       "test_execution_authorized": result["test_execution_authorized"]}))
-
-
-def cmd_final_test(args) -> None:
-    """Baseline and the chosen candidate on the test split, once, with a reference to the review."""
-    run = Path(args.run_dir)
-    decision_path = run / "decision.json"
-    if sha256_file(decision_path) != args.decision_sha256:
-        raise SystemExit("decision.json does not hash to the reviewed value")
-    review = args.review_ref.strip()
-    if not review:
-        raise SystemExit("a reference to the independent review is required before the test split is used")
-    frozen(run, args.manifest_sha256)
-    decision = read_json(decision_path)
-    chosen = decision["chosen_keep"]
-    if chosen is None:
-        raise SystemExit("FALLBACK_TO_TEACHER: no candidate qualifies on validation, so there is nothing to test")
-    ledger_path = run / "test_exposure.json"
-    ledger = read_json(ledger_path) if ledger_path.exists() else {"entries": []}
-    if any(entry["kind"] == "candidate" and entry["keep"] != chosen for entry in ledger["entries"]):
-        raise SystemExit("the test split was already exposed to another candidate: a further test would be exploratory")
-    entry = next((e for e in ledger["entries"] if e["kind"] == "candidate" and e["keep"] == chosen
-                  and e["decision_sha256"] == args.decision_sha256), None)
-    if entry is None:
-        entry = {"kind": "candidate", "keep": chosen, "decision_sha256": args.decision_sha256,
-                 "review_ref": review, "status": "started", "at": utc_now()}
-        ledger["entries"].append(entry)
-    # Written before anything runs: an interrupted test cannot be silently redirected to another candidate.
-    dump(ledger_path, ledger)
-    baseline_header, _ = read_run(run / "baseline" / "records.jsonl")
-    common = dict(corpus=str(corpus_paths(run)[1]), max_new_tokens=baseline_header["max_new_tokens"],
-                  threads=args.threads, manifest_sha256=args.manifest_sha256, cache_dir=args.cache_dir,
-                  splits=["test"], test_authorized=True)
-    execute_run(RunOptions(model=baseline_header["model"], out=str(run / "final_test" / "baseline" / "records.jsonl"),
-                           **common))
-    pruned = Path(args.pruned_dir) if args.pruned_dir else run / "pruned" / f"k{chosen}"
-    record_path = run / "final_test" / f"k{chosen}" / "prune.json"
-    if not (pruned / "prune_manifest.json").exists():
-        prune_candidate(baseline_header["model"], str(run / "selection.json"), chosen, pruned, record_path, args.cache_dir)
-    if checkpoint_identity(pruned, args.cache_dir)["candidate"] != decision["runs"][f"k{chosen}"]["candidate"]:
-        raise SystemExit(f"{pruned} is not the checkpoint whose validation records the decision rests on")
-    execute_run(RunOptions(model=str(pruned), out=str(run / "final_test" / f"k{chosen}" / "records.jsonl"), **common))
-    entry.update(status="completed", finished=utc_now())
-    dump(ledger_path, ledger)
-    print(json.dumps({"status": "FINAL_TEST_COMPLETE", "keep": chosen}))
 
 
 def cmd_report(args) -> None:
@@ -666,10 +826,13 @@ def main(argv=None) -> int:
     add_command(commands, "corpus-check", "check that the corpus on disk is the frozen one", cmd_corpus_check,
                 (["--corpus-dir"], "corpus_dir", required), (["--out"], "out", required),
                 (["--manifest-sha256"], "manifest_sha256", pinned))
-    add_command(commands, "run", "translate corpus sentences into a journal (not the test split)", cmd_run,
+    add_command(commands, "run", "translate corpus sentences into a journal (never the test split)", cmd_run,
                 (["--model"], "model", required), (["--corpus"], "corpus", required), (["--out"], "out", required),
                 (["--splits"], "splits", {"type": lambda s: s.split(","), "default": ["calibration", "validation"]}),
                 (["--max-new-tokens"], "max_new_tokens", {"type": int, "default": 640}), threads,
+                (["--mode"], "mode", {"choices": ["real", "rehearsal"], "default": "rehearsal",
+                                      "help": "real: pinned teacher, the checkpoint's own tokenizer, "
+                                              "the frozen manifest, no calibration limits"}),
                 (["--tokenizer"], "tokenizer", {}),
                 (["--mask"], "mask", {"help": "selection JSON: deny the experts pruned by candidate --mask-keep"}),
                 (["--mask-keep"], "mask_keep", {"type": int}),
@@ -680,7 +843,7 @@ def main(argv=None) -> int:
                 (["--manifest-sha256"], "manifest_sha256", pinned), cache)
     add_command(commands, "select", "expert sets from the calibration routing, coverage-checked", cmd_select,
                 (["--run-dir"], "run_dir", required), (["--keep"], "keep", required), (["--out"], "out", required),
-                (["--manifest-sha256"], "manifest_sha256", pinned))
+                (["--manifest-sha256"], "manifest_sha256", pinned), cache)
     add_command(commands, "checkpoint-check", "hash every shard and check the checkpoint's provenance",
                 cmd_checkpoint_check, (["--model"], "model", required), (["--out"], "out", required), cache)
     add_command(commands, "prune", "write a physically pruned checkpoint and verify the reload", cmd_prune,
@@ -713,12 +876,7 @@ def main(argv=None) -> int:
                 (["--run-dir"], "run_dir", required), (["--candidates"], "candidates", required),
                 (["--out"], "out", required),
                 (["--max-drop"], "max_drop", {"type": float, "default": MAX_CHRF_DROP}),
-                (["--manifest-sha256"], "manifest_sha256", pinned))
-    add_command(commands, "final-test", "baseline and the chosen candidate on test, once, after review",
-                cmd_final_test, (["--run-dir"], "run_dir", required),
-                (["--decision-sha256"], "decision_sha256", required),
-                (["--review-ref"], "review_ref", required), (["--pruned-dir"], "pruned_dir", {}),
-                threads, cache, (["--manifest-sha256"], "manifest_sha256", pinned))
+                (["--manifest-sha256"], "manifest_sha256", pinned), cache)
     add_command(commands, "report", "assemble report.json and report.md", cmd_report,
                 (["--run-dir"], "run_dir", required),
                 (["--max-drop"], "max_drop", {"type": float, "default": MAX_CHRF_DROP}),

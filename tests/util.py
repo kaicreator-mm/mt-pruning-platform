@@ -102,6 +102,6 @@ def driver(world: dict, environment: dict | None = None) -> subprocess.Completed
            "PRUNED": str(world["root"] / "pruned"), "CACHE_DIR": str(world["cache"]),
            "EVIDENCE_DIR": str(world["root"] / "evidence"), "MODEL_DIR": str(world["model"]),
            "TOKENIZER_DIR": TOKENIZER, "MANIFEST_SHA256": world["manifest_sha256"], "SKIP_WAIT": "1",
-           "TRACE_LIMIT": "2", "MAX_NEW": "6", "THREADS": "2", **(environment or {})}
+           "TRACE_LIMIT": "2", "MAX_NEW": "6", "THREADS": "2", "MODE": "rehearsal", **(environment or {})}
     return subprocess.run(["bash", str(REPO / "scripts" / "run_d01b.sh")], env=env, capture_output=True,
                           text=True, cwd=REPO, timeout=1800)

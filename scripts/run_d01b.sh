@@ -14,15 +14,15 @@
 # sentences the selection was built from: the pruned experts are the ones the calibration
 # sentences rarely use, so on those the mask would hardly ever change a routing decision.
 #
-# The final test is a separate, explicit step that needs the independently reviewed
-# decision and a reference to that review:
-#   FINAL_TEST=1 REVIEWED_DECISION_SHA256=<sha256 of decision.json> REVIEW_REF=<review> \
-#   bash scripts/run_d01b.sh
+# There is no final test in this build (R11-P1-05): every execution path for the test
+# split is removed. Setting FINAL_TEST to anything exits before any stage runs, and no
+# review reference re-enables it. The separately authorized execution design (decision/
+# candidate/corpus/protocol bound, atomic one-candidate ledger) is a later task.
 #
 # Environment (defaults are the real run on CC-LAN200; a dry run overrides them):
 #   PY ROOT RUN PRUNED EVIDENCE_DIR CACHE_DIR HUB_DIR MODEL_DIR TOKENIZER_DIR
 #   CORPUS_TARBALL MANIFEST_SHA256 CANDIDATES TRACE_LIMIT MAX_NEW THREADS LIMIT SKIP_WAIT
-#   FINAL_TEST REVIEWED_DECISION_SHA256 REVIEW_REF
+#   MODE (real | rehearsal; a dry run must set rehearsal)
 set -euo pipefail
 
 PY=${PY:-/home/cc/miniconda3/envs/mt-pruning/bin/python}
@@ -40,18 +40,21 @@ TRACE_LIMIT=${TRACE_LIMIT:-8}       # validation sentences per direction in the 
 MAX_NEW=${MAX_NEW:-640}
 THREADS=${THREADS:-16}
 SKIP_WAIT=${SKIP_WAIT:-}
+MODE=${MODE:-real}
 mkdir -p "$RUN" "$PRUNED" "$CACHE_DIR" "$EVIDENCE_DIR/inputs"
 cd "$REPO"
 CORPUS=$RUN/corpus/corpus.jsonl
 
 step() { echo "[$(date -u +%FT%TZ)] $*"; }
-# Checked first: a final test without the review is refused before any stage runs.
-if [ "${FINAL_TEST:-0}" = "1" ] && { [ -z "${REVIEWED_DECISION_SHA256:-}" ] || [ -z "${REVIEW_REF:-}" ]; }; then
-  echo "FINAL_TEST=1 needs REVIEWED_DECISION_SHA256 and REVIEW_REF"; exit 1
+# Checked first, before any stage: the test split is not exposed in this build at all.
+if [ "${FINAL_TEST:-0}" != "0" ]; then
+  echo "FINAL_TEST is disabled in this build (R12): the test split is not executable, and no"
+  echo "review reference re-enables it. test_execution_authorized stays false (see decision.json)."
+  exit 1
 fi
 PIN=(); [ -n "${MANIFEST_SHA256:-}" ] && PIN=(--manifest-sha256 "$MANIFEST_SHA256")
 LIMITED=(); [ -n "${LIMIT:-}" ] && LIMITED=(--limit "$LIMIT")
-COMMON=(--threads "$THREADS" --cache-dir "$CACHE_DIR" "${PIN[@]}")
+COMMON=(--mode "$MODE" --threads "$THREADS" --cache-dir "$CACHE_DIR" "${PIN[@]}")
 
 if [ -z "$SKIP_WAIT" ]; then
   step "wait for the checkpoint download"
@@ -90,7 +93,7 @@ EXPERTS=$("$PY" -c "import json,sys; print(json.loads(open(sys.argv[1]).readline
 
 step "selection from the calibration routing, after the coverage check"
 "$PY" -m mtpruning select --run-dir "$RUN" --keep "$(echo "$CANDIDATES" | tr ' ' ',')" \
-  --out "$RUN/selection.json" "${PIN[@]}"
+  --out "$RUN/selection.json" --cache-dir "$CACHE_DIR" "${PIN[@]}"
 
 # Stop before filling the disk: a pruned checkpoint is about keep/experts of the source, plus slack.
 needs_space() {
@@ -115,7 +118,8 @@ mechanism() {       # mechanism <keep> <model dir> <equiv args...>
   "$PY" -m mtpruning equiv --run-dir "$RUN" --keep "$keep" --candidate-traces "$folder/mechanism/traces" \
     --candidate-records "$folder/mechanism/records.jsonl" --prune-record "$folder/prune.json" \
     --trace-n "$TRACE_LIMIT" --out "$folder/equiv.json" "$@"
-  rm -rf "$folder/mechanism/traces"
+  # The raw witness traces stay on disk until the independent review is done: they are the
+  # evidence the equivalence receipt binds by hash (R11-P1-03).
 }
 
 step "identity reload of the unpruned checkpoint ($EXPERTS experts) against the baseline traces"
@@ -125,7 +129,7 @@ rm -rf "$PRUNED/k$EXPERTS"    # leftovers of an interrupted prune; the record is
   --out-manifest "$RUN/k$EXPERTS/prune.json" --cache-dir "$CACHE_DIR"
 mechanism "$EXPERTS" "$PRUNED/k$EXPERTS" --kind noop --reference-traces "$RUN/baseline/traces" \
   --reference-records "$RUN/baseline/records.jsonl" "${PIN[@]}"
-rm -rf "$PRUNED/k$EXPERTS" "$RUN/baseline/traces"    # about 2.3 GB of traces in the real run
+rm -rf "$PRUNED/k$EXPERTS"    # rebuildable from the selection; manifest, hashes and checks are on disk
 
 for keep in $CANDIDATES; do
   folder=$RUN/k$keep
@@ -140,7 +144,6 @@ for keep in $CANDIDATES; do
     --trace-dir "$folder/masked/traces" --trace-n "$TRACE_LIMIT" --max-new-tokens "$MAX_NEW" "${COMMON[@]}"
   mechanism "$keep" "$PRUNED/k$keep" --kind masked --reference-traces "$folder/masked/traces" \
     --reference-records "$folder/masked/records.jsonl" --selection "$RUN/selection.json" "${PIN[@]}"
-  rm -rf "$folder/masked/traces"
   step "k$keep: validation outputs of the reloaded prune (the test split is not run)"
   "$PY" -m mtpruning run --model "$PRUNED/k$keep" --corpus "$CORPUS" --out "$folder/records.jsonl" \
     --splits validation --max-new-tokens "$MAX_NEW" "${LIMITED[@]}" "${COMMON[@]}"
@@ -152,22 +155,18 @@ done
 
 step "provisional decision from validation records only"
 "$PY" -m mtpruning decide --run-dir "$RUN" --candidates "$(echo "$CANDIDATES" | tr ' ' ',')" \
-  --out "$RUN/decision.json" "${PIN[@]}"
+  --out "$RUN/decision.json" --cache-dir "$CACHE_DIR" "${PIN[@]}"
 "$PY" -c "import hashlib,sys; print('decision.json sha256', hashlib.sha256(open(sys.argv[1],'rb').read()).hexdigest())" "$RUN/decision.json"
 
-if [ "${FINAL_TEST:-0}" = "1" ]; then
-  step "final test for the reviewed candidate"
-  "$PY" -m mtpruning final-test --run-dir "$RUN" --decision-sha256 "$REVIEWED_DECISION_SHA256" \
-    --review-ref "$REVIEW_REF" --threads "$THREADS" --cache-dir "$CACHE_DIR" "${PIN[@]}"
-else
-  step "final test: HOLD (set FINAL_TEST=1 with the reviewed decision hash and review reference to run it)"
-fi
+step "final test: DISABLED in this build (R12); execution stays test_execution_authorized=false and the"
+step "external authorization design is a separate later task, after this decision is reviewed"
 
 step "report"
 "$PY" -m mtpruning report --run-dir "$RUN" "${PIN[@]}"
 
 step "collect evidence"
-(cd "$RUN" && find . -type f \( -name "*.json" -o -name "*.jsonl" -o -name "*.npz" -o -name "report.md" \) \
+(cd "$RUN" && find . -type f \( -name "*.json" -o -name "*.jsonl" -o -name "*.npz" -o -name "*.sqlite" \
+    -o -name "*.identity.json" -o -name "report.md" \) \
     -not -path "*/traces/*" -not -name "*.timings.jsonl") | while read -r f; do
   mkdir -p "$EVIDENCE_DIR/$(dirname "$f")"
   cp "$RUN/$f" "$EVIDENCE_DIR/$f"

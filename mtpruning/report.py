@@ -221,6 +221,7 @@ def mechanism_checks(run: Path) -> dict:
         prune = read_json(folder / "prune.json") if (folder / "prune.json").exists() else {}
         manifest, verify = prune.get("manifest", {}), prune.get("verify", {})
         stock = folder / "stock_check.json"
+        stock_data = ({k: v for k, v in read_json(stock).items() if k != "results"} if stock.exists() else None)
         checks[folder.name] = {
             "keep": manifest.get("num_experts"), "identity_mapping": verify.get("identity_mapping"),
             "kind": "identity no-op" if verify.get("identity_mapping") else "masked equivalence",
@@ -228,24 +229,35 @@ def mechanism_checks(run: Path) -> dict:
             "shards": [{"name": f["name"], "bytes": f["bytes"], "sha256": f["sha256"]} for f in manifest.get("files", [])],
             "verify_pass": verify.get("pass"),
             "equiv": {k: v for k, v in read_json(path).items() if k != "per_sentence"},
-            "stock_check": ({k: v for k, v in read_json(stock).items() if k != "results"} if stock.exists() else None),
+            "stock_check": stock_data,
+            "stock_pass": bool(stock_data and stock_data.get("pass")),
         }
     return checks
 
 
-def decide(checks: dict, quality: dict, max_drop: float) -> dict:
+def decide(checks: dict, quality: dict, max_drop: float, expected: list[str]) -> dict:
+    """Mechanism verdict over the expected candidate set only.
+
+    ``expected`` names every folder the plan requires: the identity no-op plus each
+    selection candidate. A folder that is missing, or whose prune reload, masked
+    equivalence or reference-runtime check does not pass, fails the mechanism: the
+    report never shows a pass for a subset of the planned evidence (R11-P1-04).
+    """
     noop = [c for c in checks.values() if c["identity_mapping"]]
     masked = {name: c for name, c in checks.items() if not c["identity_mapping"]}
     noop_pass = bool(noop) and all(c["verify_pass"] and c["equiv"]["pass"] for c in noop)
-    masked_pass = {name: bool(c["verify_pass"] and c["equiv"]["pass"]) for name, c in masked.items()}
-    lines = [f"mechanism {'PASS' if noop_pass and masked_pass and all(masked_pass.values()) else 'FAIL'} "
+    masked_pass = {name: bool(c["verify_pass"] and c["equiv"]["pass"] and c["stock_pass"])
+                   for name, c in masked.items()}
+    missing = [name for name in expected if name not in checks]
+    lines = [f"mechanism {'PASS' if noop_pass and all(masked_pass.values()) and not missing else 'FAIL'} "
              f"(identity reload {'PASS' if noop_pass else 'FAIL'}; masked equivalence "
-             + (", ".join(f"{n[1:]}: {'PASS' if ok else 'FAIL'}" for n, ok in masked_pass.items()) or "NOT_RUN") + ")"]
+             + (", ".join(f"{n[1:]}: {'PASS' if ok else 'FAIL'}" for n, ok in masked_pass.items()) or "NOT_RUN")
+             + (f"; missing evidence for {', '.join(missing)}" if missing else "") + ")"]
     for name, q in quality.items():
         lines.append(f"{name} experts: validation {q['validation']['status']}, test {q['test']['status']}")
     return {
         "noop_pass": noop_pass, "masked_pass": masked_pass,
-        "mechanism_pass": noop_pass and bool(masked_pass) and all(masked_pass.values()),
+        "mechanism_pass": noop_pass and bool(masked_pass) and all(masked_pass.values()) and not missing,
         "gate": f"per direction, chrF++ drop <= {max_drop} point and no more empty, truncated or digit-mismatch "
                 "outputs than the baseline",
         "quality": quality, "quality_result": "HOLD: not a quality result until the final test is reviewed",
@@ -293,6 +305,9 @@ def build(run_dir: Path, manifest_sha256=None, max_drop: float = 1.0, spot_n: in
         # A candidate with an unusable run gets no row entry at all: the reviewed gate then
         # refuses the incomplete group, and the verdict names the reason.
         table_validation = table_rows(metric, groups, contexts, "validation", max_drop, spot)
+    # The folders the plan requires: the identity no-op plus every selection candidate. A
+    # missing one fails the mechanism instead of showing a pass for a subset (R11-P1-04).
+    expected = sorted({f"k{baseline_keep}", *(f"k{keep}" for keep in keeps)})
 
     # Test: only what the final-test stage produced, and only for a completed entry of the exposure ledger.
     ledger = read_json(run / "test_exposure.json") if (run / "test_exposure.json").exists() else {"entries": []}
@@ -330,6 +345,16 @@ def build(run_dir: Path, manifest_sha256=None, max_drop: float = 1.0, spot_n: in
         data = read_json(path)
         timing[path.parent.relative_to(run).as_posix()] = {k: data.get(k) for k in (
             "sentences", "new_tokens", "finish", "masked_keep", "splits", "synthetic", "identity", "identity_keys")}
+    decision = read_json(run / "decision.json") if (run / "decision.json").exists() else None
+    if decision is not None:
+        # The decision is bound to the exact records it was made from: if any of them has
+        # changed since, the report refuses instead of decorating stale evidence (R11-P1-04).
+        if decision.get("identity", {}).get("teacher") != source["identity"]["teacher"]:
+            raise SystemExit("decision.json was made from another baseline run")
+        for name, entry in decision.get("runs", {}).items():
+            path = run / ("baseline/records.jsonl" if name == "baseline" else f"{name}/records.jsonl")
+            if not path.exists() or entry.get("records_sha256") != sha256_file(path):
+                raise SystemExit(f"decision.json binds {name} records that no longer match the run directory")
     outside = test_used_outside_final_test(run, baseline_keep)
     checks = mechanism_checks(run)
     report = {
@@ -347,9 +372,9 @@ def build(run_dir: Path, manifest_sha256=None, max_drop: float = 1.0, spot_n: in
             "split_sizes", "language_codes", "duplicate_rule", "prompt_policy", "records")},
         "corpus_receipt": read_json(run / "corpus_receipt.json") if (run / "corpus_receipt.json").exists() else None,
         "test_used_outside_final_test": outside, "exploratory": bool(outside),
-        "decision": read_json(run / "decision.json") if (run / "decision.json").exists() else None,
-        "decision_sha256": sha256_file(run / "decision.json") if (run / "decision.json").exists() else None,
-        "verdict": decide(checks, quality, max_drop),
+        "decision": decision,
+        "decision_sha256": sha256_file(run / "decision.json") if decision is not None else None,
+        "verdict": decide(checks, quality, max_drop, expected),
         "mechanism_checks": checks,
         "calibration": summary.get("routing"),
         "selection": selection,
@@ -434,9 +459,12 @@ def render_markdown(report: dict) -> str:
         out.append(f"| {c['kind']} | {c['keep']} | {e['sentences']} | {e['identical_text']} | {e['all_argmax_agree']} | "
                    f"{e['all_route_ids_agree']} | {e['within_tol']} | {e['bitwise_identical_logits']} | "
                    f"{e['logits_max_abs_diff']:.4g} | {'PASS' if e['pass'] else 'FAIL'} |")
-    out += ["", "\"Within tol\" = the 64 largest logits of every compared position differ by at most 0.125 "
-             "(two bf16 steps where the top logits sit); \"bitwise identical\" = the hash of the whole logit row "
-             "is the same at every compared position.", ""]
+    out += ["", "\"Within tol\" is a diagnostic: the 64 largest logits of every compared position differ by at "
+             "most 0.125 (two bf16 steps where the top logits sit). A mechanism pass claims more than that: "
+             "equal trace lengths, identical text, every argmax and route id in agreement, whole logit rows "
+             "bitwise identical at every compared position, and route weights within float32 rounding "
+             "(1e-6; the masked wide router and the physically pruned one sum in different orders) - on the "
+             "traced witness sentences only.", ""]
     if report["mask_audit"]:
         out += ["## What the mask changes", "",
                 "On the traced validation sentences: routing decisions (token, layer) that differ from the unmasked "

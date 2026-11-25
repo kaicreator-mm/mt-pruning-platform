@@ -23,8 +23,8 @@ GitHub 是事实源；采用有限实验、精确提交证据、失败闭锁。
 | 专家选择 | 仅用校准集的路由：每层每个方向的路由权重占比取六方向平均，保留 top-K。选择前先用 `r6/bridge.py` 核对聚合覆盖 |
 | 物理裁剪 | 写出全新的 checkpoint：router 行、expert bias、专家矩阵按新索引落盘，其余张量原样复制；逐张量与源对比后再重载 |
 | 机制检查 | 128 专家恒等重载 = 原模型（no-op）；物理裁剪 = 在原模型上屏蔽被删专家（masked）。在验证集句子上逐位置比较，这些句子不参与选择 |
-| 候选评估 | 候选只在验证集上运行。临时决策由 `r7/handoff.py` 给出（通过所有方向的最小候选，否则回退到原模型） |
-| 最终测试 | **暂缓（HOLD）**：只有经过独立评审的决策才能运行 test，而且只运行一次 |
+| 候选评估 | 候选只在验证集上运行。临时决策由 `r7/handoff.py` 给出（通过所有方向的最小候选，否则回退到原模型），并且只在全部证据链（选择→裁剪→等价→参考运行时→完整验证记录）都在场且与当前文件一致时才给出 |
+| 最终测试 | **本构建中硬禁用（R12）**：test 分割的每条执行路径都已移除，任何评审引用字符串都不能重新启用；与决策/候选/语料/协议绑定的外部授权设计推迟到真实验证决策产生之后的独立任务 |
 
 质量门槛：每个方向 chrF++ 下降不超过 1 分，且空输出、截断、数字不匹配的数量都不多于基线。判定统一走
 `r6/bridge.py` 的独立门槛；记录不完整（缺方向、重复、多余、组不满）的候选记为 NOT_EVALUATED，永远不会被判为通过。
@@ -65,14 +65,18 @@ MTPRUNING_TOKENIZER_DIR=<snapshot_dir> MTPRUNING_FLORES_TARBALL=<tarball> TMPDIR
 # 4. 全流程到临时决策为止，不运行 test；中断后重跑会从已有输出处继续
 bash scripts/run_d01b.sh
 
-# 5. 最终测试：仅在决策经过独立评审之后
-FINAL_TEST=1 REVIEWED_DECISION_SHA256=<decision.json 的 sha256> REVIEW_REF=<评审引用> bash scripts/run_d01b.sh
+# 5. 最终测试：本构建中不存在。设置 FINAL_TEST 会在任何阶段开始前直接退出；
+#    外部授权的执行设计是与真实验证决策分开的后续任务。
 ```
 
 各阶段也可以单独调用：
-`python -m mtpruning corpus-check | checkpoint-check | run | select | prune | equiv | stock-check | decide | final-test | report`。
-`run` 拒绝 test 分割，它只能由 `final-test` 运行；`final-test` 需要已评审决策的哈希和评审引用，并把使用记录写进
-`test_exposure.json`。如果 test 已经对某个候选运行过，再对另一个候选运行会被拒绝。
+`python -m mtpruning corpus-check | checkpoint-check | run | select | prune | equiv | stock-check | decide | report`。
+`run` 和 `stock-check` 拒绝 test 分割，`final-test` 子命令已整体移除（R12）；`test_execution_authorized` 保持 false。
+
+`run` 支持 `--mode real|rehearsal`（默认 rehearsal；驱动脚本默认 real，演练需显式 `MODE=rehearsal`）。
+real 模式拒绝 tokenizer 覆盖（用 checkpoint 自带的 tokenizer）、拒绝校准集上的 `--limit`、只接受冻结语料清单，
+并且只允许 pinned 教师或从 pinned 教师剪枝出的候选；synthetic checkpoint 只能是演练教师。
+运行身份绑定的是**实际生效**的 tokenizer 字节；pinned 快照的 tokenizer 文件也与固定清单逐字节比对。
 
 ## 目录
 
@@ -97,5 +101,6 @@ evidence/        运行环境、语料清单与回执、各阶段产物和报告
 
 ## 不包含
 
-最终测试（暂缓，等待评审）、80 专家/层、同规模随机剪枝对照、7B 稠密模型对照、GGUF 同量化、16 GiB GPU 上的峰值与速度、
-人工严重错误抽查，以及生产验收级别的样本量。小样本（每方向 20 句）的 chrF++ 只能说明趋势，不能宣称生产可用。
+最终测试执行路径（本构建中已整体移除，R12；外部授权设计推迟）、80 专家/层、同规模随机剪枝对照、7B 稠密模型对照、
+GGUF 同量化、16 GiB GPU 上的峰值与速度、人工严重错误抽查，以及生产验收级别的样本量。
+小样本（每方向 20 句）的 chrF++ 只能说明趋势，不能宣称生产可用。
