@@ -1,0 +1,52 @@
+[2026-11-26T10:08:34Z] wait for the checkpoint download
+[2026-11-26T10:08:36Z] checkpoint content: hash every shard and compare with what the directory claims to be
+{"status": "CHECKPOINT_CONTENT_VERIFIED", "kind": "pinned-snapshot", "teacher": "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94", "num_experts": 128}
+[2026-11-26T10:09:27Z] frozen corpus contract (a failure here is BLOCKED_CORPUS_CONTRACT: nothing is resampled)
+{"status": "FROZEN_CORPUS_CONTRACT_OK", "records": 384, "corpus_sha256": "9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4"}
+[2026-11-26T10:09:28Z] baseline: calibration routing statistics and validation outputs
+{"stage": "baseline", "checked": "2026-11-26T10:09:28+00:00", "needed_bytes": 68018291691, "free_bytes": 284328960000, "sufficient": true, "filesystems": [{"device": 64512, "paths": [{"role": "RUN", "path": "/home/cc/.cache/mt-pruning/run-d01b", "needed_bytes": 400687104}, {"role": "PRUNED", "path": "/home/cc/.cache/mt-pruning/pruned", "needed_bytes": 66135936998}, {"role": "EVIDENCE_DIR", "path": "/home/cc/mt-pruning-platform/evidence/d01b", "needed_bytes": 1481667589}], "needed_bytes": 68018291691, "free_bytes": 284328960000, "sufficient": true}], "assumptions": {"largest_copy_experts": 128, "prune_peak_bytes": 66135936998, "run_budget_bytes": 400687104, "trace_budget_bytes": 395182080, "trace_positions_per_sentence": 1340, "trace_runs": 6, "journal_budget_bytes": 5505024, "evidence_budget_bytes": 1481667589, "witness_sentences": 48, "witness_count_never_reduced": true}}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/cc/mt-pruning-platform/mtpruning/__main__.py", line 5, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/cc/mt-pruning-platform/mtpruning/pipeline.py", line 1289, in main
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/cc/mt-pruning-platform/mtpruning/pipeline.py", line 535, in cmd_run
+    summary = execute_run(RunOptions(**options))
+  File "/home/cc/mt-pruning-platform/mtpruning/pipeline.py", line 396, in execute_run
+    generated = engine.generate(record["prompt_ids"], options.max_new_tokens, trace=record["id"] in traced)
+  File "/home/cc/mt-pruning-platform/mtpruning/engine.py", line 447, in generate
+    logits = self.forward(prompt_ids, cache, "prefill")
+  File "/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/cc/mt-pruning-platform/mtpruning/engine.py", line 408, in forward
+    h = residual + F.linear(attn.transpose(0, 1).reshape(n, self.hidden), layer.wo)
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+RuntimeError: shape '[74, 2048]' is invalid for input of size 303104
+Command exited with non-zero status 1
+	Command being timed: "env -u LIMIT -u MANIFEST_SHA256 -u TOKENIZER_DIR -u CORPUS_TARBALL PY=/home/cc/miniconda3/envs/mt-pruning/bin/python MODE=real CANDIDATES=96 64 TRACE_LIMIT=8 MAX_NEW=640 THREADS=16 FINAL_TEST=0 SKIP_WAIT= bash scripts/run_d01b.sh"
+	User time (seconds): 91.03
+	System time (seconds): 30.82
+	Percent of CPU this job got: 109%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:51.72
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 6647940
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 7579
+	Minor (reclaiming a frame) page faults: 323337
+	Voluntary context switches: 118235
+	Involuntary context switches: 1488
+	Swaps: 0
+	File system inputs: 219747664
+	File system outputs: 224
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1

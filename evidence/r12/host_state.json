@@ -1,0 +1,42 @@
+{
+  "captured_utc": "2026-11-25T21:49:58+00:00",
+  "download": {
+    "bytes_expected_total": 60143159279,
+    "bytes_on_disk": 47527639079,
+    "driver": "download_hf.sh running (pid family alive, 3 parallel curls), straight from huggingface.co; untouched by this task, no competing download",
+    "files_expected": 19,
+    "files_verified_sha256": 14,
+    "fraction_rounded": 0.7902,
+    "shards_not_yet_started": [
+      "model-00001-of-00013.safetensors",
+      "model-00011-of-00013.safetensors"
+    ],
+    "verified_files": [
+      "special_tokens_map.json",
+      "config.json",
+      "chat_template.jinja",
+      "tokenizer_config.json",
+      "model.safetensors.index.json",
+      "tokenizer.json",
+      "model-00013-of-00013.safetensors",
+      "model-00012-of-00013.safetensors",
+      "model-00002-of-00013.safetensors",
+      "model-00003-of-00013.safetensors",
+      "model-00004-of-00013.safetensors",
+      "model-00009-of-00013.safetensors",
+      "model-00010-of-00013.safetensors",
+      "model-00007-of-00013.safetensors"
+    ]
+  },
+  "drivers": {
+    "calibration_driver_running": false,
+    "note": "the only run_d01b.sh/mtpruning processes during this task were the test suite own dry-run subprocesses on a tiny synthetic world; no real-model driver, no inference on real weights",
+    "stopped_old_driver_note": "the pre-R10 driver was already stopped by hand (R10 receipt); nothing is queued to start automatically"
+  },
+  "host": "CC-LAN200 (192.168.100.200)",
+  "label": "MT_PRUNING_D01B_R12_CURRENT_HOST_STATE",
+  "runtime_env": {
+    "conda_env": "/home/cc/miniconda3/envs/mt-pruning",
+    "pip_check": "No broken requirements found (setup_env.verify.log, ENV_OK)"
+  }
+}

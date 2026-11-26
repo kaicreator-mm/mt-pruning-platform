@@ -1,0 +1,4 @@
+# command: python -m compileall -q mtpruning tests
+# host: cc  cwd: /home/cc/mt-pruning-platform  tree = HEAD a7ef076 (clean)
+2026-11-25T21:45:10Z
+COMPILE_EXIT=0

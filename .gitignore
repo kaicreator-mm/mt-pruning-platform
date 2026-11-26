@@ -1,5 +1,7 @@
 __pycache__/
 *.pyc
-# per-position logits of the traced sentences: ~1.4 GB per run, rebuilt by scripts/run_d01b.sh
+# traces stay in the run directory; the reports carry the sha256 of every compared trace file
 evidence/**/traces/
 *.npy
+*.sqlite
+*.timings.jsonl

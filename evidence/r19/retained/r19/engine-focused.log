@@ -1,0 +1,64 @@
+Loading weights:   0%|          | 0/44 [00:00<?, ?it/s]Loading weights: 100%|██████████| 44/44 [00:00<00:00, 6900.07it/s]
+test_attention_dimensions_are_validated (tests.test_engine.EngineVsReference.test_attention_dimensions_are_validated) ... ok
+test_attention_projection_shapes_are_checked_at_load (tests.test_engine.EngineVsReference.test_attention_projection_shapes_are_checked_at_load) ... ok
+test_bad_masks_are_rejected (tests.test_engine.EngineVsReference.test_bad_masks_are_rejected) ... ok
+test_context_limit (tests.test_engine.EngineVsReference.test_context_limit) ... ok
+test_decode_logits_are_identical_step_by_step (tests.test_engine.EngineVsReference.test_decode_logits_are_identical_step_by_step) ... ok
+test_expert_combine_is_the_reference_experts_path (tests.test_engine.EngineVsReference.test_expert_combine_is_the_reference_experts_path) ... ok
+test_forward_never_writes_into_weights (tests.test_engine.EngineVsReference.test_forward_never_writes_into_weights) ... ok
+test_greedy_tokens_match_the_reference (tests.test_engine.EngineVsReference.test_greedy_tokens_match_the_reference) ... ok
+test_identity_prune_is_a_noop (tests.test_engine.EngineVsReference.test_identity_prune_is_a_noop) ... ok
+test_mask_removes_experts (tests.test_engine.EngineVsReference.test_mask_removes_experts) ... ok
+test_masked_model_equals_physical_prune (tests.test_engine.EngineVsReference.test_masked_model_equals_physical_prune) ... ok
+test_prefill_logits_are_identical_to_the_reference (tests.test_engine.EngineVsReference.test_prefill_logits_are_identical_to_the_reference) ... ok
+test_reference_loader_opens_the_pruned_checkpoint (tests.test_engine.EngineVsReference.test_reference_loader_opens_the_pruned_checkpoint) ... Loading weights:   0%|          | 0/44 [00:00<?, ?it/s]Loading weights: 100%|██████████| 44/44 [00:00<00:00, 7430.72it/s]
+ok
+test_split_linear_equals_fused_grouped_mm_at_model_shapes (tests.test_engine.EngineVsReference.test_split_linear_equals_fused_grouped_mm_at_model_shapes) ... ok
+test_stays_within_tolerance_of_the_eager_experts_path (tests.test_engine.EngineVsReference.test_stays_within_tolerance_of_the_eager_experts_path) ... Loading weights:   0%|          | 0/44 [00:00<?, ?it/s]Loading weights: 100%|██████████| 44/44 [00:00<00:00, 5949.75it/s]
+ok
+Loading weights:   0%|          | 0/44 [00:00<?, ?it/s]Loading weights: 100%|██████████| 44/44 [00:00<00:00, 6247.23it/s]
+test_attention_dimensions_are_validated (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_attention_dimensions_are_validated) ... ok
+test_attention_projection_shapes_are_checked_at_load (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_attention_projection_shapes_are_checked_at_load) ... ok
+test_bad_masks_are_rejected (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_bad_masks_are_rejected) ... ok
+test_context_limit (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_context_limit) ... ok
+test_decode_logits_are_identical_step_by_step (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_decode_logits_are_identical_step_by_step) ... ok
+test_expert_combine_is_the_reference_experts_path (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_expert_combine_is_the_reference_experts_path) ... ok
+test_forward_never_writes_into_weights (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_forward_never_writes_into_weights) ... ok
+test_greedy_tokens_match_the_reference (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_greedy_tokens_match_the_reference) ... ok
+test_identity_prune_is_a_noop (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_identity_prune_is_a_noop) ... ok
+test_mask_removes_experts (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_mask_removes_experts) ... ok
+test_masked_model_equals_physical_prune (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_masked_model_equals_physical_prune) ... ok
+test_prefill_logits_are_identical_to_the_reference (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_prefill_logits_are_identical_to_the_reference) ... ok
+test_reference_loader_opens_the_pruned_checkpoint (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_reference_loader_opens_the_pruned_checkpoint) ... Loading weights:   0%|          | 0/44 [00:00<?, ?it/s]Loading weights: 100%|██████████| 44/44 [00:00<00:00, 8037.16it/s]
+ok
+test_split_linear_equals_fused_grouped_mm_at_model_shapes (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_split_linear_equals_fused_grouped_mm_at_model_shapes) ... ok
+test_stays_within_tolerance_of_the_eager_experts_path (tests.test_engine.UnequalAttentionWidthEngineVsReference.test_stays_within_tolerance_of_the_eager_experts_path) ... Loading weights:   0%|          | 0/44 [00:00<?, ?it/s]Loading weights: 100%|██████████| 44/44 [00:00<00:00, 6569.23it/s]
+ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 5.064s
+
+OK
+	Command being timed: "/home/cc/miniconda3/envs/mt-pruning/bin/python -m unittest tests.test_engine -v"
+	User time (seconds): 30.32
+	System time (seconds): 0.59
+	Percent of CPU this job got: 471%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:06.56
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 784752
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 12
+	Minor (reclaiming a frame) page faults: 143391
+	Voluntary context switches: 8610
+	Involuntary context switches: 249
+	Swaps: 0
+	File system inputs: 1376
+	File system outputs: 160
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

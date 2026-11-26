@@ -1,0 +1,102 @@
+{
+  "directions": [
+    "zh-my",
+    "my-zh",
+    "zh-en",
+    "en-zh",
+    "en-my",
+    "my-en"
+  ],
+  "sentences": {
+    "zh-my": 24,
+    "my-zh": 24,
+    "zh-en": 24,
+    "en-zh": 24,
+    "en-my": 24,
+    "my-en": 24
+  },
+  "tokens": {
+    "zh-my": {
+      "prefill": 1471,
+      "decode": 5145
+    },
+    "my-zh": {
+      "prefill": 5108,
+      "decode": 543
+    },
+    "zh-en": {
+      "prefill": 1447,
+      "decode": 665
+    },
+    "en-zh": {
+      "prefill": 1615,
+      "decode": 611
+    },
+    "en-my": {
+      "prefill": 1663,
+      "decode": 4902
+    },
+    "my-en": {
+      "prefill": 5108,
+      "decode": 609
+    }
+  },
+  "expert_slots_never_selected": {
+    "zh-my": 16,
+    "my-zh": 18,
+    "zh-en": 32,
+    "en-zh": 26,
+    "en-my": 8,
+    "my-en": 17
+  },
+  "expert_slots_total": 6016,
+  "layers": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47
+  ]
+}

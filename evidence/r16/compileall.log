@@ -1,0 +1,2 @@
+COMMAND=python -m compileall -q mtpruning tests
+COMPILEALL_EXIT=0

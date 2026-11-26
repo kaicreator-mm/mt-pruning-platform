@@ -1,0 +1,148 @@
+{
+  "model": "/home/cc/.cache/mt-pruning/hf_home/hub/models--tencent--Hy-MT3-30B-A3B/snapshots/08ae9acea91abe265c6236e757e49d8851e1ce06",
+  "num_experts": 128,
+  "masked_keep": 96,
+  "splits": [
+    "validation"
+  ],
+  "max_new_tokens": 640,
+  "decoding": "greedy (argmax of bf16 logits)",
+  "exported": "2026-11-26T15:21:50+00:00",
+  "identity": {
+    "teacher": "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94",
+    "candidate": "c371d8deb7b263a31ca9c454462f38a10b11ea3da3cf14f3eb021f4c3cf15b36",
+    "corpus": "9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4",
+    "prompt": "47183c48e4c44e7cc1aad7c55b279ed93cb46afe6232224edbfe5457fe683c92",
+    "runtime": "0cf5ce22c729e8e428cf912fc3756e779752394ea162fe2683fcf561ce400776",
+    "protocol": "540328ea25fb5aa21d18e5769ff30b68b4de85720d28ea88ee6628827a44bffa",
+    "code": "58f5d9de8e1599bbb38c3d5d955d6f730040f9ff41dde00e45ddf1476319ad73",
+    "decoding": "a23d9cce20c4a43cf6dc2c44f64ada724471f19365ebb019a0016acfd894efeb",
+    "mode": "real"
+  },
+  "identity_keys": {
+    "calibration": "10d22931933f7f437ad1a28d5f8e2a392aaf0e88a8dbc839e32446180f81d582",
+    "validation": "1a3499d926bdd219aabd47687d9dec85c27e4f3647b7d1c4ade0aed13e7dcc5d",
+    "test": "1c81fb7980dea5404859d0c67cb03da250996010d12e37cf7215b11ab79064cd"
+  },
+  "checkpoint_kind": "pinned-snapshot",
+  "synthetic": false,
+  "mode": "real",
+  "environment": {
+    "python": "3.13.18",
+    "torch": "2.10.0+cpu",
+    "transformers": "5.24.1",
+    "sacrebleu": "2.6.0",
+    "numpy": "2.5.5",
+    "platform": "Linux-7.0.0-44-generic-x86_64-with-glibc2.43",
+    "hostname": "cc",
+    "cpu_count": 16,
+    "torch_threads": 16
+  },
+  "commits_this_invocation": 48,
+  "seconds_this_invocation": 2010.0,
+  "sentences": 48,
+  "per_split_direction": {
+    "validation:en-my": 8,
+    "validation:en-zh": 8,
+    "validation:my-en": 8,
+    "validation:my-zh": 8,
+    "validation:zh-en": 8,
+    "validation:zh-my": 8
+  },
+  "finish": {
+    "eos": 48
+  },
+  "new_tokens": 4307,
+  "traced": 48,
+  "journal": {
+    "path": "/home/cc/.cache/mt-pruning/run-d01b-r19/k96/masked/records.jsonl.sqlite",
+    "sha256": "bbe615ccd55481c53792bc075df3c3c788036dc4e209f800995be59c05e8d958"
+  },
+  "routing": null,
+  "mask_audit": {
+    "zh-my": {
+      "prefill": {
+        "decisions": 21855,
+        "changed": 8884,
+        "changed_fraction": 0.40649736902310685,
+        "lost_weight_mass": 1358.363
+      },
+      "decode": {
+        "decisions": 72756,
+        "changed": 33819,
+        "changed_fraction": 0.464827643080983,
+        "lost_weight_mass": 4310.9749
+      }
+    },
+    "my-zh": {
+      "prefill": {
+        "decisions": 90569,
+        "changed": 40179,
+        "changed_fraction": 0.4436286146473959,
+        "lost_weight_mass": 5620.5333
+      },
+      "decode": {
+        "decisions": 10857,
+        "changed": 5125,
+        "changed_fraction": 0.4720456848116423,
+        "lost_weight_mass": 702.4357
+      }
+    },
+    "zh-en": {
+      "prefill": {
+        "decisions": 21479,
+        "changed": 9118,
+        "changed_fraction": 0.424507658643326,
+        "lost_weight_mass": 1415.0682
+      },
+      "decode": {
+        "decisions": 10622,
+        "changed": 6714,
+        "changed_fraction": 0.632084353229147,
+        "lost_weight_mass": 1174.6901
+      }
+    },
+    "en-zh": {
+      "prefill": {
+        "decisions": 26320,
+        "changed": 10785,
+        "changed_fraction": 0.4097644376899696,
+        "lost_weight_mass": 1567.3797
+      },
+      "decode": {
+        "decisions": 9729,
+        "changed": 4619,
+        "changed_fraction": 0.4747661630177819,
+        "lost_weight_mass": 617.1052
+      }
+    },
+    "en-my": {
+      "prefill": {
+        "decisions": 27072,
+        "changed": 11465,
+        "changed_fraction": 0.4235002955082742,
+        "lost_weight_mass": 1660.4186
+      },
+      "decode": {
+        "decisions": 86621,
+        "changed": 37298,
+        "changed_fraction": 0.43058842543955855,
+        "lost_weight_mass": 4550.5062
+      }
+    },
+    "my-en": {
+      "prefill": {
+        "decisions": 90569,
+        "changed": 42763,
+        "changed_fraction": 0.4721593481213219,
+        "lost_weight_mass": 6165.2292
+      },
+      "decode": {
+        "decisions": 11844,
+        "changed": 7234,
+        "changed_fraction": 0.610773387369132,
+        "lost_weight_mass": 1206.3419
+      }
+    }
+  }
+}

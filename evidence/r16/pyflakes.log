@@ -1,0 +1,2 @@
+COMMAND=python -m pyflakes mtpruning/*.py tests/*.py
+PYFLAKES_EXIT=0
