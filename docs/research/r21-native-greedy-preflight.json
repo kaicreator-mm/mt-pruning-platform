@@ -1,0 +1,115 @@
+{
+  "job": "job_01M8CVKRSV007PXEANC25BCSS3",
+  "exit_code": 0,
+  "compile": "PASS",
+  "results": [
+    {
+      "status": "BLOCKED",
+      "name": "128",
+      "phase": "pilot",
+      "model": "/home/cc/.cache/mt-pruning/gguf-r20-r1/k128-f16.gguf",
+      "model_bytes": 60159655456,
+      "expected_model_sha256": "c0f31f9243f2be7c67971b3195606bbb5ed4fa9ceb035add2520480b67f38e5b",
+      "model_full_hash_rechecked": false,
+      "manifest_sha256": "f7c7f94a691047d7d03340c43e4615598f0b3b81a1ed71de3b7a0dc3cbd71c23",
+      "sample_ids": [
+        "validation:en-my:103",
+        "validation:en-zh:103",
+        "validation:my-en:142",
+        "validation:my-zh:142",
+        "validation:zh-en:104",
+        "validation:zh-my:104",
+        "validation:my-zh:142",
+        "validation:zh-my:104"
+      ],
+      "requests": 8,
+      "destination": "/home/cc/.cache/mt-pruning/native-greedy-runs/128-pilot",
+      "runtime_file_hashes": {
+        "llama-server": "cf2b8861dc6e1de1205bbd32770885d6212bdecf977cb186e78e4c703a86972f",
+        "libllama-server-impl.so": "18ffb29a829b2539eac260ad7ef91dd0ed6b2f7837ab7931c8735ad143747ce6",
+        "libllama.so": "56539d76d4ac449177efb10eb548be6dc3bb9a7b9218c22de413b7be9728fe04",
+        "libggml-cpu.so": "4a84bac13b73ac69b2d3bc3bfb503fc0000e8a513edb6614e0d3728ae9083bd8",
+        "libggml-cuda.so": "6917f4f7c97db04bb7096a77abe9835aeb4ae85b392e8bc75cf72bf99e9a7a6b",
+        "libggml.so": "2f6ed0e405ab2482ec99d6a4d72fb239d77a969f9b8604a5ec2c1cd6858f304c",
+        "libggml-base.so": "f5f23cb9ffd543a2b2571c6a038bf9d279f0a2eb8d0b0008d2e210406dad87bd",
+        "libllama-common.so": "fac5ee8d5dd6e3ead2fa3b6926bb61a1ae97ce453c94e4ef44657c01a422148a",
+        "libmtmd.so": "9fff963cd63201f617757f010effd160e774728b03f791daf0cac0e17085b190"
+      },
+      "gpu_pids": [
+        441608
+      ],
+      "model_processes": [
+        {
+          "pid": 441608,
+          "comm": "llama-server"
+        },
+        {
+          "pid": 441678,
+          "comm": "python"
+        },
+        {
+          "pid": 450974,
+          "comm": "llama-cli"
+        }
+      ],
+      "free_bytes": 53636349952,
+      "blockers": [
+        "ACTIVE_GPU_OR_MODEL_PROCESS"
+      ]
+    },
+    {
+      "status": "BLOCKED",
+      "name": "96",
+      "phase": "pilot",
+      "model": "/home/cc/.cache/mt-pruning/gguf-r20-r1/k96-f16.gguf",
+      "model_bytes": 45953803808,
+      "expected_model_sha256": "baf285001817a5e3b623c4d4e20844f1dbe23e14d79bf930ffc0c8b9aea3d9bd",
+      "model_full_hash_rechecked": false,
+      "manifest_sha256": "f7c7f94a691047d7d03340c43e4615598f0b3b81a1ed71de3b7a0dc3cbd71c23",
+      "sample_ids": [
+        "validation:en-my:103",
+        "validation:en-zh:103",
+        "validation:my-en:142",
+        "validation:my-zh:142",
+        "validation:zh-en:104",
+        "validation:zh-my:104",
+        "validation:my-zh:142",
+        "validation:zh-my:104"
+      ],
+      "requests": 8,
+      "destination": "/home/cc/.cache/mt-pruning/native-greedy-runs/96-pilot",
+      "runtime_file_hashes": {
+        "llama-server": "cf2b8861dc6e1de1205bbd32770885d6212bdecf977cb186e78e4c703a86972f",
+        "libllama-server-impl.so": "18ffb29a829b2539eac260ad7ef91dd0ed6b2f7837ab7931c8735ad143747ce6",
+        "libllama.so": "56539d76d4ac449177efb10eb548be6dc3bb9a7b9218c22de413b7be9728fe04",
+        "libggml-cpu.so": "4a84bac13b73ac69b2d3bc3bfb503fc0000e8a513edb6614e0d3728ae9083bd8",
+        "libggml-cuda.so": "6917f4f7c97db04bb7096a77abe9835aeb4ae85b392e8bc75cf72bf99e9a7a6b",
+        "libggml.so": "2f6ed0e405ab2482ec99d6a4d72fb239d77a969f9b8604a5ec2c1cd6858f304c",
+        "libggml-base.so": "f5f23cb9ffd543a2b2571c6a038bf9d279f0a2eb8d0b0008d2e210406dad87bd",
+        "libllama-common.so": "fac5ee8d5dd6e3ead2fa3b6926bb61a1ae97ce453c94e4ef44657c01a422148a",
+        "libmtmd.so": "9fff963cd63201f617757f010effd160e774728b03f791daf0cac0e17085b190"
+      },
+      "gpu_pids": [
+        441608
+      ],
+      "model_processes": [
+        {
+          "pid": 441608,
+          "comm": "llama-server"
+        },
+        {
+          "pid": 441678,
+          "comm": "python"
+        },
+        {
+          "pid": 450974,
+          "comm": "llama-cli"
+        }
+      ],
+      "free_bytes": 53636349952,
+      "blockers": [
+        "ACTIVE_GPU_OR_MODEL_PROCESS"
+      ]
+    }
+  ]
+}
