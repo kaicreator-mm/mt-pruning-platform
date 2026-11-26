@@ -1,0 +1,179 @@
+{
+  "job": "job_01M8CSHC7N005RE6SZ604V483N",
+  "exit_code": 0,
+  "status": "SIX_WITNESS_REPLAY_ONLY",
+  "metric_signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:2|space:no|version:2.6.0",
+  "corpus_sha256": "9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4",
+  "runs": {
+    "f16-hybrid-ncmoe40": {
+      "sha256": "e6c1aa89c716f74ac698a56560b3ba7d4e176b0539ed4b870dc8dc8edd0db127",
+      "n": 6,
+      "wall_seconds": 78.19141238900193,
+      "prompt_ms": 21864.23,
+      "prompt_tokens": 567,
+      "decode_ms": 36657.65,
+      "decode_tokens": 309,
+      "max_device_vram_mib": 10893,
+      "finish_missing": 6,
+      "actual_tokens_missing": 6
+    },
+    "q4-cpu": {
+      "sha256": "f53dec56c0ff9a0981039be872994ddd0875413a7a02fbc72e0caa3bc4e23042",
+      "n": 6,
+      "wall_seconds": 42.41317867299949,
+      "prompt_ms": 9539.21,
+      "prompt_tokens": 567,
+      "decode_ms": 25747.37,
+      "decode_tokens": 309,
+      "max_device_vram_mib": 885,
+      "finish_missing": 6,
+      "actual_tokens_missing": 6
+    },
+    "q4-full-gpu": {
+      "sha256": "a4cd0f30f75089d912fd205457b4c3033ccd01bc41646be57628d145b283b7a4",
+      "n": 6,
+      "wall_seconds": 24.783733609016053,
+      "prompt_ms": 692.34,
+      "prompt_tokens": 567,
+      "decode_ms": 2497.7400000000002,
+      "decode_tokens": 309,
+      "max_device_vram_mib": 14145,
+      "finish_missing": 6,
+      "actual_tokens_missing": 6
+    }
+  },
+  "pairs": [
+    {
+      "id": "validation:en-my:103",
+      "direction": "en-my",
+      "scores": {
+        "f16-hybrid-ncmoe40": {
+          "chrfpp": 50.811083101158246,
+          "digit_flag": false
+        },
+        "q4-cpu": {
+          "chrfpp": 50.811083101158246,
+          "digit_flag": false
+        },
+        "q4-full-gpu": {
+          "chrfpp": 50.811083101158246,
+          "digit_flag": false
+        }
+      },
+      "q4_cpu_gpu_identical": true,
+      "f16_q4_gpu_identical": true
+    },
+    {
+      "id": "validation:en-zh:103",
+      "direction": "en-zh",
+      "scores": {
+        "f16-hybrid-ncmoe40": {
+          "chrfpp": 37.19821954638006,
+          "digit_flag": false
+        },
+        "q4-cpu": {
+          "chrfpp": 36.777094460132496,
+          "digit_flag": false
+        },
+        "q4-full-gpu": {
+          "chrfpp": 36.777094460132496,
+          "digit_flag": false
+        }
+      },
+      "q4_cpu_gpu_identical": true,
+      "f16_q4_gpu_identical": false
+    },
+    {
+      "id": "validation:my-en:142",
+      "direction": "my-en",
+      "scores": {
+        "f16-hybrid-ncmoe40": {
+          "chrfpp": 54.272967618897574,
+          "digit_flag": false
+        },
+        "q4-cpu": {
+          "chrfpp": 47.345034415197404,
+          "digit_flag": false
+        },
+        "q4-full-gpu": {
+          "chrfpp": 53.73570413777951,
+          "digit_flag": false
+        }
+      },
+      "q4_cpu_gpu_identical": false,
+      "f16_q4_gpu_identical": false
+    },
+    {
+      "id": "validation:my-zh:142",
+      "direction": "my-zh",
+      "scores": {
+        "f16-hybrid-ncmoe40": {
+          "chrfpp": 9.195011337868479,
+          "digit_flag": false
+        },
+        "q4-cpu": {
+          "chrfpp": 11.248499399759904,
+          "digit_flag": false
+        },
+        "q4-full-gpu": {
+          "chrfpp": 11.248499399759904,
+          "digit_flag": false
+        }
+      },
+      "q4_cpu_gpu_identical": false,
+      "f16_q4_gpu_identical": false
+    },
+    {
+      "id": "validation:zh-en:104",
+      "direction": "zh-en",
+      "scores": {
+        "f16-hybrid-ncmoe40": {
+          "chrfpp": 45.813461577109436,
+          "digit_flag": false
+        },
+        "q4-cpu": {
+          "chrfpp": 45.813461577109436,
+          "digit_flag": false
+        },
+        "q4-full-gpu": {
+          "chrfpp": 45.813461577109436,
+          "digit_flag": false
+        }
+      },
+      "q4_cpu_gpu_identical": true,
+      "f16_q4_gpu_identical": true
+    },
+    {
+      "id": "validation:zh-my:104",
+      "direction": "zh-my",
+      "scores": {
+        "f16-hybrid-ncmoe40": {
+          "chrfpp": 34.045354458167736,
+          "digit_flag": false
+        },
+        "q4-cpu": {
+          "chrfpp": 31.031863394989283,
+          "digit_flag": false
+        },
+        "q4-full-gpu": {
+          "chrfpp": 31.031863394989283,
+          "digit_flag": false
+        }
+      },
+      "q4_cpu_gpu_identical": true,
+      "f16_q4_gpu_identical": false
+    }
+  ],
+  "speed": {
+    "q4_cpu_to_gpu_wall": 1.7113312845474598,
+    "f16_hybrid_to_q4_gpu_wall": 3.154948871809885,
+    "q4_cpu_decode_tps": 12.001225756261707,
+    "q4_gpu_decode_tps": 123.71183549929135,
+    "f16_hybrid_decode_tps": 8.429345579981259
+  },
+  "limits": [
+    "One witness per direction, not gate or representative estimate.",
+    "FP16 hybrid vs Q4 GPU changes precision and placement; Q4 CPU vs GPU holds model path/precision but backend differs; timing includes model loads.",
+    "Missing actual generated token arrays and finish evidence; no formal diagnostics/qualification."
+  ]
+}
