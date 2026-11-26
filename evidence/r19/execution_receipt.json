@@ -1,0 +1,176 @@
+{
+  "label": "MT_PRUNING_D01B_R19_ATTENTION_WIDTH_FIX_AND_REAL_PILOT_RESTART",
+  "overall_status": "BLOCKED",
+  "blocking_stage": "k96_masked_original_vs_physical_equivalence",
+  "source": {
+    "review_base": "919786dc69f166dfbc928de9bf65e56b3ecfb545",
+    "previous_accepted_head": "36b10d3bbd9941ad069d6b23284a6feb4a5c0f4b",
+    "tested_code_head": "085a6ff67d8b869ef0507348507c29f8e5bc7991",
+    "tested_code_tree": "592e074b66e1e1e7f521aa31cdd8e6809eb9c712",
+    "main_head_at_dispatch": "b2b486fcfd3db1820e14aaba389f3ae002688d10",
+    "changed_files": ["mtpruning/engine.py", "mtpruning/testing.py", "tests/test_engine.py"],
+    "protocol_or_pruning_source_changed": false
+  },
+  "model": {
+    "repo": "tencent/Hy-MT3-30B-A3B",
+    "revision": "08ae9acea91abe265c6236e757e49d8851e1ce06",
+    "teacher": "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94",
+    "hidden_size": 2048,
+    "attention_width": 4096,
+    "kv_width": 512,
+    "hidden_layers": 48,
+    "sparse_layers": 47,
+    "metadata_layers_pass": 48,
+    "metadata_projections_pass": 192,
+    "metadata_mismatches": 0,
+    "snapshot_bytes": 60143159279,
+    "index_weight_bytes": 60129463808
+  },
+  "corpus_sha256": "9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4",
+  "run": {
+    "root": "/home/cc/.cache/mt-pruning/run-d01b-r19",
+    "pruned_root": "/home/cc/.cache/mt-pruning/pruned-r19",
+    "evidence_root": "evidence/d01b-r19",
+    "old_r18_journal_reused": false,
+    "mode": "real",
+    "candidates": [96, 64],
+    "trace_limit": 8,
+    "max_new_tokens": 640,
+    "threads": 16,
+    "final_test": 0,
+    "limit": null,
+    "tokenizer_override": null,
+    "manifest_override": null,
+    "corpus_override": null
+  },
+  "checks": {
+    "focused_engine_tests": {"status": "PASS", "ran": 30, "seconds": 5.064},
+    "full_unittest": {"status": "PASS", "ran": 124, "seconds": 265.106, "exit_code": 0, "skips_reported": 0},
+    "compileall": "PASS",
+    "pyflakes": "PASS",
+    "bash_syntax": "PASS",
+    "pip_check": "PASS",
+    "real_smoke": {
+      "status": "PASS",
+      "sample_id": "calibration:zh-my:44",
+      "prompt_tokens": 74,
+      "new_tokens": 326,
+      "finish": "eos",
+      "prefill_seconds": 12.257,
+      "decode_seconds": 113.638,
+      "prefill_selection_count": 27824,
+      "decode_selection_count": 122576,
+      "sparse_layers_covered": 47,
+      "real_reference_runtime_comparison": "NOT_RUN"
+    }
+  },
+  "stages": {
+    "calibration": {"status": "PASS", "completed": 144, "planned": 144},
+    "baseline_validation": {"status": "PASS", "completed": 120, "planned": 120},
+    "baseline_traces": {"status": "PASS", "completed": 48, "planned": 48},
+    "selection_96_64": "PASS",
+    "k128_physical_reload": "PASS",
+    "k128_equivalence": {
+      "status": "PASS",
+      "identical_text": 48,
+      "all_argmax_agree": 48,
+      "all_route_ids_agree": 48,
+      "positions_compared": 10147,
+      "logits_max_abs_diff": 0.0,
+      "route_weight_max_abs_diff": 0.0
+    },
+    "k96_physical_reload": {
+      "status": "PASS",
+      "shards": 10,
+      "tensor_bytes": 45929772672,
+      "checkpoint_bytes": 45942544507,
+      "tensors_checked": 14161,
+      "mismatched_tensors": 0,
+      "expert_retention": 0.75
+    },
+    "k96_masked_mechanism": {"status": "PASS", "rows": 48, "new_tokens": 4307},
+    "k96_physical_mechanism": {"status": "PASS", "rows": 48, "new_tokens": 4345},
+    "k96_equivalence": {
+      "status": "FAIL",
+      "pass": false,
+      "identical_text": 32,
+      "all_argmax_agree": 0,
+      "all_route_ids_agree": 0,
+      "within_tol": 0,
+      "length_match": 37,
+      "positions_compared": 1509,
+      "logits_max_abs_diff": 10.6875,
+      "route_id_mismatches": 9203,
+      "route_weight_max_abs_diff": 1.820320725440979,
+      "masked_witness_changed": 218003
+    },
+    "k96_full_validation": "NOT_RUN",
+    "k96_stock_check": "NOT_RUN",
+    "k64_all_stages": "NOT_RUN",
+    "decision": "NOT_RUN",
+    "canonical_quality_report": "NOT_RUN",
+    "final_test": "HARD_DISABLED_NOT_RUN"
+  },
+  "selection_retained_mass": {
+    "96": {"zh-my": 0.946051, "my-zh": 0.942819, "zh-en": 0.931132, "en-zh": 0.939623, "en-my": 0.947656, "my-en": 0.934896},
+    "64": {"zh-my": 0.837986, "my-zh": 0.818607, "zh-en": 0.768510, "en-zh": 0.792610, "en-my": 0.833937, "my-en": 0.789016}
+  },
+  "generation_metrics": {
+    "unit": "new_tokens divided by summed decode seconds; excludes prefill and model loading",
+    "baseline": {"rows": 264, "new_tokens": 22420, "prefill_seconds": 2770.715, "decode_seconds": 7639.714, "tokens_per_decode_second": 2.9346648316939614},
+    "k128_mechanism": {"rows": 48, "new_tokens": 4235, "prefill_seconds": 541.888, "decode_seconds": 1466.514, "tokens_per_decode_second": 2.887800593789081},
+    "k96_masked": {"rows": 48, "new_tokens": 4307, "prefill_seconds": 501.344, "decode_seconds": 1499.115, "tokens_per_decode_second": 2.873028420101193},
+    "k96_physical": {"rows": 48, "new_tokens": 4345, "prefill_seconds": 513.340, "decode_seconds": 1489.538, "tokens_per_decode_second": 2.9170118519970623}
+  },
+  "quality": {
+    "status": "NOT_RUN",
+    "directions": ["zh-my", "my-zh", "zh-en", "en-zh", "en-my", "my-en"],
+    "chrf_pp": "NOT_RUN",
+    "per_direction_deltas": "NOT_RUN",
+    "empty_truncated_digit_comparison": "NOT_RUN",
+    "candidate_selected": null,
+    "fallback_invoked": false
+  },
+  "operational_interruption": {
+    "kind": "SIGPIPE in external attached tee after SSH reset",
+    "exit_code": 141,
+    "baseline_complete_before_interruption": true,
+    "baseline_rows": 264,
+    "baseline_traces": 48,
+    "resume_commits_this_invocation": 0,
+    "resume_logging": "setsid with file redirection; no SSH stdout dependency"
+  },
+  "detached_run_resources": {
+    "wall_seconds": 6612,
+    "user_cpu_seconds": 95503.41,
+    "system_cpu_seconds": 960.77,
+    "maximum_rss_kib": 61853228,
+    "gnu_time_swaps": 0,
+    "monitored_swap_peak_bytes_approx": 1284075520,
+    "terminal_exit_code": 1,
+    "terminal_utc": "2026-11-26T15:56:14Z"
+  },
+  "retained_evidence": {
+    "r18_manifest_verified": 15,
+    "r19_manifest_verified": 286,
+    "r19_manifest_sha256": "1f5be17ef29c73487e26ad74b8fbbb168c23c07212e8e1c10818fd936b59752e",
+    "retained_root": "/home/cc/.cache/mt-pruning",
+    "verification_command": "cd /home/cc/.cache/mt-pruning && sha256sum -c r19-real/retained_manifest.sha256",
+    "k96_checkpoint_retained": true,
+    "raw_host_network_details_published": false
+  },
+  "holds": {
+    "download": "UNTOUCHED",
+    "model_config": "UNTOUCHED",
+    "frozen_corpus": "UNTOUCHED",
+    "quality_gate": "UNCHANGED",
+    "new_agent": "NOT_RUN",
+    "final_test": "HARD_DISABLED_NOT_RUN",
+    "training": "NOT_RUN",
+    "gguf": "NOT_RUN",
+    "gpu_deployment": "NOT_RUN",
+    "github_actions": "NOT_RUN",
+    "merge": "NOT_RUN",
+    "production_claim": false
+  }
+}

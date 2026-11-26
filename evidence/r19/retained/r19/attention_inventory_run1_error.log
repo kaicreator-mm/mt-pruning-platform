@@ -1,0 +1,9 @@
+R19 attention metadata probe run 1: diagnostic harness error, no valid receipt produced.
+The product engine and model were not executed or modified by this probe.
+
+Traceback (most recent call last):
+  File "/home/cc/.cache/mt-pruning/r19/attention_inventory.py", line 47, in <module>
+    handle.close()
+AttributeError: 'builtins.safe_open' object has no attribute 'close'
+
+Disposition: use safe_open as a context manager via ExitStack; rerun identical metadata checks.

@@ -1,0 +1,63 @@
+{
+  "model": "/home/cc/.cache/mt-pruning/pruned-r19/k96",
+  "num_experts": 96,
+  "masked_keep": null,
+  "splits": [
+    "validation"
+  ],
+  "max_new_tokens": 640,
+  "decoding": "greedy (argmax of bf16 logits)",
+  "exported": "2026-11-26T15:56:08+00:00",
+  "identity": {
+    "teacher": "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94",
+    "candidate": "fa53d390e6bd88980f7cdc001d7b374abc8b352188c8b6dad9701a3641b26fc6",
+    "corpus": "9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4",
+    "prompt": "47183c48e4c44e7cc1aad7c55b279ed93cb46afe6232224edbfe5457fe683c92",
+    "runtime": "0cf5ce22c729e8e428cf912fc3756e779752394ea162fe2683fcf561ce400776",
+    "protocol": "540328ea25fb5aa21d18e5769ff30b68b4de85720d28ea88ee6628827a44bffa",
+    "code": "58f5d9de8e1599bbb38c3d5d955d6f730040f9ff41dde00e45ddf1476319ad73",
+    "decoding": "a23d9cce20c4a43cf6dc2c44f64ada724471f19365ebb019a0016acfd894efeb",
+    "mode": "real"
+  },
+  "identity_keys": {
+    "calibration": "e9d1cd90622b3c7b0bc412da41bb2404982faed80e3f2dd31c5096ab09b25d20",
+    "validation": "15c8262a41d0be0f38cd3b22f3aa101f228a86c920acd93050cf7e01a9e5aad7",
+    "test": "f493ec3b813238b92edd4584b9d7e6026f9ad3d6370fe387b551e333010b5ed1"
+  },
+  "checkpoint_kind": "pruned",
+  "synthetic": false,
+  "mode": "real",
+  "environment": {
+    "python": "3.13.18",
+    "torch": "2.10.0+cpu",
+    "transformers": "5.24.1",
+    "sacrebleu": "2.6.0",
+    "numpy": "2.5.5",
+    "platform": "Linux-7.0.0-44-generic-x86_64-with-glibc2.43",
+    "hostname": "cc",
+    "cpu_count": 16,
+    "torch_threads": 16
+  },
+  "commits_this_invocation": 48,
+  "seconds_this_invocation": 2013.2,
+  "sentences": 48,
+  "per_split_direction": {
+    "validation:en-my": 8,
+    "validation:en-zh": 8,
+    "validation:my-en": 8,
+    "validation:my-zh": 8,
+    "validation:zh-en": 8,
+    "validation:zh-my": 8
+  },
+  "finish": {
+    "eos": 48
+  },
+  "new_tokens": 4345,
+  "traced": 48,
+  "journal": {
+    "path": "/home/cc/.cache/mt-pruning/run-d01b-r19/k96/mechanism/records.jsonl.sqlite",
+    "sha256": "8a186c8cbdaabf6b2a08d3439b06530445a95b628b83782560ac11b206fdc642"
+  },
+  "routing": null,
+  "mask_audit": null
+}
