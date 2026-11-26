@@ -1,0 +1,1927 @@
+{
+  "status": "CALIBRATION_DIRECTION_TRANSFER_PROXY_ONLY",
+  "input_sha256": {
+    "stats.npz": "8190126a4e69943cd7bceb5f136b8ca9b9201c06bda005b2d24ffd9b229a4169",
+    "stats.json": "aa1092914aaa4310397a9e87e9dd3d4897bba9e2cda7001481487fd7d5912c72",
+    "records.jsonl": "37d13f9a7f9d9f56e9e810b5c869d216d2c6baa6a32cccb489818bd8ae7656e8",
+    "corpus.jsonl": "9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4"
+  },
+  "original_replay_96_64": "PASS",
+  "layers": 47,
+  "directions": [
+    "zh-my",
+    "my-zh",
+    "zh-en",
+    "en-zh",
+    "en-my",
+    "my-en"
+  ],
+  "work": {
+    "all": {
+      "samples": 144,
+      "prefill": 16412,
+      "decode": 12475
+    },
+    "zh_en_reusable": {
+      "samples": 48,
+      "prefill": 3062,
+      "decode": 1276
+    },
+    "my_related_observed": {
+      "samples": 96,
+      "prefill": 13350,
+      "decode": 11199
+    }
+  },
+  "results": {
+    "48": {
+      "pair_without_zh": {
+        "seen": [
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-zh"
+        ],
+        "seen_proxy": {
+          "mean": 0.7136720804256321,
+          "min_cell": 0.5507156319781139,
+          "min_group_mean": 0.6819970598464953,
+          "group_mean": {
+            "en-my/prefill": 0.7174698986713651,
+            "en-my/decode": 0.751108278060137,
+            "my-en/prefill": 0.7041130851245311,
+            "my-en/decode": 0.6819970598464953
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.6022428734153652,
+          "min_cell": 0.10211458892146238,
+          "min_group_mean": 0.43461260361417825,
+          "group_mean": {
+            "zh-my/prefill": 0.6291519816511387,
+            "zh-my/decode": 0.734956179983373,
+            "my-zh/prefill": 0.6554827694584044,
+            "my-zh/decode": 0.4385225218207725,
+            "zh-en/prefill": 0.5929290762386142,
+            "zh-en/decode": 0.6458222866458262,
+            "en-zh/prefill": 0.686465567910614,
+            "en-zh/decode": 0.43461260361417825
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.705790253917157,
+          "min_cell": 0.472615912067726,
+          "min_group_mean": 0.5846459866866843,
+          "group_mean": {
+            "zh-my/prefill": 0.7349887149155764,
+            "zh-my/decode": 0.7379469825336271,
+            "my-zh/prefill": 0.70279165094122,
+            "my-zh/decode": 0.7388191353231636,
+            "zh-en/prefill": 0.7217395878777342,
+            "zh-en/decode": 0.5846459866866843,
+            "en-zh/prefill": 0.6874005573107277,
+            "en-zh/decode": 0.7379894157485222
+          }
+        },
+        "omitted_mean_delta": -0.1035473805017918,
+        "omitted_floor_delta": -0.3705013231462636,
+        "overlap_full": 0.813386524822695
+      },
+      "pair_without_en": {
+        "seen": [
+          "zh-my",
+          "my-zh"
+        ],
+        "omitted": [
+          "zh-en",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.7550156199404793,
+          "min_cell": 0.6189509464929428,
+          "min_group_mean": 0.72325657810162,
+          "group_mean": {
+            "zh-my/prefill": 0.7457757891549275,
+            "zh-my/decode": 0.7793925341138304,
+            "my-zh/prefill": 0.72325657810162,
+            "my-zh/decode": 0.7716375783915393
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.6301112735793193,
+          "min_cell": 0.1720950255275011,
+          "min_group_mean": 0.43546384866483995,
+          "group_mean": {
+            "zh-en/prefill": 0.7263899471818969,
+            "zh-en/decode": 0.43546384866483995,
+            "en-zh/prefill": 0.6157229171040784,
+            "en-zh/decode": 0.7626936345536697,
+            "en-my/prefill": 0.6169393877074614,
+            "en-my/decode": 0.7807192933374536,
+            "my-en/prefill": 0.6668319883634756,
+            "my-en/decode": 0.43612917172167903
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.6780062193348462,
+          "min_cell": 0.472615912067726,
+          "min_group_mean": 0.5846459866866843,
+          "group_mean": {
+            "zh-en/prefill": 0.7217395878777342,
+            "zh-en/decode": 0.5846459866866843,
+            "en-zh/prefill": 0.6874005573107277,
+            "en-zh/decode": 0.7379894157485222,
+            "en-my/prefill": 0.685081415308658,
+            "en-my/decode": 0.7436701068636684,
+            "my-en/prefill": 0.6743555860090665,
+            "my-en/decode": 0.5891670988737082
+          }
+        },
+        "omitted_mean_delta": -0.047894945755526885,
+        "omitted_floor_delta": -0.3005208865402249,
+        "overlap_full": 0.836436170212766
+      },
+      "pair_without_my": {
+        "seen": [
+          "zh-en",
+          "en-zh"
+        ],
+        "omitted": [
+          "zh-my",
+          "my-zh",
+          "en-my",
+          "my-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.7202280269855624,
+          "min_cell": 0.5730141201368232,
+          "min_group_mean": 0.6641567695281285,
+          "group_mean": {
+            "zh-en/prefill": 0.7370881138397046,
+            "zh-en/decode": 0.6641567695281285,
+            "en-zh/prefill": 0.7172891948796521,
+            "en-zh/decode": 0.7623780296947641
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.5635740783726662,
+          "min_cell": 0.09555162963170603,
+          "min_group_mean": 0.35889267988560064,
+          "group_mean": {
+            "zh-my/prefill": 0.6919356965669066,
+            "zh-my/decode": 0.35889267988560064,
+            "my-zh/prefill": 0.5246533065802726,
+            "my-zh/decode": 0.7522695996093344,
+            "en-my/prefill": 0.6699898488801411,
+            "en-my/decode": 0.3622164393696867,
+            "my-en/prefill": 0.49847229318088165,
+            "my-en/decode": 0.6501627629085055
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.7008525863460859,
+          "min_cell": 0.47653379249065564,
+          "min_group_mean": 0.5891670988737082,
+          "group_mean": {
+            "zh-my/prefill": 0.7349887149155764,
+            "zh-my/decode": 0.7379469825336271,
+            "my-zh/prefill": 0.70279165094122,
+            "my-zh/decode": 0.7388191353231636,
+            "en-my/prefill": 0.685081415308658,
+            "en-my/decode": 0.7436701068636684,
+            "my-en/prefill": 0.6743555860090665,
+            "my-en/decode": 0.5891670988737082
+          }
+        },
+        "omitted_mean_delta": -0.13727850797341978,
+        "omitted_floor_delta": -0.3809821628589496,
+        "overlap_full": 0.8257978723404256
+      },
+      "omit_zh-my": {
+        "seen": [
+          "my-zh",
+          "zh-en",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "zh-my"
+        ],
+        "seen_proxy": {
+          "mean": 0.6885685722781852,
+          "min_cell": 0.5138839370419913,
+          "min_group_mean": 0.6149781906082219,
+          "group_mean": {
+            "my-zh/prefill": 0.6913620232110794,
+            "my-zh/decode": 0.7392201569371394,
+            "zh-en/prefill": 0.7078898568475863,
+            "zh-en/decode": 0.6149781906082219,
+            "en-zh/prefill": 0.6931402593471223,
+            "en-zh/decode": 0.7374049319277802,
+            "en-my/prefill": 0.6874354105262361,
+            "en-my/decode": 0.7201168759954704,
+            "my-en/prefill": 0.6667211170106478,
+            "my-en/decode": 0.6274169003705686
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.7148027928418682,
+          "min_cell": 0.5459757717736687,
+          "min_group_mean": 0.7116204238140023,
+          "group_mean": {
+            "zh-my/prefill": 0.7179851618697342,
+            "zh-my/decode": 0.7116204238140023
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.7364678487246018,
+          "min_cell": 0.5740139666673816,
+          "min_group_mean": 0.7349887149155764,
+          "group_mean": {
+            "zh-my/prefill": 0.7349887149155764,
+            "zh-my/decode": 0.7379469825336271
+          }
+        },
+        "omitted_mean_delta": -0.021665055882733597,
+        "omitted_floor_delta": -0.028038194893712842,
+        "overlap_full": 0.9468085106382979
+      },
+      "omit_my-zh": {
+        "seen": [
+          "zh-my",
+          "zh-en",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "my-zh"
+        ],
+        "seen_proxy": {
+          "mean": 0.6922013712589222,
+          "min_cell": 0.5297389521467457,
+          "min_group_mean": 0.6180513719426831,
+          "group_mean": {
+            "zh-my/prefill": 0.730364760508856,
+            "zh-my/decode": 0.7331076499770912,
+            "zh-en/prefill": 0.7153606494196939,
+            "zh-en/decode": 0.6180513719426831,
+            "en-zh/prefill": 0.699999466279064,
+            "en-zh/decode": 0.6965595117101498,
+            "en-my/prefill": 0.6998619433270752,
+            "en-my/decode": 0.7384412270727787,
+            "my-en/prefill": 0.6720289759800863,
+            "my-en/decode": 0.6182381563717442
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.6909577450810271,
+          "min_cell": 0.5819145902444929,
+          "min_group_mean": 0.687697510967411,
+          "group_mean": {
+            "my-zh/prefill": 0.687697510967411,
+            "my-zh/decode": 0.6942179791946433
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.7208053931321917,
+          "min_cell": 0.6058329963727257,
+          "min_group_mean": 0.70279165094122,
+          "group_mean": {
+            "my-zh/prefill": 0.70279165094122,
+            "my-zh/decode": 0.7388191353231636
+          }
+        },
+        "omitted_mean_delta": -0.029847648051164577,
+        "omitted_floor_delta": -0.023918406128232816,
+        "overlap_full": 0.9445921985815603
+      },
+      "omit_zh-en": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "zh-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.7053767440358891,
+          "min_cell": 0.40441744151600617,
+          "min_group_mean": 0.5609589672067679,
+          "group_mean": {
+            "zh-my/prefill": 0.7298708497985346,
+            "zh-my/decode": 0.7485117836935867,
+            "my-zh/prefill": 0.7146779189606807,
+            "my-zh/decode": 0.7487120129889687,
+            "en-zh/prefill": 0.6797232302997614,
+            "en-zh/decode": 0.7506806947707843,
+            "en-my/prefill": 0.6793536690802121,
+            "en-my/decode": 0.7598073595626068,
+            "my-en/prefill": 0.681470953996988,
+            "my-en/decode": 0.5609589672067679
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.6274590327294115,
+          "min_cell": 0.3954435424914905,
+          "min_group_mean": 0.5414964648700884,
+          "group_mean": {
+            "zh-en/prefill": 0.7134216005887345,
+            "zh-en/decode": 0.5414964648700884
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.6531927872822092,
+          "min_cell": 0.472615912067726,
+          "min_group_mean": 0.5846459866866843,
+          "group_mean": {
+            "zh-en/prefill": 0.7217395878777342,
+            "zh-en/decode": 0.5846459866866843
+          }
+        },
+        "omitted_mean_delta": -0.025733754552797694,
+        "omitted_floor_delta": -0.07717236957623552,
+        "overlap_full": 0.9476950354609929
+      },
+      "omit_en-zh": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "en-zh"
+        ],
+        "seen_proxy": {
+          "mean": 0.6930676590830992,
+          "min_cell": 0.502928711304098,
+          "min_group_mean": 0.6011716684034607,
+          "group_mean": {
+            "zh-my/prefill": 0.7282893368660214,
+            "zh-my/decode": 0.7472275358689803,
+            "my-zh/prefill": 0.7037083461291449,
+            "my-zh/decode": 0.7147386291504884,
+            "zh-en/prefill": 0.7134847382057434,
+            "zh-en/decode": 0.6011716684034607,
+            "en-my/prefill": 0.6822572719972769,
+            "en-my/decode": 0.7508850059108717,
+            "my-en/prefill": 0.6836084138023141,
+            "my-en/decode": 0.6053056444966906
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.6924469815531898,
+          "min_cell": 0.5470094257698014,
+          "min_group_mean": 0.6812058044363793,
+          "group_mean": {
+            "en-zh/prefill": 0.6812058044363793,
+            "en-zh/decode": 0.7036881586700006
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.712694986529625,
+          "min_cell": 0.5886084045357922,
+          "min_group_mean": 0.6874005573107277,
+          "group_mean": {
+            "en-zh/prefill": 0.6874005573107277,
+            "en-zh/decode": 0.7379894157485222
+          }
+        },
+        "omitted_mean_delta": -0.020248004976435197,
+        "omitted_floor_delta": -0.041598978765990835,
+        "overlap_full": 0.9516843971631206
+      },
+      "omit_en-my": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-zh",
+          "my-en"
+        ],
+        "omitted": [
+          "en-my"
+        ],
+        "seen_proxy": {
+          "mean": 0.6924481519546523,
+          "min_cell": 0.5007472487152491,
+          "min_group_mean": 0.6029604157202474,
+          "group_mean": {
+            "zh-my/prefill": 0.7293549823768986,
+            "zh-my/decode": 0.7194230514062767,
+            "my-zh/prefill": 0.6941665731338355,
+            "my-zh/decode": 0.7548362739071275,
+            "zh-en/prefill": 0.7193313977853506,
+            "zh-en/decode": 0.6029604157202474,
+            "en-zh/prefill": 0.680853148567687,
+            "en-zh/decode": 0.7498316760732139,
+            "my-en/prefill": 0.6658971800951469,
+            "my-en/decode": 0.6078268204807387
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.6975643855785789,
+          "min_cell": 0.5417851462866665,
+          "min_group_mean": 0.6729114873350179,
+          "group_mean": {
+            "en-my/prefill": 0.6729114873350179,
+            "en-my/decode": 0.7222172838221398
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.7143757610861632,
+          "min_cell": 0.5722091118036966,
+          "min_group_mean": 0.685081415308658,
+          "group_mean": {
+            "en-my/prefill": 0.685081415308658,
+            "en-my/decode": 0.7436701068636684
+          }
+        },
+        "omitted_mean_delta": -0.01681137550758427,
+        "omitted_floor_delta": -0.030423965517030083,
+        "overlap_full": 0.9539007092198581
+      },
+      "omit_my-en": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-zh",
+          "en-my"
+        ],
+        "omitted": [
+          "my-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.710081316349573,
+          "min_cell": 0.38729985411784296,
+          "min_group_mean": 0.5433920597217142,
+          "group_mean": {
+            "zh-my/prefill": 0.7494817828146816,
+            "zh-my/decode": 0.7444693272530317,
+            "my-zh/prefill": 0.7034224127610751,
+            "my-zh/decode": 0.7527196433772462,
+            "zh-en/prefill": 0.7366389685082784,
+            "zh-en/decode": 0.5433920597217142,
+            "en-zh/prefill": 0.6829970696367448,
+            "en-zh/decode": 0.7586471647295979,
+            "en-my/prefill": 0.6791064032380799,
+            "en-my/decode": 0.7499383314552813
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.6010838355563085,
+          "min_cell": 0.38115125947406314,
+          "min_group_mean": 0.5379493391228187,
+          "group_mean": {
+            "my-en/prefill": 0.6642183319897983,
+            "my-en/decode": 0.5379493391228187
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.6317613424413874,
+          "min_cell": 0.47653379249065564,
+          "min_group_mean": 0.5891670988737082,
+          "group_mean": {
+            "my-en/prefill": 0.6743555860090665,
+            "my-en/decode": 0.5891670988737082
+          }
+        },
+        "omitted_mean_delta": -0.030677506885078865,
+        "omitted_floor_delta": -0.0953825330165925,
+        "overlap_full": 0.9423758865248227
+      }
+    },
+    "64": {
+      "pair_without_zh": {
+        "seen": [
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-zh"
+        ],
+        "seen_proxy": {
+          "mean": 0.815274751678021,
+          "min_cell": 0.7051566622969945,
+          "min_group_mean": 0.8041877529296002,
+          "group_mean": {
+            "en-my/prefill": 0.8200644605411741,
+            "en-my/decode": 0.8310900527762192,
+            "my-en/prefill": 0.8057567404650903,
+            "my-en/decode": 0.8041877529296002
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.7040382406702367,
+          "min_cell": 0.12188376882757486,
+          "min_group_mean": 0.5374662738239148,
+          "group_mean": {
+            "zh-my/prefill": 0.7283093968054898,
+            "zh-my/decode": 0.8169394687530398,
+            "my-zh/prefill": 0.7534752276834374,
+            "my-zh/decode": 0.5460066380059456,
+            "zh-en/prefill": 0.6936050392606427,
+            "zh-en/decode": 0.7679306488603819,
+            "en-zh/prefill": 0.7885732321690408,
+            "en-zh/decode": 0.5374662738239148
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.8049125526539254,
+          "min_cell": 0.6647423729979356,
+          "min_group_mean": 0.7407697908541423,
+          "group_mean": {
+            "zh-my/prefill": 0.8190565195017261,
+            "zh-my/decode": 0.8088419764630572,
+            "my-zh/prefill": 0.795143650562304,
+            "my-zh/decode": 0.8333764637436955,
+            "zh-en/prefill": 0.8121055862347901,
+            "zh-en/decode": 0.7407697908541423,
+            "en-zh/prefill": 0.7993381642764537,
+            "en-zh/decode": 0.830668269595234
+          }
+        },
+        "omitted_mean_delta": -0.10087431198368868,
+        "omitted_floor_delta": -0.5428586041703607,
+        "overlap_full": 0.8527260638297872
+      },
+      "pair_without_en": {
+        "seen": [
+          "zh-my",
+          "my-zh"
+        ],
+        "omitted": [
+          "zh-en",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.8408698389171901,
+          "min_cell": 0.7492226659590099,
+          "min_group_mean": 0.8178258536300823,
+          "group_mean": {
+            "zh-my/prefill": 0.8344270897182827,
+            "zh-my/decode": 0.8555647528689168,
+            "my-zh/prefill": 0.8178258536300823,
+            "my-zh/decode": 0.8556616594514787
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.7325460090809042,
+          "min_cell": 0.2657541765562093,
+          "min_group_mean": 0.5614762404143477,
+          "group_mean": {
+            "zh-en/prefill": 0.8178495106834994,
+            "zh-en/decode": 0.5614762404143477,
+            "en-zh/prefill": 0.7207592620081459,
+            "en-zh/decode": 0.8442985873259835,
+            "en-my/prefill": 0.7240902338919974,
+            "en-my/decode": 0.8569730276863421,
+            "my-en/prefill": 0.7718091705607772,
+            "my-en/decode": 0.5631120400761401
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.7897827047408004,
+          "min_cell": 0.6647423729979356,
+          "min_group_mean": 0.7407697908541423,
+          "group_mean": {
+            "zh-en/prefill": 0.8121055862347901,
+            "zh-en/decode": 0.7407697908541423,
+            "en-zh/prefill": 0.7993381642764537,
+            "en-zh/decode": 0.830668269595234,
+            "en-my/prefill": 0.7918099579023727,
+            "en-my/decode": 0.8154656876204139,
+            "my-en/prefill": 0.7777774684645369,
+            "my-en/decode": 0.7503267129784595
+          }
+        },
+        "omitted_mean_delta": -0.0572366956598962,
+        "omitted_floor_delta": -0.3989881964417263,
+        "overlap_full": 0.8414228723404256
+      },
+      "pair_without_my": {
+        "seen": [
+          "zh-en",
+          "en-zh"
+        ],
+        "omitted": [
+          "zh-my",
+          "my-zh",
+          "en-my",
+          "my-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.8237641309474492,
+          "min_cell": 0.7298520099232392,
+          "min_group_mean": 0.7930048852711326,
+          "group_mean": {
+            "zh-en/prefill": 0.8299835916592002,
+            "zh-en/decode": 0.7930048852711326,
+            "en-zh/prefill": 0.8218911169750817,
+            "en-zh/decode": 0.8501769298843823
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.6640368904905894,
+          "min_cell": 0.1336316130343104,
+          "min_group_mean": 0.44785601876319636,
+          "group_mean": {
+            "zh-my/prefill": 0.7815920059396986,
+            "zh-my/decode": 0.44785601876319636,
+            "my-zh/prefill": 0.6256887905324131,
+            "my-zh/decode": 0.8396566288271475,
+            "en-my/prefill": 0.7751810138158018,
+            "en-my/decode": 0.4524548811017748,
+            "my-en/prefill": 0.6108678012196453,
+            "my-en/decode": 0.7789979837250385
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.7989748046545707,
+          "min_cell": 0.6768585543251339,
+          "min_group_mean": 0.7503267129784595,
+          "group_mean": {
+            "zh-my/prefill": 0.8190565195017261,
+            "zh-my/decode": 0.8088419764630572,
+            "my-zh/prefill": 0.795143650562304,
+            "my-zh/decode": 0.8333764637436955,
+            "en-my/prefill": 0.7918099579023727,
+            "en-my/decode": 0.8154656876204139,
+            "my-en/prefill": 0.7777774684645369,
+            "my-en/decode": 0.7503267129784595
+          }
+        },
+        "omitted_mean_delta": -0.13493791416398127,
+        "omitted_floor_delta": -0.5432269412908235,
+        "overlap_full": 0.864029255319149
+      },
+      "omit_zh-my": {
+        "seen": [
+          "my-zh",
+          "zh-en",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "zh-my"
+        ],
+        "seen_proxy": {
+          "mean": 0.7958140335085174,
+          "min_cell": 0.664881391299122,
+          "min_group_mean": 0.7538263004462263,
+          "group_mean": {
+            "my-zh/prefill": 0.7898068123285279,
+            "my-zh/decode": 0.8370437698105087,
+            "zh-en/prefill": 0.8059448941584076,
+            "zh-en/decode": 0.7538263004462263,
+            "en-zh/prefill": 0.8019222422986143,
+            "en-zh/decode": 0.8331892809843006,
+            "en-my/prefill": 0.7937555193632888,
+            "en-my/decode": 0.8001609618733138,
+            "my-en/prefill": 0.7743355805678918,
+            "my-en/decode": 0.7681549732540943
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.8010803041535807,
+          "min_cell": 0.6654984400861046,
+          "min_group_mean": 0.7916167995481036,
+          "group_mean": {
+            "zh-my/prefill": 0.8105438087590575,
+            "zh-my/decode": 0.7916167995481036
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.8139492479823917,
+          "min_cell": 0.6885372465429717,
+          "min_group_mean": 0.8088419764630572,
+          "group_mean": {
+            "zh-my/prefill": 0.8190565195017261,
+            "zh-my/decode": 0.8088419764630572
+          }
+        },
+        "omitted_mean_delta": -0.012868943828810986,
+        "omitted_floor_delta": -0.023038806456867067,
+        "overlap_full": 0.9684175531914894
+      },
+      "omit_my-zh": {
+        "seen": [
+          "zh-my",
+          "zh-en",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "my-zh"
+        ],
+        "seen_proxy": {
+          "mean": 0.7963569635842238,
+          "min_cell": 0.6740502600731371,
+          "min_group_mean": 0.760134010068864,
+          "group_mean": {
+            "zh-my/prefill": 0.8187306588306255,
+            "zh-my/decode": 0.8090752953664336,
+            "zh-en/prefill": 0.809201955903601,
+            "zh-en/decode": 0.760134010068864,
+            "en-zh/prefill": 0.8083646837136895,
+            "en-zh/decode": 0.8016770366795833,
+            "en-my/prefill": 0.8029967034959209,
+            "en-my/decode": 0.8152896137920269,
+            "my-en/prefill": 0.7747633226708363,
+            "my-en/decode": 0.763336355320657
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.7920087746917476,
+          "min_cell": 0.7086268388450261,
+          "min_group_mean": 0.7847210932902823,
+          "group_mean": {
+            "my-zh/prefill": 0.7847210932902823,
+            "my-zh/decode": 0.7992964560932129
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.8142600571529998,
+          "min_cell": 0.7176552459889777,
+          "min_group_mean": 0.795143650562304,
+          "group_mean": {
+            "my-zh/prefill": 0.795143650562304,
+            "my-zh/decode": 0.8333764637436955
+          }
+        },
+        "omitted_mean_delta": -0.022251282461252186,
+        "omitted_floor_delta": -0.009028407143951589,
+        "overlap_full": 0.9591090425531915
+      },
+      "omit_zh-en": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "zh-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.804076875141228,
+          "min_cell": 0.5957974465380875,
+          "min_group_mean": 0.7158800080545055,
+          "group_mean": {
+            "zh-my/prefill": 0.8192283105578155,
+            "zh-my/decode": 0.8227640050426057,
+            "my-zh/prefill": 0.8064304890271334,
+            "my-zh/decode": 0.8395755902245177,
+            "en-zh/prefill": 0.7925303241547987,
+            "en-zh/decode": 0.83834330606125,
+            "en-my/prefill": 0.7893878352191642,
+            "en-my/decode": 0.831971905762003,
+            "my-en/prefill": 0.7846569773084863,
+            "my-en/decode": 0.7158800080545055
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.7534655532239859,
+          "min_cell": 0.5767111827891166,
+          "min_group_mean": 0.698550553682059,
+          "group_mean": {
+            "zh-en/prefill": 0.8083805527659127,
+            "zh-en/decode": 0.698550553682059
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.7764376885444663,
+          "min_cell": 0.6647423729979356,
+          "min_group_mean": 0.7407697908541423,
+          "group_mean": {
+            "zh-en/prefill": 0.8121055862347901,
+            "zh-en/decode": 0.7407697908541423
+          }
+        },
+        "omitted_mean_delta": -0.02297213532048037,
+        "omitted_floor_delta": -0.088031190208819,
+        "overlap_full": 0.9544547872340425
+      },
+      "omit_en-zh": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "en-zh"
+        ],
+        "seen_proxy": {
+          "mean": 0.7960641226005046,
+          "min_cell": 0.6630163543061837,
+          "min_group_mean": 0.7471647000599191,
+          "group_mean": {
+            "zh-my/prefill": 0.8173810734125537,
+            "zh-my/decode": 0.822385641810642,
+            "my-zh/prefill": 0.7973234926914667,
+            "my-zh/decode": 0.8117866519468702,
+            "zh-en/prefill": 0.8070361632142661,
+            "zh-en/decode": 0.7471647000599191,
+            "en-my/prefill": 0.7909530574562605,
+            "en-my/decode": 0.8257402865936581,
+            "my-en/prefill": 0.785954973223501,
+            "my-en/decode": 0.7549151855959095
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.7961705490807054,
+          "min_cell": 0.6941151471560576,
+          "min_group_mean": 0.7920876829782808,
+          "group_mean": {
+            "en-zh/prefill": 0.7920876829782808,
+            "en-zh/decode": 0.80025341518313
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.8150032169358439,
+          "min_cell": 0.7289899695901243,
+          "min_group_mean": 0.7993381642764537,
+          "group_mean": {
+            "en-zh/prefill": 0.7993381642764537,
+            "en-zh/decode": 0.830668269595234
+          }
+        },
+        "omitted_mean_delta": -0.018832667855138485,
+        "omitted_floor_delta": -0.0348748224340667,
+        "overlap_full": 0.9607712765957447
+      },
+      "omit_en-my": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-zh",
+          "my-en"
+        ],
+        "omitted": [
+          "en-my"
+        ],
+        "seen_proxy": {
+          "mean": 0.797681477356342,
+          "min_cell": 0.6644371639539973,
+          "min_group_mean": 0.7509997387411071,
+          "group_mean": {
+            "zh-my/prefill": 0.8190074012477561,
+            "zh-my/decode": 0.7954821683972421,
+            "my-zh/prefill": 0.7892620849250022,
+            "my-zh/decode": 0.8438471932643978,
+            "zh-en/prefill": 0.814946365301772,
+            "zh-en/decode": 0.7509997387411071,
+            "en-zh/prefill": 0.7949453437964492,
+            "en-zh/decode": 0.8382162117693087,
+            "my-en/prefill": 0.7718363109785428,
+            "my-en/decode": 0.7582719551418422
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.792185424154775,
+          "min_cell": 0.6632379234309451,
+          "min_group_mean": 0.7850358453377784,
+          "group_mean": {
+            "en-my/prefill": 0.7850358453377784,
+            "en-my/decode": 0.7993350029717715
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.8036378227613934,
+          "min_cell": 0.6896801616575308,
+          "min_group_mean": 0.7918099579023727,
+          "group_mean": {
+            "en-my/prefill": 0.7918099579023727,
+            "en-my/decode": 0.8154656876204139
+          }
+        },
+        "omitted_mean_delta": -0.011452398606618397,
+        "omitted_floor_delta": -0.026442238226585646,
+        "overlap_full": 0.9707446808510638
+      },
+      "omit_my-en": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-zh",
+          "en-my"
+        ],
+        "omitted": [
+          "my-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.8070450648899257,
+          "min_cell": 0.5704476466523029,
+          "min_group_mean": 0.704762139922067,
+          "group_mean": {
+            "zh-my/prefill": 0.8310864264173305,
+            "zh-my/decode": 0.8203829875081103,
+            "my-zh/prefill": 0.796693983594491,
+            "my-zh/decode": 0.841122705939546,
+            "zh-en/prefill": 0.8222599977324474,
+            "zh-en/decode": 0.704762139922067,
+            "en-zh/prefill": 0.793658639618552,
+            "en-zh/decode": 0.8447766124624942,
+            "en-my/prefill": 0.7886417225837581,
+            "en-my/decode": 0.8270654331204602
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.7361817316510002,
+          "min_cell": 0.5827931864652338,
+          "min_group_mean": 0.7021035046984491,
+          "group_mean": {
+            "my-en/prefill": 0.7702599586035516,
+            "my-en/decode": 0.7021035046984491
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.7640520907214983,
+          "min_cell": 0.6768585543251339,
+          "min_group_mean": 0.7503267129784595,
+          "group_mean": {
+            "my-en/prefill": 0.7777774684645369,
+            "my-en/decode": 0.7503267129784595
+          }
+        },
+        "omitted_mean_delta": -0.027870359070498063,
+        "omitted_floor_delta": -0.09406536785990005,
+        "overlap_full": 0.9498005319148937
+      }
+    },
+    "80": {
+      "pair_without_zh": {
+        "seen": [
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-zh"
+        ],
+        "seen_proxy": {
+          "mean": 0.8920708970572933,
+          "min_cell": 0.7975918861800798,
+          "min_group_mean": 0.8832271295632681,
+          "group_mean": {
+            "en-my/prefill": 0.8988817984357939,
+            "en-my/decode": 0.8979907346291556,
+            "my-en/prefill": 0.8832271295632681,
+            "my-en/decode": 0.8881839256009557
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.7923307527573424,
+          "min_cell": 0.15513512514830508,
+          "min_group_mean": 0.6391851035313306,
+          "group_mean": {
+            "zh-my/prefill": 0.8178926055988891,
+            "zh-my/decode": 0.8858046367832089,
+            "my-zh/prefill": 0.8345733686697623,
+            "my-zh/decode": 0.6475435328998203,
+            "zh-en/prefill": 0.7848550651476748,
+            "zh-en/decode": 0.8589534290092673,
+            "en-zh/prefill": 0.8698382804187863,
+            "en-zh/decode": 0.6391851035313306
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.8826342664454682,
+          "min_cell": 0.7951189772686538,
+          "min_group_mean": 0.8493953264125333,
+          "group_mean": {
+            "zh-my/prefill": 0.8916918464412673,
+            "zh-my/decode": 0.8784892489140206,
+            "my-zh/prefill": 0.8719558522783786,
+            "my-zh/decode": 0.9006155861946649,
+            "zh-en/prefill": 0.8884034501432772,
+            "zh-en/decode": 0.8493953264125333,
+            "en-zh/prefill": 0.8838355343426546,
+            "en-zh/decode": 0.8966872868369486
+          }
+        },
+        "omitted_mean_delta": -0.09030351368812572,
+        "omitted_floor_delta": -0.6399838521203487,
+        "overlap_full": 0.8912234042553191
+      },
+      "pair_without_en": {
+        "seen": [
+          "zh-my",
+          "my-zh"
+        ],
+        "omitted": [
+          "zh-en",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.9057324750181353,
+          "min_cell": 0.8423624203858078,
+          "min_group_mean": 0.8902394239853505,
+          "group_mean": {
+            "zh-my/prefill": 0.903797875355307,
+            "zh-my/decode": 0.9135725049868375,
+            "my-zh/prefill": 0.8902394239853505,
+            "my-zh/decode": 0.9153200957450457
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.8217571507563696,
+          "min_cell": 0.46621812105479854,
+          "min_group_mean": 0.6863772633099353,
+          "group_mean": {
+            "zh-en/prefill": 0.8891372453498346,
+            "zh-en/decode": 0.688834478385513,
+            "en-zh/prefill": 0.8149507918098764,
+            "en-zh/decode": 0.903977075516528,
+            "en-my/prefill": 0.8207394966183845,
+            "en-my/decode": 0.9138552166914156,
+            "my-en/prefill": 0.8561856383694696,
+            "my-en/decode": 0.6863772633099353
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.8751679600777539,
+          "min_cell": 0.7951189772686538,
+          "min_group_mean": 0.8493953264125333,
+          "group_mean": {
+            "zh-en/prefill": 0.8884034501432772,
+            "zh-en/decode": 0.8493953264125333,
+            "en-zh/prefill": 0.8838355343426546,
+            "en-zh/decode": 0.8966872868369486,
+            "en-my/prefill": 0.8787960131710365,
+            "en-my/decode": 0.8842358896308533,
+            "my-en/prefill": 0.8633278274456323,
+            "my-en/decode": 0.8566623526390952
+          }
+        },
+        "omitted_mean_delta": -0.05341080932138431,
+        "omitted_floor_delta": -0.32890085621385523,
+        "overlap_full": 0.8760638297872341
+      },
+      "pair_without_my": {
+        "seen": [
+          "zh-en",
+          "en-zh"
+        ],
+        "omitted": [
+          "zh-my",
+          "my-zh",
+          "en-my",
+          "my-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.9003153862722827,
+          "min_cell": 0.839949058639258,
+          "min_group_mean": 0.8826904689684741,
+          "group_mean": {
+            "zh-en/prefill": 0.9055051091565042,
+            "zh-en/decode": 0.8826904689684741,
+            "en-zh/prefill": 0.8989416549926229,
+            "en-zh/decode": 0.9141243119715295
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.763467667556337,
+          "min_cell": 0.19177663609992837,
+          "min_group_mean": 0.5737669880169222,
+          "group_mean": {
+            "zh-my/prefill": 0.8673053359436484,
+            "zh-my/decode": 0.5737669880169222,
+            "my-zh/prefill": 0.7303720270546977,
+            "my-zh/decode": 0.9052954139691501,
+            "en-my/prefill": 0.863436095468423,
+            "en-my/decode": 0.5770688776015837,
+            "my-en/prefill": 0.7220558968149225,
+            "my-en/decode": 0.8684407055813477
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.8782218270893686,
+          "min_cell": 0.7967923274460197,
+          "min_group_mean": 0.8566623526390952,
+          "group_mean": {
+            "zh-my/prefill": 0.8916918464412673,
+            "zh-my/decode": 0.8784892489140206,
+            "my-zh/prefill": 0.8719558522783786,
+            "my-zh/decode": 0.9006155861946649,
+            "en-my/prefill": 0.8787960131710365,
+            "en-my/decode": 0.8842358896308533,
+            "my-en/prefill": 0.8633278274456323,
+            "my-en/decode": 0.8566623526390952
+          }
+        },
+        "omitted_mean_delta": -0.11475415953303159,
+        "omitted_floor_delta": -0.6050156913460913,
+        "overlap_full": 0.8938829787234043
+      },
+      "omit_zh-my": {
+        "seen": [
+          "my-zh",
+          "zh-en",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "zh-my"
+        ],
+        "seen_proxy": {
+          "mean": 0.8781521181956022,
+          "min_cell": 0.7891011024133278,
+          "min_group_mean": 0.8568397100392068,
+          "group_mean": {
+            "my-zh/prefill": 0.8696283417494344,
+            "my-zh/decode": 0.9048260995263185,
+            "zh-en/prefill": 0.8841181157208424,
+            "zh-en/decode": 0.8568397100392068,
+            "en-zh/prefill": 0.8851267171551436,
+            "en-zh/decode": 0.8999439863779426,
+            "en-my/prefill": 0.8785112168458975,
+            "en-my/decode": 0.8729324005266923,
+            "my-en/prefill": 0.8622430151891272,
+            "my-en/decode": 0.8673515788254172
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.8753186745790881,
+          "min_cell": 0.7908796363944706,
+          "min_group_mean": 0.8653497229486643,
+          "group_mean": {
+            "zh-my/prefill": 0.8852876262095117,
+            "zh-my/decode": 0.8653497229486643
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.885090547677644,
+          "min_cell": 0.8033520677364975,
+          "min_group_mean": 0.8784892489140206,
+          "group_mean": {
+            "zh-my/prefill": 0.8916918464412673,
+            "zh-my/decode": 0.8784892489140206
+          }
+        },
+        "omitted_mean_delta": -0.009771873098555872,
+        "omitted_floor_delta": -0.012472431342026913,
+        "overlap_full": 0.9771276595744681
+      },
+      "omit_my-zh": {
+        "seen": [
+          "zh-my",
+          "zh-en",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "my-zh"
+        ],
+        "seen_proxy": {
+          "mean": 0.8780609936698419,
+          "min_cell": 0.7953021730321937,
+          "min_group_mean": 0.8576325571547425,
+          "group_mean": {
+            "zh-my/prefill": 0.8932571959829272,
+            "zh-my/decode": 0.8791502581532477,
+            "zh-en/prefill": 0.8883318039241128,
+            "zh-en/decode": 0.8576325571547425,
+            "en-zh/prefill": 0.8876257258299282,
+            "en-zh/decode": 0.886270140664051,
+            "en-my/prefill": 0.8835209075441719,
+            "en-my/decode": 0.8847126720957419,
+            "my-en/prefill": 0.8605778936833884,
+            "my-en/decode": 0.8595307816661069
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.8755001077142913,
+          "min_cell": 0.8009482608180679,
+          "min_group_mean": 0.8656368731863363,
+          "group_mean": {
+            "my-zh/prefill": 0.8656368731863363,
+            "my-zh/decode": 0.8853633422422463
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.8862857192365217,
+          "min_cell": 0.8074071662897938,
+          "min_group_mean": 0.8719558522783786,
+          "group_mean": {
+            "my-zh/prefill": 0.8719558522783786,
+            "my-zh/decode": 0.9006155861946649
+          }
+        },
+        "omitted_mean_delta": -0.010785611522230343,
+        "omitted_floor_delta": -0.006458905471725895,
+        "overlap_full": 0.9763297872340425
+      },
+      "omit_zh-en": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "zh-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.8821315884805851,
+          "min_cell": 0.7788904796214108,
+          "min_group_mean": 0.8421666420719716,
+          "group_mean": {
+            "zh-my/prefill": 0.8894701012781879,
+            "zh-my/decode": 0.8853854890835978,
+            "my-zh/prefill": 0.8799798792728546,
+            "my-zh/decode": 0.9039942659573579,
+            "en-zh/prefill": 0.8805106584848976,
+            "en-zh/decode": 0.9005541037490323,
+            "en-my/prefill": 0.8775678501643098,
+            "en-my/decode": 0.89375344188028,
+            "my-en/prefill": 0.8679334528633617,
+            "my-en/decode": 0.8421666420719716
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.8531313670687798,
+          "min_cell": 0.7554410964707408,
+          "min_group_mean": 0.8238946629947095,
+          "group_mean": {
+            "zh-en/prefill": 0.8823680711428502,
+            "zh-en/decode": 0.8238946629947095
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.8688993882779052,
+          "min_cell": 0.7951189772686538,
+          "min_group_mean": 0.8493953264125333,
+          "group_mean": {
+            "zh-en/prefill": 0.8884034501432772,
+            "zh-en/decode": 0.8493953264125333
+          }
+        },
+        "omitted_mean_delta": -0.01576802120912546,
+        "omitted_floor_delta": -0.03967788079791301,
+        "overlap_full": 0.9702127659574468
+      },
+      "omit_en-zh": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "en-zh"
+        ],
+        "seen_proxy": {
+          "mean": 0.8772408164613397,
+          "min_cell": 0.7832257966712489,
+          "min_group_mean": 0.8527150529353302,
+          "group_mean": {
+            "zh-my/prefill": 0.8910951530401912,
+            "zh-my/decode": 0.8858882439065568,
+            "my-zh/prefill": 0.8749303301887295,
+            "my-zh/decode": 0.8910246687079171,
+            "zh-en/prefill": 0.8861204448201584,
+            "zh-en/decode": 0.8527150529353302,
+            "en-my/prefill": 0.8751169587493807,
+            "en-my/decode": 0.8888990621696304,
+            "my-en/prefill": 0.8686529930512616,
+            "my-en/decode": 0.8579652570442402
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.8782818558226761,
+          "min_cell": 0.788427344380247,
+          "min_group_mean": 0.8768918123495937,
+          "group_mean": {
+            "en-zh/prefill": 0.8768918123495937,
+            "en-zh/decode": 0.8796718992957587
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.8902614105898016,
+          "min_cell": 0.8231396073830652,
+          "min_group_mean": 0.8838355343426546,
+          "group_mean": {
+            "en-zh/prefill": 0.8838355343426546,
+            "en-zh/decode": 0.8966872868369486
+          }
+        },
+        "omitted_mean_delta": -0.011979554767125422,
+        "omitted_floor_delta": -0.03471226300281827,
+        "overlap_full": 0.9736702127659574
+      },
+      "omit_en-my": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-zh",
+          "my-en"
+        ],
+        "omitted": [
+          "en-my"
+        ],
+        "seen_proxy": {
+          "mean": 0.8789232782965045,
+          "min_cell": 0.7956900684643882,
+          "min_group_mean": 0.8586950594914275,
+          "group_mean": {
+            "zh-my/prefill": 0.8908728353295212,
+            "zh-my/decode": 0.8687570024222462,
+            "my-zh/prefill": 0.869626904635599,
+            "my-zh/decode": 0.9075725043409144,
+            "zh-en/prefill": 0.8895072814127336,
+            "zh-en/decode": 0.8586950594914275,
+            "en-zh/prefill": 0.8800535095701286,
+            "en-zh/decode": 0.9003611960870129,
+            "my-en/prefill": 0.8607525510762198,
+            "my-en/decode": 0.8630339385992426
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.8715049308582663,
+          "min_cell": 0.7993859189047708,
+          "min_group_mean": 0.8714165727950136,
+          "group_mean": {
+            "en-my/prefill": 0.8714165727950136,
+            "en-my/decode": 0.8715932889215192
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.8815159514009449,
+          "min_cell": 0.8000653131333804,
+          "min_group_mean": 0.8787960131710365,
+          "group_mean": {
+            "en-my/prefill": 0.8787960131710365,
+            "en-my/decode": 0.8842358896308533
+          }
+        },
+        "omitted_mean_delta": -0.01001102054267855,
+        "omitted_floor_delta": -0.00067939422860952,
+        "overlap_full": 0.976063829787234
+      },
+      "omit_my-en": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-zh",
+          "en-my"
+        ],
+        "omitted": [
+          "my-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.8837480457556776,
+          "min_cell": 0.7463336002366804,
+          "min_group_mean": 0.8331333976928055,
+          "group_mean": {
+            "zh-my/prefill": 0.8986285349374972,
+            "zh-my/decode": 0.8853096234374598,
+            "my-zh/prefill": 0.8714644345579765,
+            "my-zh/decode": 0.9022555521485626,
+            "zh-en/prefill": 0.8937711587894693,
+            "zh-en/decode": 0.8331333976928055,
+            "en-zh/prefill": 0.8815600289464134,
+            "en-zh/decode": 0.9037142569215333,
+            "en-my/prefill": 0.8771069547329927,
+            "en-my/decode": 0.8905365153920646
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.8437860785898051,
+          "min_cell": 0.7599922717725724,
+          "min_group_mean": 0.8302480112762876,
+          "group_mean": {
+            "my-en/prefill": 0.8573241459033226,
+            "my-en/decode": 0.8302480112762876
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.8599950900423637,
+          "min_cell": 0.7967923274460197,
+          "min_group_mean": 0.8566623526390952,
+          "group_mean": {
+            "my-en/prefill": 0.8633278274456323,
+            "my-en/decode": 0.8566623526390952
+          }
+        },
+        "omitted_mean_delta": -0.016209011452558597,
+        "omitted_floor_delta": -0.03680005567344724,
+        "overlap_full": 0.9680851063829787
+      }
+    },
+    "96": {
+      "pair_without_zh": {
+        "seen": [
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-zh"
+        ],
+        "seen_proxy": {
+          "mean": 0.9476105013924473,
+          "min_cell": 0.8960621018010716,
+          "min_group_mean": 0.9413668291481465,
+          "group_mean": {
+            "en-my/prefill": 0.9530962469686978,
+            "en-my/decode": 0.9485628816287518,
+            "my-en/prefill": 0.9413668291481465,
+            "my-en/decode": 0.9474160478241931
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.8651461790388026,
+          "min_cell": 0.2594653679099415,
+          "min_group_mean": 0.7332758515736836,
+          "group_mean": {
+            "zh-my/prefill": 0.8910107759602279,
+            "zh-my/decode": 0.940216443394258,
+            "my-zh/prefill": 0.9000798845752469,
+            "my-zh/decode": 0.7382329124168637,
+            "zh-en/prefill": 0.8633788572260824,
+            "zh-en/decode": 0.925276535423952,
+            "en-zh/prefill": 0.929698171740107,
+            "en-zh/decode": 0.7332758515736836
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.9414048282663933,
+          "min_cell": 0.8866888606715451,
+          "min_group_mean": 0.925328248124423,
+          "group_mean": {
+            "zh-my/prefill": 0.9474998215549347,
+            "zh-my/decode": 0.9362688684268435,
+            "my-zh/prefill": 0.9349609962615798,
+            "my-zh/decode": 0.951374556154846,
+            "zh-en/prefill": 0.9450876416623631,
+            "zh-en/decode": 0.925328248124423,
+            "en-zh/prefill": 0.9423342757578184,
+            "en-zh/decode": 0.9483842181883384
+          }
+        },
+        "omitted_mean_delta": -0.07625864922759062,
+        "omitted_floor_delta": -0.6272234927616036,
+        "overlap_full": 0.9224290780141844
+      },
+      "pair_without_en": {
+        "seen": [
+          "zh-my",
+          "my-zh"
+        ],
+        "omitted": [
+          "zh-en",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.9535366293908326,
+          "min_cell": 0.9115748660265343,
+          "min_group_mean": 0.9445800744349693,
+          "group_mean": {
+            "zh-my/prefill": 0.9532078786247772,
+            "zh-my/decode": 0.956691484464197,
+            "my-zh/prefill": 0.9445800744349693,
+            "my-zh/decode": 0.9596670800393869
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.8950861857002337,
+          "min_cell": 0.6332621615001596,
+          "min_group_mean": 0.7987792697593187,
+          "group_mean": {
+            "zh-en/prefill": 0.9425300041914557,
+            "zh-en/decode": 0.8017781407038322,
+            "en-zh/prefill": 0.8924098370835482,
+            "en-zh/decode": 0.9502056879254026,
+            "en-my/prefill": 0.8964489222225079,
+            "en-my/decode": 0.9566186114225589,
+            "my-en/prefill": 0.9219190122932447,
+            "my-en/decode": 0.7987792697593187
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.9374478375728534,
+          "min_cell": 0.8866888606715451,
+          "min_group_mean": 0.925328248124423,
+          "group_mean": {
+            "zh-en/prefill": 0.9450876416623631,
+            "zh-en/decode": 0.925328248124423,
+            "en-zh/prefill": 0.9423342757578184,
+            "en-zh/decode": 0.9483842181883384,
+            "en-my/prefill": 0.94004376823864,
+            "en-my/decode": 0.9402274832495867,
+            "my-en/prefill": 0.9297842026181362,
+            "my-en/decode": 0.9283928627435216
+          }
+        },
+        "omitted_mean_delta": -0.042361651872619754,
+        "omitted_floor_delta": -0.2534266991713855,
+        "overlap_full": 0.9162234042553191
+      },
+      "pair_without_my": {
+        "seen": [
+          "zh-en",
+          "en-zh"
+        ],
+        "omitted": [
+          "zh-my",
+          "my-zh",
+          "en-my",
+          "my-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.9543522866261511,
+          "min_cell": 0.9111305987152596,
+          "min_group_mean": 0.9461066160211031,
+          "group_mean": {
+            "zh-en/prefill": 0.9583708787577686,
+            "zh-en/decode": 0.9461066160211031,
+            "en-zh/prefill": 0.9533248708011641,
+            "en-zh/decode": 0.9596067809245685
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.8398904344603993,
+          "min_cell": 0.25891355122491677,
+          "min_group_mean": 0.675535471129417,
+          "group_mean": {
+            "zh-my/prefill": 0.9242601847730393,
+            "zh-my/decode": 0.675535471129417,
+            "my-zh/prefill": 0.8166688098605156,
+            "my-zh/decode": 0.9525872382966665,
+            "en-my/prefill": 0.92504137162338,
+            "en-my/decode": 0.6776657110839047,
+            "my-en/prefill": 0.8132369011529451,
+            "my-en/decode": 0.9341277877633269
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.938569069906011,
+          "min_cell": 0.8881335333260961,
+          "min_group_mean": 0.9283928627435216,
+          "group_mean": {
+            "zh-my/prefill": 0.9474998215549347,
+            "zh-my/decode": 0.9362688684268435,
+            "my-zh/prefill": 0.9349609962615798,
+            "my-zh/decode": 0.951374556154846,
+            "en-my/prefill": 0.94004376823864,
+            "en-my/decode": 0.9402274832495867,
+            "my-en/prefill": 0.9297842026181362,
+            "my-en/decode": 0.9283928627435216
+          }
+        },
+        "omitted_mean_delta": -0.09867863544561162,
+        "omitted_floor_delta": -0.6292199821011794,
+        "overlap_full": 0.9206560283687943
+      },
+      "omit_zh-my": {
+        "seen": [
+          "my-zh",
+          "zh-en",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "zh-my"
+        ],
+        "seen_proxy": {
+          "mean": 0.9391370360657402,
+          "min_cell": 0.8802236904512081,
+          "min_group_mean": 0.927585048538114,
+          "group_mean": {
+            "my-zh/prefill": 0.9343028467187023,
+            "my-zh/decode": 0.95419641858744,
+            "zh-en/prefill": 0.9438520687061394,
+            "zh-en/decode": 0.927585048538114,
+            "en-zh/prefill": 0.9437405019865132,
+            "en-zh/decode": 0.9507909887927221,
+            "en-my/prefill": 0.9409123777072292,
+            "en-my/decode": 0.9322240372113243,
+            "my-en/prefill": 0.9296514328937374,
+            "my-en/decode": 0.9341146395154794
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.9355637962153995,
+          "min_cell": 0.8788579001888446,
+          "min_group_mean": 0.9267822933733441,
+          "group_mean": {
+            "zh-my/prefill": 0.944345299057455,
+            "zh-my/decode": 0.9267822933733441
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.9418843449908891,
+          "min_cell": 0.8938910906103085,
+          "min_group_mean": 0.9362688684268435,
+          "group_mean": {
+            "zh-my/prefill": 0.9474998215549347,
+            "zh-my/decode": 0.9362688684268435
+          }
+        },
+        "omitted_mean_delta": -0.006320548775489598,
+        "omitted_floor_delta": -0.015033190421463893,
+        "overlap_full": 0.9835992907801419
+      },
+      "omit_my-zh": {
+        "seen": [
+          "zh-my",
+          "zh-en",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "my-zh"
+        ],
+        "seen_proxy": {
+          "mean": 0.9389298586690175,
+          "min_cell": 0.8908763568461849,
+          "min_group_mean": 0.9270970483104969,
+          "group_mean": {
+            "zh-my/prefill": 0.9481025005765689,
+            "zh-my/decode": 0.9364094843959533,
+            "zh-en/prefill": 0.9453601709611288,
+            "zh-en/decode": 0.9304998649065038,
+            "en-zh/prefill": 0.9445768719466153,
+            "en-zh/decode": 0.9438222820172776,
+            "en-my/prefill": 0.9430552922591924,
+            "en-my/decode": 0.9401797650500094,
+            "my-en/prefill": 0.9270970483104969,
+            "my-en/decode": 0.9301953062664283
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.9361450651696701,
+          "min_cell": 0.8955329538653958,
+          "min_group_mean": 0.9297462812411438,
+          "group_mean": {
+            "my-zh/prefill": 0.9297462812411438,
+            "my-zh/decode": 0.9425438490981962
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.943167776208213,
+          "min_cell": 0.9015256779595954,
+          "min_group_mean": 0.9349609962615798,
+          "group_mean": {
+            "my-zh/prefill": 0.9349609962615798,
+            "my-zh/decode": 0.951374556154846
+          }
+        },
+        "omitted_mean_delta": -0.007022711038542906,
+        "omitted_floor_delta": -0.005992724094199597,
+        "overlap_full": 0.9835992907801419
+      },
+      "omit_zh-en": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "en-zh",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "zh-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.9408289647766717,
+          "min_cell": 0.8777457350233756,
+          "min_group_mean": 0.9223809030332955,
+          "group_mean": {
+            "zh-my/prefill": 0.944138529077281,
+            "zh-my/decode": 0.9389249976123599,
+            "my-zh/prefill": 0.9393999575352561,
+            "my-zh/decode": 0.9524534941176835,
+            "en-zh/prefill": 0.9414077737091082,
+            "en-zh/decode": 0.9493639428985305,
+            "en-my/prefill": 0.9415600702729164,
+            "en-my/decode": 0.9452613269526249,
+            "my-en/prefill": 0.9333986525576597,
+            "my-en/decode": 0.9223809030332955
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.924616707994862,
+          "min_cell": 0.864345173384646,
+          "min_group_mean": 0.9093814034634499,
+          "group_mean": {
+            "zh-en/prefill": 0.9398520125262743,
+            "zh-en/decode": 0.9093814034634499
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.935207944893393,
+          "min_cell": 0.8866888606715451,
+          "min_group_mean": 0.925328248124423,
+          "group_mean": {
+            "zh-en/prefill": 0.9450876416623631,
+            "zh-en/decode": 0.925328248124423
+          }
+        },
+        "omitted_mean_delta": -0.010591236898531031,
+        "omitted_floor_delta": -0.02234368728689906,
+        "overlap_full": 0.9793882978723404
+      },
+      "omit_en-zh": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-my",
+          "my-en"
+        ],
+        "omitted": [
+          "en-zh"
+        ],
+        "seen_proxy": {
+          "mean": 0.9384355570770516,
+          "min_cell": 0.8833275777055044,
+          "min_group_mean": 0.9270977080583177,
+          "group_mean": {
+            "zh-my/prefill": 0.9464859326020592,
+            "zh-my/decode": 0.9397228880473033,
+            "my-zh/prefill": 0.9359994548867356,
+            "my-zh/decode": 0.9459527229634491,
+            "zh-en/prefill": 0.9433416702865606,
+            "zh-en/decode": 0.9270977080583177,
+            "en-my/prefill": 0.9391083537114171,
+            "en-my/decode": 0.9426898851459906,
+            "my-en/prefill": 0.9328720227339132,
+            "my-en/decode": 0.9310849323347701
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.9380972511807231,
+          "min_cell": 0.8842703773855356,
+          "min_group_mean": 0.9372735589897413,
+          "group_mean": {
+            "en-zh/prefill": 0.9389209433717047,
+            "en-zh/decode": 0.9372735589897413
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.9453592469730783,
+          "min_cell": 0.8932295288089342,
+          "min_group_mean": 0.9423342757578184,
+          "group_mean": {
+            "en-zh/prefill": 0.9423342757578184,
+            "en-zh/decode": 0.9483842181883384
+          }
+        },
+        "omitted_mean_delta": -0.0072619957923552025,
+        "omitted_floor_delta": -0.008959151423398648,
+        "overlap_full": 0.9838209219858156
+      },
+      "omit_en-my": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-zh",
+          "my-en"
+        ],
+        "omitted": [
+          "en-my"
+        ],
+        "seen_proxy": {
+          "mean": 0.9395284052042144,
+          "min_cell": 0.8838181056444415,
+          "min_group_mean": 0.9284035568097693,
+          "group_mean": {
+            "zh-my/prefill": 0.9470028374689076,
+            "zh-my/decode": 0.9291743262018285,
+            "my-zh/prefill": 0.9336057912690181,
+            "my-zh/decode": 0.9555094761637138,
+            "zh-en/prefill": 0.9464626088176984,
+            "zh-en/decode": 0.930873094070177,
+            "en-zh/prefill": 0.9408523573832284,
+            "en-zh/decode": 0.9505610694861794,
+            "my-en/prefill": 0.9284035568097693,
+            "my-en/decode": 0.9328389343716235
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.9334534328228502,
+          "min_cell": 0.8818031156064339,
+          "min_group_mean": 0.9314174430527479,
+          "group_mean": {
+            "en-my/prefill": 0.9354894225929525,
+            "en-my/decode": 0.9314174430527479
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.9401356257441135,
+          "min_cell": 0.8902411032723541,
+          "min_group_mean": 0.94004376823864,
+          "group_mean": {
+            "en-my/prefill": 0.94004376823864,
+            "en-my/decode": 0.9402274832495867
+          }
+        },
+        "omitted_mean_delta": -0.006682192921263264,
+        "omitted_floor_delta": -0.008437987665920188,
+        "overlap_full": 0.9820478723404256
+      },
+      "omit_my-en": {
+        "seen": [
+          "zh-my",
+          "my-zh",
+          "zh-en",
+          "en-zh",
+          "en-my"
+        ],
+        "omitted": [
+          "my-en"
+        ],
+        "seen_proxy": {
+          "mean": 0.9418462354724353,
+          "min_cell": 0.8792216484621211,
+          "min_group_mean": 0.9193501108863396,
+          "group_mean": {
+            "zh-my/prefill": 0.9505726266493135,
+            "zh-my/decode": 0.9387876499105905,
+            "my-zh/prefill": 0.9331442303266837,
+            "my-zh/decode": 0.9517129600434975,
+            "zh-en/prefill": 0.9475203901615782,
+            "zh-en/decode": 0.9193501108863396,
+            "en-zh/prefill": 0.9422740449846112,
+            "en-zh/decode": 0.9522933186242444,
+            "en-my/prefill": 0.9403672675843963,
+            "en-my/decode": 0.9424397555530983
+          }
+        },
+        "omitted_proxy": {
+          "mean": 0.9205862829752831,
+          "min_cell": 0.8742146138430036,
+          "min_group_mean": 0.9155770029271296,
+          "group_mean": {
+            "my-en/prefill": 0.9255955630234366,
+            "my-en/decode": 0.9155770029271296
+          }
+        },
+        "all_direction_reference_on_omitted": {
+          "mean": 0.9290885326808289,
+          "min_cell": 0.8881335333260961,
+          "min_group_mean": 0.9283928627435216,
+          "group_mean": {
+            "my-en/prefill": 0.9297842026181362,
+            "my-en/decode": 0.9283928627435216
+          }
+        },
+        "omitted_mean_delta": -0.008502249705545806,
+        "omitted_floor_delta": -0.01391891948309254,
+        "overlap_full": 0.9798315602836879
+      }
+    }
+  },
+  "execution": {
+    "job": "job_01M8CJY6KV002RZ1S79PY2H1BA",
+    "exit_code": 0,
+    "compile": "PASS",
+    "prior_timeout_job": "job_01M8CJTFKX005TMACBWX7SBFB2",
+    "prior_exit_code": 124,
+    "source_head": "3212303e1e02994a5124db8c85195b91325c7a7c",
+    "analysis_base": "6d62573ae01570a0a724fafb5445a7e9dfc96810"
+  }
+}
