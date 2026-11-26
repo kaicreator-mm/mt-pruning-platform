@@ -1,0 +1,45 @@
+{
+  "status": "SYNTHETIC_VERIFIED_REAL_HEADER_ONLY",
+  "source_head": "3212303e1e02994a5124db8c85195b91325c7a7c",
+  "research_base": "42941b4c87b69e8f42f82156516915b71d67c76f",
+  "execution": {
+    "job": "job_01M8CRR89C00C1812MYFEQFV3S",
+    "exit_code": 0,
+    "compile": "PASS",
+    "target": "aliyun-sg plus read-only V100 header inspection",
+    "live_probe_job": "job_01M8CRN6P200D8JR93631VYJ8H"
+  },
+  "synthetic": {
+    "status": "PASS_SYNTHETIC_ONLY",
+    "tensor_byte_oracle": 46,
+    "negative_checks": 10,
+    "metadata_preserved": true,
+    "source_unchanged": true,
+    "output_sha256": "4d08334cc8f1ec841b98daf73db9269ca79a8c8fc3e1cc3c1e43a612824fac3f"
+  },
+  "real_plan": {
+    "status": "HEADER_ONLY_NOT_MATERIALIZED",
+    "source": "/home/cc/.cache/mt-pruning/gguf-r20-r1/k128-f16.gguf",
+    "source_bytes": 60159655456,
+    "source_header_sha256": "aa7df89983ceb9a0278905e683f0568ba426d62a824155a538e0359eba6f049f",
+    "source_header_bytes": 5128224,
+    "source_expected_full_sha256": "c0f31f9243f2be7c67971b3195606bbb5ed4fa9ceb035add2520480b67f38e5b",
+    "source_full_sha256_rechecked": false,
+    "mask_sha256": "4589d613512ac0a07f02be500e8b2fabe3f4beb78ddd171e14fd26cd8078960c",
+    "keep": 96,
+    "tensor_count": 766,
+    "sliced_tensors": 235,
+    "copied_tensors": 531,
+    "planned_bytes": 45953803936,
+    "planned_header_sha256": "f0e9ac96bc1a2dcf2a430ef117cf59877e95b0d6aed6dac5f61a828854ef3423",
+    "free_bytes": 53722333184,
+    "reserve_bytes": 10737418240,
+    "disk_eligible": false,
+    "shortfall_bytes": 2968888992
+  },
+  "limitations": [
+    "No real model written, no real full weight SHA replay, no runtime load, no new GPU inference, no final test.",
+    "Raw-byte copier restricted to little-endian GGUF v3 F16/F32 HY-V3 exact model profile and P12 mask.",
+    "10 GiB disk reserve is a provisional operational guard, not a quality requirement."
+  ]
+}
