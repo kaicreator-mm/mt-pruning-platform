@@ -7,15 +7,17 @@ Two reference configurations of the pinned release matter:
   eager experts  the per-expert loop in ``modeling_hy_v3`` (bf16 accumulation, an
                  equally official path). The engine must stay within LOGIT_TOL.
 """
+import re
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import torch
 
-from mtpruning.engine import Checkpoint, Engine, expert_combine
+from mtpruning.engine import Checkpoint, Engine, check_config, expert_combine
 from mtpruning.prune import verify_pruned, write_pruned
-from mtpruning.testing import tiny_checkpoint
+from mtpruning.testing import tiny_checkpoint, tiny_config
 
 SPARSE = [1, 2]
 KEPT = {1: [0, 2, 4, 6], 2: [1, 2, 5, 7]}
@@ -29,11 +31,14 @@ def reference(path, **options):
 
 
 class EngineVsReference(unittest.TestCase):
+    hidden_size = 64
+
     @classmethod
     def setUpClass(cls):
         cls.tmp = tempfile.TemporaryDirectory()
         cls.root = Path(cls.tmp.name)
-        cls.source = Checkpoint(tiny_checkpoint(cls.root / "tiny", cls.root / "none", seed=7))
+        cls.source = Checkpoint(tiny_checkpoint(cls.root / "tiny", cls.root / "none", seed=7,
+                                                hidden_size=cls.hidden_size))
         torch.manual_seed(0)
         cls.prompts = [torch.randint(0, 120000, (n,)).tolist() for n in (1, 2, 9, 17)]
         cls.model = reference(cls.source.path, attn_implementation="eager")
@@ -190,10 +195,42 @@ class EngineVsReference(unittest.TestCase):
                 engine.set_mask(bad)
             engine.set_mask(None)
 
+    def test_attention_projection_shapes_are_checked_at_load(self):
+        wrong = torch.empty((1, 1), dtype=torch.bfloat16)
+        for projection in ("q_proj", "k_proj", "v_proj", "o_proj"):
+            name = f"model.layers.0.self_attn.{projection}.weight"
+            original = self.source.tensor
+
+            def tensor(requested, original=original, name=name):
+                return wrong if requested == name else original(requested)
+
+            with self.subTest(projection=projection), mock.patch.object(self.source, "tensor", side_effect=tensor):
+                with self.assertRaisesRegex(ValueError, re.escape(name) + r".*expected .*actual"):
+                    Engine(self.source)
+
+    def test_attention_dimensions_are_validated(self):
+        for key in ("hidden_size", "num_attention_heads", "num_key_value_heads", "head_dim"):
+            for value in (0, -2):
+                config = tiny_config(1000)
+                config[key] = value
+                with self.subTest(key=key, value=value):
+                    with self.assertRaisesRegex(ValueError, key):
+                        check_config(config)
+        config = tiny_config(1000)
+        config["num_attention_heads"] = 5
+        with self.assertRaisesRegex(ValueError, "multiple"):
+            check_config(config)
+
     def test_context_limit(self):
         engine = Engine(self.source)
         with self.assertRaises(ValueError):
             engine.generate([1] * (engine.max_context + 1), 1)
+
+
+class UnequalAttentionWidthEngineVsReference(EngineVsReference):
+    """Residual hidden=32, attention=4*16=64 and grouped KV=2*16=32."""
+
+    hidden_size = 32
 
 
 if __name__ == "__main__":

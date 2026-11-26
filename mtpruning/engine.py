@@ -63,6 +63,9 @@ def check_config(config: dict) -> None:
     for key in ("rope_scaling", "rope_parameters"):
         if config.get(key) is not None:
             raise ValueError(f"unsupported config: {key}={config.get(key)!r}")
+    for key in ("hidden_size", "num_attention_heads", "num_key_value_heads", "head_dim"):
+        if int(config[key]) <= 0:
+            raise ValueError(f"{key} must be positive")
     if int(config["num_attention_heads"]) % int(config["num_key_value_heads"]):
         raise ValueError("num_attention_heads must be a multiple of num_key_value_heads")
 
@@ -281,6 +284,8 @@ class Engine:
         self.n_heads = int(cfg["num_attention_heads"])
         self.n_kv = int(cfg["num_key_value_heads"])
         self.head_dim = int(cfg["head_dim"])
+        self.attention_width = self.n_heads * self.head_dim
+        self.kv_width = self.n_kv * self.head_dim
         self.n_rep = self.n_heads // self.n_kv
         self.scaling = self.head_dim ** -0.5
         self.max_context = min(int(cfg["max_position_embeddings"]), 8192)   # model card: max_context 8192
@@ -299,13 +304,23 @@ class Engine:
         self.lm_head = tensor("lm_head.weight")
         self.layers = [self._load_layer(i) for i in range(int(cfg["num_hidden_layers"]))]
 
+    def _attention_projection(self, prefix: str, name: str, expected: tuple[int, int]) -> torch.Tensor:
+        full_name = f"{prefix}self_attn.{name}.weight"
+        tensor = self.ckpt.tensor(full_name)
+        actual = tuple(tensor.shape)
+        if actual != expected:
+            raise ValueError(f"attention projection shape mismatch: {full_name}: expected {expected}, actual {actual}")
+        return tensor
+
     def _load_layer(self, idx: int) -> Layer:
         tensor, prefix = self.ckpt.tensor, f"model.layers.{idx}."
         layer = Layer(
             idx, self.ckpt.sparse[idx],
             tensor(prefix + "input_layernorm.weight"), tensor(prefix + "post_attention_layernorm.weight"),
-            tensor(prefix + "self_attn.q_proj.weight"), tensor(prefix + "self_attn.k_proj.weight"),
-            tensor(prefix + "self_attn.v_proj.weight"), tensor(prefix + "self_attn.o_proj.weight"),
+            self._attention_projection(prefix, "q_proj", (self.attention_width, self.hidden)),
+            self._attention_projection(prefix, "k_proj", (self.kv_width, self.hidden)),
+            self._attention_projection(prefix, "v_proj", (self.kv_width, self.hidden)),
+            self._attention_projection(prefix, "o_proj", (self.hidden, self.attention_width)),
             tensor(prefix + "self_attn.q_norm.weight"), tensor(prefix + "self_attn.k_norm.weight"),
         )
         if layer.sparse:
@@ -394,10 +409,9 @@ class Engine:
         for layer in self.layers:
             residual = h
             x = rms_norm(h, layer.ln1, self.eps)
-            shape = (n, -1, self.head_dim)
-            q = F.linear(x, layer.wq).view(shape).transpose(0, 1)
-            k = F.linear(x, layer.wk).view(shape).transpose(0, 1)
-            v = F.linear(x, layer.wv).view(shape).transpose(0, 1)
+            q = F.linear(x, layer.wq).view(n, self.n_heads, self.head_dim).transpose(0, 1)
+            k = F.linear(x, layer.wk).view(n, self.n_kv, self.head_dim).transpose(0, 1)
+            v = F.linear(x, layer.wv).view(n, self.n_kv, self.head_dim).transpose(0, 1)
             q, k = rms_norm(q, layer.q_norm, self.eps), rms_norm(k, layer.k_norm, self.eps)
             q, k = apply_rotary_pos_emb(q, k, cos, sin)
             keys, values = cache.append(layer.idx, k, v)
@@ -405,7 +419,8 @@ class Engine:
             if attn.shape != (self.n_heads, n, self.head_dim):
                 raise RuntimeError(f"attention output has shape {tuple(attn.shape)}, expected "
                                    f"{(self.n_heads, n, self.head_dim)}")
-            h = residual + F.linear(attn.transpose(0, 1).reshape(n, self.hidden), layer.wo)
+            # HY-V3 attention width is independent of the residual hidden width.
+            h = residual + F.linear(attn.transpose(0, 1).reshape(n, self.attention_width), layer.wo)
             residual = h
             x = rms_norm(h, layer.ln2, self.eps)
             if layer.sparse:

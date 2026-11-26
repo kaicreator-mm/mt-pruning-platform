@@ -13,14 +13,14 @@ from .engine import expected_keys
 from .prune import AUX_FILES, save_shard
 
 
-def tiny_config(vocab_size: int, num_experts=8, top_k=2, layers=3) -> dict:
+def tiny_config(vocab_size: int, num_experts=8, top_k=2, layers=3, hidden_size=64) -> dict:
     """A HY-V3 config with the same option values as the real checkpoint, at toy dimensions."""
     return {
         "architectures": ["HYV3ForCausalLM"], "model_type": "hy_v3",
         "attn_impl": "eager", "bos_token_id": 120000, "enable_attention_fp32_softmax": False,
         "enable_lm_head_fp32": True, "enable_moe_fp32_combine": False, "eod_token_id": 120026,
         "eos_token_id": 120025, "expert_hidden_dim": 32, "first_k_dense_replace": 1, "head_dim": 16,
-        "hidden_act": "silu", "hidden_size": 64, "initializer_range": 0.006, "intermediate_size": 128,
+        "hidden_act": "silu", "hidden_size": hidden_size, "initializer_range": 0.006, "intermediate_size": 128,
         "max_position_embeddings": 4096, "moe_intermediate_size": 32,
         "moe_router_enable_expert_bias": True, "moe_router_use_sigmoid": True,
         "num_attention_heads": 4, "num_experts": num_experts, "num_experts_per_tok": top_k,
@@ -32,10 +32,10 @@ def tiny_config(vocab_size: int, num_experts=8, top_k=2, layers=3) -> dict:
 
 
 def tiny_checkpoint(out_dir, tokenizer_dir, vocab_size=120832, seed=0, num_experts=8, top_k=2, layers=3,
-                      router_gain=3.0) -> Path:
+                      router_gain=3.0, hidden_size=64) -> Path:
     """Write a two-shard random checkpoint plus the tokenizer files of ``tokenizer_dir``; returns its path."""
     out_dir, tokenizer_dir = Path(out_dir), Path(tokenizer_dir)
-    config = tiny_config(vocab_size, num_experts, top_k, layers)
+    config = tiny_config(vocab_size, num_experts, top_k, layers, hidden_size)
     generator = torch.Generator().manual_seed(seed)
     hidden, inter, experts = config["hidden_size"], config["moe_intermediate_size"], config["num_experts"]
 
