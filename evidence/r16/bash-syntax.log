@@ -1,0 +1,2 @@
+COMMAND=bash -n scripts/run_d01b.sh
+BASH_SYNTAX_EXIT=0

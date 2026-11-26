@@ -1,0 +1,314 @@
+test_aggregate_decisions_are_rechecked_against_routing (tests.test_audit.MaskAuditAccumulationTests.test_aggregate_decisions_are_rechecked_against_routing) ... ok
+test_audit_accumulates_across_samples (tests.test_audit.MaskAuditAccumulationTests.test_audit_accumulates_across_samples) ... ok
+test_decisions_must_equal_tokens_times_sparse_layer_count (tests.test_audit.MaskAuditAccumulationTests.test_decisions_must_equal_tokens_times_sparse_layer_count) ... ok
+test_run_kind_requires_audit_presence (tests.test_audit.MaskAuditAccumulationTests.test_run_kind_requires_audit_presence) ... ok
+test_totals_match_an_independent_sum (tests.test_audit.MaskAuditAccumulationTests.test_totals_match_an_independent_sum) ... ok
+test_01_stops_before_the_test_split (tests.test_driver.DriverTests.test_01_stops_before_the_test_split) ... ok
+test_02_changed_corpus_blocks_the_driver_before_any_run (tests.test_driver.DriverTests.test_02_changed_corpus_blocks_the_driver_before_any_run) ... ok
+test_03_final_test_is_disabled_before_any_stage_runs (tests.test_driver.DriverTests.test_03_final_test_is_disabled_before_any_stage_runs) ... ok
+test_04_final_test_execution_paths_are_removed (tests.test_driver.DriverTests.test_04_final_test_execution_paths_are_removed) ... usage: mtpruning [-h] [--version]
+                 {corpus,corpus-check,run,select,checkpoint-check,prune,verify,equiv,stock-check,decide,report} ...
+mtpruning: error: argument command: invalid choice: 'final-test' (choose from 'corpus', 'corpus-check', 'run', 'select', 'checkpoint-check', 'prune', 'verify', 'equiv', 'stock-check', 'decide', 'report')
+ok
+Loading weights:   0%|          | 0/44 [00:00<?, ?it/s]Loading weights: 100%|██████████| 44/44 [00:00<00:00, 6296.25it/s]
+test_bad_masks_are_rejected (tests.test_engine.EngineVsReference.test_bad_masks_are_rejected) ... ok
+test_context_limit (tests.test_engine.EngineVsReference.test_context_limit) ... ok
+test_decode_logits_are_identical_step_by_step (tests.test_engine.EngineVsReference.test_decode_logits_are_identical_step_by_step) ... ok
+test_expert_combine_is_the_reference_experts_path (tests.test_engine.EngineVsReference.test_expert_combine_is_the_reference_experts_path) ... ok
+test_forward_never_writes_into_weights (tests.test_engine.EngineVsReference.test_forward_never_writes_into_weights) ... ok
+test_greedy_tokens_match_the_reference (tests.test_engine.EngineVsReference.test_greedy_tokens_match_the_reference) ... ok
+test_identity_prune_is_a_noop (tests.test_engine.EngineVsReference.test_identity_prune_is_a_noop) ... ok
+test_mask_removes_experts (tests.test_engine.EngineVsReference.test_mask_removes_experts) ... ok
+test_masked_model_equals_physical_prune (tests.test_engine.EngineVsReference.test_masked_model_equals_physical_prune) ... ok
+test_prefill_logits_are_identical_to_the_reference (tests.test_engine.EngineVsReference.test_prefill_logits_are_identical_to_the_reference) ... ok
+test_reference_loader_opens_the_pruned_checkpoint (tests.test_engine.EngineVsReference.test_reference_loader_opens_the_pruned_checkpoint) ... Loading weights:   0%|          | 0/44 [00:00<?, ?it/s]Loading weights: 100%|██████████| 44/44 [00:00<00:00, 7477.08it/s]
+ok
+test_split_linear_equals_fused_grouped_mm_at_model_shapes (tests.test_engine.EngineVsReference.test_split_linear_equals_fused_grouped_mm_at_model_shapes) ... ok
+test_stays_within_tolerance_of_the_eager_experts_path (tests.test_engine.EngineVsReference.test_stays_within_tolerance_of_the_eager_experts_path) ... Loading weights:   0%|          | 0/44 [00:00<?, ?it/s]Loading weights: 100%|██████████| 44/44 [00:00<00:00, 6155.34it/s]
+ok
+test_duplicates_across_splits_and_inside_a_sample_are_avoided (tests.test_evaluate.CorpusLogicTests.test_duplicates_across_splits_and_inside_a_sample_are_avoided) ... ok
+test_prompt_policy (tests.test_evaluate.CorpusLogicTests.test_prompt_policy) ... ok
+test_sample_is_disjoint_and_reproducible (tests.test_evaluate.CorpusLogicTests.test_sample_is_disjoint_and_reproducible) ... ok
+test_clean_sentence_has_no_flags (tests.test_evaluate.FailureFlagTests.test_clean_sentence_has_no_flags) ... ok
+test_flags (tests.test_evaluate.FailureFlagTests.test_flags) ... ok
+test_paired_bootstrap (tests.test_evaluate.MetricTests.test_paired_bootstrap) ... ok
+test_segment_statistics_reproduce_corpus_and_sentence_scores (tests.test_evaluate.MetricTests.test_segment_statistics_reproduce_corpus_and_sentence_scores) ... ok
+test_a_changed_row_is_detected_even_below_the_top_logits (tests.test_evaluate.TraceTests.test_a_changed_row_is_detected_even_below_the_top_logits) ... ok
+test_a_length_mismatch_is_never_a_pass (tests.test_evaluate.TraceTests.test_a_length_mismatch_is_never_a_pass) ... ok
+test_a_rewritten_array_with_an_unchanged_stored_digest_is_not_evidence (tests.test_evaluate.TraceTests.test_a_rewritten_array_with_an_unchanged_stored_digest_is_not_evidence)
+R13-P1-01: the reader recomputes the digest from the actual arrays - a valid ... ok
+test_a_traced_position_keeps_the_top_logits_and_binds_the_whole_row (tests.test_evaluate.TraceTests.test_a_traced_position_keeps_the_top_logits_and_binds_the_whole_row) ... ok
+test_an_index_missing_from_the_other_top_list_is_reported (tests.test_evaluate.TraceTests.test_an_index_missing_from_the_other_top_list_is_reported) ... ok
+test_comparison_stops_at_first_divergent_choice (tests.test_evaluate.TraceTests.test_comparison_stops_at_first_divergent_choice) ... ok
+test_identical_traces (tests.test_evaluate.TraceTests.test_identical_traces) ... ok
+test_malformed_trace_ranks_and_shapes_return_none_even_with_a_fresh_digest (tests.test_evaluate.TraceTests.test_malformed_trace_ranks_and_shapes_return_none_even_with_a_fresh_digest)
+R15-P2-01: structural rejection happens before any shape indexing. ... ok
+test_route_weights_are_aligned_by_sorted_id_and_must_match (tests.test_evaluate.TraceTests.test_route_weights_are_aligned_by_sorted_id_and_must_match) ... ok
+test_save_load_round_trip_and_compare_runs (tests.test_evaluate.TraceTests.test_save_load_round_trip_and_compare_runs) ... ok
+test_the_candidate_side_must_cover_exactly_the_expected_sentences (tests.test_evaluate.TraceTests.test_the_candidate_side_must_cover_exactly_the_expected_sentences) ... ok
+test_trace_records_are_checked_against_the_journal_and_published_atomically (tests.test_evaluate.TraceTests.test_trace_records_are_checked_against_the_journal_and_published_atomically) ... /home/cc/mt-pruning-platform/mtpruning/evaluate.py:171: ResourceWarning: unclosed file <_io.BufferedReader name='/home/cc/.cache/mt-pruning/test-tmp/tmpmyfeutdl/test__zh-my__12.trace.npz'>
+  return None
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_a_declared_checkpoint_is_bound_by_content (tests.test_identity.CheckpointProvenanceTests.test_a_declared_checkpoint_is_bound_by_content) ... ok
+test_a_directory_of_unknown_provenance_is_refused (tests.test_identity.CheckpointProvenanceTests.test_a_directory_of_unknown_provenance_is_refused) ... ok
+test_a_same_size_mtime_mutation_is_never_served_from_the_cache (tests.test_identity.CheckpointProvenanceTests.test_a_same_size_mtime_mutation_is_never_served_from_the_cache) ... ok
+test_hashes_are_reused_while_size_and_mtime_are_unchanged (tests.test_identity.CheckpointProvenanceTests.test_hashes_are_reused_while_size_and_mtime_are_unchanged) ... ok
+test_pinned_listing (tests.test_identity.CheckpointProvenanceTests.test_pinned_listing) ... ok
+test_real_qualification_requires_the_exact_pinned_inventory (tests.test_identity.CheckpointProvenanceTests.test_real_qualification_requires_the_exact_pinned_inventory)
+R13-P1-02: real qualification needs all four tokenizer files and nothing beyond ... ok
+test_the_pinned_snapshot_binds_its_tokenizer_bytes (tests.test_identity.CheckpointProvenanceTests.test_the_pinned_snapshot_binds_its_tokenizer_bytes) ... ok
+test_a_checkpoint_without_a_tokenizer_is_refused (tests.test_identity.RunIdentityTests.test_a_checkpoint_without_a_tokenizer_is_refused) ... ok
+test_corpus_bytes_must_match_the_manifest (tests.test_identity.RunIdentityTests.test_corpus_bytes_must_match_the_manifest) ... ok
+test_every_dependency_moves_the_key (tests.test_identity.RunIdentityTests.test_every_dependency_moves_the_key) ... ok
+test_fields_follow_the_reviewed_contract (tests.test_identity.RunIdentityTests.test_fields_follow_the_reviewed_contract) ... ok
+test_real_mode_refuses_overrides_and_synthetic_teachers (tests.test_identity.RunIdentityTests.test_real_mode_refuses_overrides_and_synthetic_teachers) ... ok
+test_the_identity_binds_the_effective_tokenizer_bytes (tests.test_identity.RunIdentityTests.test_the_identity_binds_the_effective_tokenizer_bytes) ... ok
+test_a_journal_refuses_to_continue_under_another_identity (tests.test_journal.JournalResumeTests.test_a_journal_refuses_to_continue_under_another_identity) ... /home/cc/miniconda3/envs/mt-pruning/lib/python3.13/json/decoder.py:361: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a697b0>
+  obj, end = self.scan_once(s, idx)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_a_sample_committed_under_another_identity_is_refused (tests.test_journal.JournalResumeTests.test_a_sample_committed_under_another_identity_is_refused) ... /home/cc/miniconda3/envs/mt-pruning/lib/python3.13/json/decoder.py:361: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a4d0>
+  obj, end = self.scan_once(s, idx)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_changed_corpus_bytes_block_the_run (tests.test_journal.JournalResumeTests.test_changed_corpus_bytes_block_the_run) ... /home/cc/miniconda3/envs/mt-pruning/lib/python3.13/json/decoder.py:361: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a4d0>
+  obj, end = self.scan_once(s, idx)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_conflicting_duplicate_and_corrupted_payload_are_refused (tests.test_journal.JournalResumeTests.test_conflicting_duplicate_and_corrupted_payload_are_refused) ... /home/cc/miniconda3/envs/mt-pruning/lib/python3.13/json/decoder.py:361: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a69f30>
+  obj, end = self.scan_once(s, idx)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/json/decoder.py:361: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6b100>
+  obj, end = self.scan_once(s, idx)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_interrupted_then_resumed_equals_uninterrupted (tests.test_journal.JournalResumeTests.test_interrupted_then_resumed_equals_uninterrupted) ... /home/cc/miniconda3/envs/mt-pruning/lib/python3.13/json/decoder.py:361: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6bd30>
+  obj, end = self.scan_once(s, idx)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/json/decoder.py:361: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a697b0>
+  obj, end = self.scan_once(s, idx)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/mt-pruning-platform/mtpruning/engine.py:217: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a6b0>
+  return handle.get_tensor(name)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/storage.py:468: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6ac50>
+  return super().__getitem__(*args, **kwargs)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/ast.py:100: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a890>
+  map(_convert, node.values)))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_mask_audit_of_an_interrupted_masked_run_matches_an_uninterrupted_one (tests.test_journal.JournalResumeTests.test_mask_audit_of_an_interrupted_masked_run_matches_an_uninterrupted_one) ... /home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/storage.py:468: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a69f30>
+  return super().__getitem__(*args, **kwargs)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/storage.py:468: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a69e40>
+  return super().__getitem__(*args, **kwargs)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/json/decoder.py:361: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a5c0>
+  obj, end = self.scan_once(s, idx)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/storage.py:465: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a5c0>
+  def __getitem__(self, *args, **kwargs):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_rerunning_a_finished_run_changes_nothing (tests.test_journal.JournalResumeTests.test_rerunning_a_finished_run_changes_nothing) ... /home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/storage.py:468: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a5c0>
+  return super().__getitem__(*args, **kwargs)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/storage.py:468: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a69990>
+  return super().__getitem__(*args, **kwargs)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_selection_refuses_an_interrupted_calibration (tests.test_journal.JournalResumeTests.test_selection_refuses_an_interrupted_calibration) ... /home/cc/mt-pruning-platform/mtpruning/engine.py:217: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a69d50>
+  return handle.get_tensor(name)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/filelock/_core/_fork.py:344: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a69990>
+  def _audit_fork_safety(  # pragma: no cover - CPython disables tracing while Python audit hooks run
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_selection_refuses_stale_or_edited_aggregates (tests.test_journal.JournalResumeTests.test_selection_refuses_stale_or_edited_aggregates) ... /home/cc/mt-pruning-platform/mtpruning/prune.py:96: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6ae30>
+  offset = end
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/mt-pruning-platform/mtpruning/calibration.py:88: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6af20>
+  def validate_payload(payload, context: dict, sparse_layers: list[int], num_experts: int, top_k: int,
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/filelock/_core/_fork.py:344: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a7a0>
+  def _audit_fork_safety(  # pragma: no cover - CPython disables tracing while Python audit hooks run
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/filelock/_core/_fork.py:344: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6ad40>
+  def _audit_fork_safety(  # pragma: no cover - CPython disables tracing while Python audit hooks run
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/filelock/_core/_fork.py:344: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a69c60>
+  def _audit_fork_safety(  # pragma: no cover - CPython disables tracing while Python audit hooks run
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_exactly_once_with_conflict_and_corruption_detection (tests.test_journal.JournalTests.test_exactly_once_with_conflict_and_corruption_detection) ... ok
+/home/cc/mt-pruning-platform/mtpruning/prune.py:94: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a6b0>
+  header[name] = {"dtype": _DTYPES[tensor.dtype], "shape": list(tensor.shape), "data_offsets": [offset, end]}
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/mt-pruning-platform/mtpruning/engine.py:217: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a695d0>
+  return handle.get_tensor(name)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/json/decoder.py:361: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a110>
+  obj, end = self.scan_once(s, idx)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/json/decoder.py:361: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6b4c0>
+  obj, end = self.scan_once(s, idx)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/ast.py:84: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6b4c0>
+  def _convert(node):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/mt-pruning-platform/mtpruning/prune.py:94: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a200>
+  header[name] = {"dtype": _DTYPES[tensor.dtype], "shape": list(tensor.shape), "data_offsets": [offset, end]}
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/ast.py:84: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a695d0>
+  def _convert(node):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/__init__.py:1717: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a110>
+  def _check(cond, message=None):  # noqa: F811
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+{"status": "SELECTION_FROM_COVERAGE_CHECKED_CALIBRATION", "retained_mass": {"96": {"zh-my": 1.0, "my-zh": 0.999937, "zh-en": 1.0, "en-zh": 1.0, "en-my": 1.0, "my-en": 1.0}, "64": {"zh-my": 0.981946, "my-zh": 0.983492, "zh-en": 0.989031, "en-zh": 0.994188, "en-my": 0.989466, "my-en": 0.982905}}}
+{"status": "SELECTION_FROM_COVERAGE_CHECKED_CALIBRATION", "retained_mass": {"96": {"zh-my": 1.0, "my-zh": 0.999937, "zh-en": 1.0, "en-zh": 1.0, "en-my": 1.0, "my-en": 1.0}, "64": {"zh-my": 0.981946, "my-zh": 0.983492, "zh-en": 0.989031, "en-zh": 0.994188, "en-my": 0.989466, "my-en": 0.982905}}}
+{"status": "SELECTION_FROM_COVERAGE_CHECKED_CALIBRATION", "retained_mass": {"96": {"zh-my": 1.0, "my-zh": 0.999937, "zh-en": 1.0, "en-zh": 1.0, "en-my": 1.0, "my-en": 1.0}, "64": {"zh-my": 0.981946, "my-zh": 0.983492, "zh-en": 0.989031, "en-zh": 0.994188, "en-my": 0.989466, "my-en": 0.982905}}}
+{"sentences": 12, "abs_tol": 0.125, "compared_logits": "64 largest per position", "route_weight_abs_tol": 1e-06, "row_hash_algorithm": "BLAKE2b-128 per position logit row", "claim": "engine logit-row fingerprints (BLAKE2b-128) identical at every compared position, route ids identical, route weights within float32 rounding, on the traced witness sentences only; fingerprint equality of the engine's rows: not raw full-logit retention, not a mathematical proof, and not a whole-run claim", "identical_text": 12, "all_argmax_agree": 12, "all_route_ids_agree": 12, "within_tol": 12, "bitwise_identical_logits": 12, "route_weights_bitwise_equal": 12, "route_weights_within_tol": 12, "length_match": 12, "positions_compared": 1722, "logits_max_abs_diff": 0.0, "route_id_mismatches": 0, "route_weight_max_abs_diff": 0.0, "pass": true, "binding": {"reference": {"records_sha256": "cbfcef3b46b894ba596cf63fc3e0538ecdc3b9df02f56b9d0cea5e7656fd0ed5", "journal_sha256": "698ec9a56c2d26fe3262cceff8b7d708588cd6debdcab0a4189cf38bb942d6df", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "5bb978b53d29dba033d36b712d513324e3816e2be92faca1e93605e3eb5b3185", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}, "candidate": {"records_sha256": "b127fe4406a7258bb4a280822d5bf25fc3bb39454411d60da07e8622dc397190", "journal_sha256": "61d112e7ba4f8f74d036fe0485e8d884bf00dae9896a37233b49f4ae6a1c86d3", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "80c210e1e02788f33eaee414e4b4fb2e219a55b674805dfdb9749064069889d9", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}}}
+{"sentences": 12, "abs_tol": 0.125, "compared_logits": "64 largest per position", "route_weight_abs_tol": 1e-06, "row_hash_algorithm": "BLAKE2b-128 per position logit row", "claim": "engine logit-row fingerprints (BLAKE2b-128) identical at every compared position, route ids identical, route weights within float32 rounding, on the traced witness sentences only; fingerprint equality of the engine's rows: not raw full-logit retention, not a mathematical proof, and not a whole-run claim", "identical_text": 12, "all_argmax_agree": 12, "all_route_ids_agree": 12, "within_tol": 12, "bitwise_identical_logits": 12, "route_weights_bitwise_equal": 0, "route_weights_within_tol": 12, "length_match": 12, "positions_compared": 1722, "logits_max_abs_diff": 0.0, "route_id_mismatches": 0, "route_weight_max_abs_diff": 8.940696716308594e-08, "pass": true, "binding": {"reference": {"records_sha256": "45eb5e89038b33cce9a76138d6f7839f6e04b05713ab75947aa901a33014f12b", "journal_sha256": "5b4f4c70027d806b4af5885bdb0ebe3b281372fbba13e00f12915e90bfbbe285", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "d0dfc2313599e9a1df51f266d2021aa45a13026b4a178a5167c0cdae88d87c3a", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}, "candidate": {"records_sha256": "02f025a6e2e2c22fa47a371aac22992a12655862e8a351bc3425e7961f0f2bcb", "journal_sha256": "ccabc165457ffb05e02518e52e7908676b0f7505476e4b87d77d41ddbdef7de9", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "c99602619bdef3aaa1ea54c764e00ee07226dbed2e5e5e70cd08704318a9f75f", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}, "masked_witness_changed": 10}}
+Loading weights:   0%|          | 0/44 [00:00<?, ?it/s]Loading weights: 100%|██████████| 44/44 [00:00<00:00, 995.81it/s]
+/home/cc/mt-pruning-platform/mtpruning/prune.py:94: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a69e40>
+  header[name] = {"dtype": _DTYPES[tensor.dtype], "shape": list(tensor.shape), "data_offsets": [offset, end]}
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/ast.py:84: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a7a0>
+  def _convert(node):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/_prims_common/wrappers.py:292: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6b6a0>
+  @wraps(fn)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+{"sentences": 6, "text_equal": 6}
+{"sentences": 12, "abs_tol": 0.125, "compared_logits": "64 largest per position", "route_weight_abs_tol": 1e-06, "row_hash_algorithm": "BLAKE2b-128 per position logit row", "claim": "engine logit-row fingerprints (BLAKE2b-128) identical at every compared position, route ids identical, route weights within float32 rounding, on the traced witness sentences only; fingerprint equality of the engine's rows: not raw full-logit retention, not a mathematical proof, and not a whole-run claim", "identical_text": 12, "all_argmax_agree": 12, "all_route_ids_agree": 12, "within_tol": 12, "bitwise_identical_logits": 12, "route_weights_bitwise_equal": 0, "route_weights_within_tol": 12, "length_match": 12, "positions_compared": 1722, "logits_max_abs_diff": 0.0, "route_id_mismatches": 0, "route_weight_max_abs_diff": 8.940696716308594e-08, "pass": true, "binding": {"reference": {"records_sha256": "27b828b9fad3bdb7b507c57b12fb9a8e54696410dbb1e9c47843a0582cf1cbc3", "journal_sha256": "498a36dd6add8c9ecee24f67e628c359a0874f83ac257785dd4f3eb7bebe9d34", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "6ade09a8e6a44840fe2be276a75e2d764d69d4bf2a94bfd7ac43245c555b4da3", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}, "candidate": {"records_sha256": "143b94a2d3e9b35d5833c0d7c75c7246979076f86ff88b66fbc4a782063ed688", "journal_sha256": "caee9ed9592bc7680c2021c98191793b90af39ff7c5f508c08afb869143f58f5", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "b4bb13794d13b91fa2b76cfbcea588d6309a593b61c0f82924753b2068a2c597", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}, "masked_witness_changed": 450}}
+Loading weights:   0%|          | 0/44 [00:00<?, ?it/s]Loading weights: 100%|██████████| 44/44 [00:00<00:00, 1486.72it/s]
+test_a_corrupt_or_missing_trace_is_regenerated_from_the_journal (tests.test_pipeline.StageTests.test_a_corrupt_or_missing_trace_is_regenerated_from_the_journal) ... ok
+test_checkpoint_check (tests.test_pipeline.StageTests.test_checkpoint_check) ... ok
+test_corpus_check (tests.test_pipeline.StageTests.test_corpus_check) ... ok
+test_decide_counts_the_witness_from_the_journal_not_the_summary (tests.test_pipeline.StageTests.test_decide_counts_the_witness_from_the_journal_not_the_summary)
+R13-P1-03: editing the summary's audit (zero->positive or positive->zero) changes ... /home/cc/miniconda3/envs/mt-pruning/lib/python3.13/ast.py:99: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a200>
+  return dict(zip(map(_convert, node.keys),
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/ast.py:99: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a685e0>
+  return dict(zip(map(_convert, node.keys),
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_decide_refuses_mixed_identity_and_unnamed_candidates (tests.test_pipeline.StageTests.test_decide_refuses_mixed_identity_and_unnamed_candidates) ... ok
+test_decide_requires_the_full_receipt_chain (tests.test_pipeline.StageTests.test_decide_requires_the_full_receipt_chain) ... /home/cc/mt-pruning-platform/mtpruning/evaluate.py:171: ResourceWarning: unclosed file <_io.BufferedReader name='/home/cc/.cache/mt-pruning/test-tmp/tmpqypratcz/tmpel3hdz06/run/k64/masked/traces/validation__my-zh__223.trace.npz'>
+  return None
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_equiv_refuses_a_genuine_mixed_mode_pair (tests.test_pipeline.StageTests.test_equiv_refuses_a_genuine_mixed_mode_pair)
+A supported real-labelled run and a rehearsal counterpart cannot form a pair. ... ok
+test_equiv_refuses_pairs_it_is_not_defined_for (tests.test_pipeline.StageTests.test_equiv_refuses_pairs_it_is_not_defined_for) ... <frozen os>:717: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6b6a0>
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_real_mode_boundaries (tests.test_pipeline.StageTests.test_real_mode_boundaries) ... ok
+test_real_pruned_loader_inventory_is_exact (tests.test_pipeline.StageTests.test_real_pruned_loader_inventory_is_exact) ... ok
+test_run_refuses_the_test_split_outside_the_final_test_stage (tests.test_pipeline.StageTests.test_run_refuses_the_test_split_outside_the_final_test_stage) ... usage: mtpruning [-h] [--version]
+                 {corpus,corpus-check,run,select,checkpoint-check,prune,verify,equiv,stock-check,decide,report} ...
+mtpruning: error: argument command: invalid choice: 'final-test' (choose from 'corpus', 'corpus-check', 'run', 'select', 'checkpoint-check', 'prune', 'verify', 'equiv', 'stock-check', 'decide', 'report')
+ok
+test_selection_and_decision_are_bound_to_the_run_identity (tests.test_pipeline.StageTests.test_selection_and_decision_are_bound_to_the_run_identity) ... ok
+test_stock_refuses_mislabeled_test_context_and_foreign_model_without_loading (tests.test_pipeline.StageTests.test_stock_refuses_mislabeled_test_context_and_foreign_model_without_loading)
+R13-P1-04/P1-05: a frozen test-context sentence smuggled in under a validation row ... ok
+test_stock_refuses_wrong_tokenizer_or_generation_settings_before_loading (tests.test_pipeline.StageTests.test_stock_refuses_wrong_tokenizer_or_generation_settings_before_loading) ... ok
+test_the_dry_run_really_routes_around_pruned_experts (tests.test_pipeline.StageTests.test_the_dry_run_really_routes_around_pruned_experts)
+The masked equivalence would prove nothing if the mask never changed a routing decision. ... ok
+test_the_editable_summary_never_drives_the_witness_gate (tests.test_pipeline.StageTests.test_the_editable_summary_never_drives_the_witness_gate)
+R13-P1-03: equiv and decide count the changed-route witness from the committed ... /home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/storage.py:465: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a685e0>
+  def __getitem__(self, *args, **kwargs):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/storage.py:468: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6b790>
+  return super().__getitem__(*args, **kwargs)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/ast.py:84: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6b790>
+  def _convert(node):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_rejects_unknown_layout_and_unsupported_config (tests.test_prune.CheckpointTests.test_rejects_unknown_layout_and_unsupported_config) ... ok
+test_bad_mappings_are_rejected (tests.test_prune.PruneTests.test_bad_mappings_are_rejected) ... ok
+test_identity_prune_is_a_noop_copy (tests.test_prune.PruneTests.test_identity_prune_is_a_noop_copy) ... ok
+test_physical_prune_reloads_with_the_expected_mapping (tests.test_prune.PruneTests.test_physical_prune_reloads_with_the_expected_mapping) ... ok
+test_refuses_to_overwrite (tests.test_prune.PruneTests.test_refuses_to_overwrite) ... ok
+test_shards_match_their_manifest (tests.test_prune.PruneTests.test_shards_match_their_manifest) ... ok
+test_directions_are_normalised_before_averaging (tests.test_prune.SelectTests.test_directions_are_normalised_before_averaging) ... ok
+test_negatives (tests.test_prune.SelectTests.test_negatives) ... ok
+test_outvoted_favourite_is_dropped (tests.test_prune.SelectTests.test_outvoted_favourite_is_dropped) ... ok
+test_ties_break_on_lower_index (tests.test_prune.SelectTests.test_ties_break_on_lower_index) ... ok
+test_hand_written_shard_reads_like_a_library_one (tests.test_prune.ShardTests.test_hand_written_shard_reads_like_a_library_one) ... ok
+test_boundary_drops (tests.test_report.GateSignTests.test_boundary_drops) ... ok
+test_diagnostics_gate_too (tests.test_report.GateSignTests.test_diagnostics_gate_too) ... ok
+test_incomplete_or_inconsistent_rows_are_never_a_pass (tests.test_report.GateSignTests.test_incomplete_or_inconsistent_rows_are_never_a_pass) ... ok
+test_own_flag_matches_the_reviewed_gate (tests.test_report.GateSignTests.test_own_flag_matches_the_reviewed_gate) ... ok
+test_row_flags_are_cross_checked_against_the_reviewed_gate (tests.test_report.GateSignTests.test_row_flags_are_cross_checked_against_the_reviewed_gate) ... ok
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/storage.py:468: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a697b0>
+  return super().__getitem__(*args, **kwargs)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/ast.py:99: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a020>
+  return dict(zip(map(_convert, node.keys),
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/storage.py:468: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a69990>
+  return super().__getitem__(*args, **kwargs)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/mt-pruning-platform/mtpruning/prune.py:94: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a69990>
+  header[name] = {"dtype": _DTYPES[tensor.dtype], "shape": list(tensor.shape), "data_offsets": [offset, end]}
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/ast.py:50: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a697b0>
+  return compile(source, filename, mode, flags,
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+{"sentences": 6, "text_equal": 6}
+{"status": "PROVISIONAL_VALIDATION_SELECTION_ONLY", "chosen_keep": 64, "test_execution_authorized": false}
+{"status": "CHECKPOINT_CONTENT_VERIFIED", "kind": "synthetic", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "num_experts": 128}
+{"status": "FROZEN_CORPUS_CONTRACT_OK", "records": 60, "corpus_sha256": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1"}
+{"status": "PROVISIONAL_VALIDATION_SELECTION_ONLY", "chosen_keep": 64, "test_execution_authorized": false}
+{"status": "PROVISIONAL_VALIDATION_SELECTION_ONLY", "chosen_keep": 64, "test_execution_authorized": false}
+{"sentences": 12, "abs_tol": 0.125, "compared_logits": "64 largest per position", "route_weight_abs_tol": 1e-06, "row_hash_algorithm": "BLAKE2b-128 per position logit row", "claim": "engine logit-row fingerprints (BLAKE2b-128) identical at every compared position, route ids identical, route weights within float32 rounding, on the traced witness sentences only; fingerprint equality of the engine's rows: not raw full-logit retention, not a mathematical proof, and not a whole-run claim", "identical_text": 12, "all_argmax_agree": 12, "all_route_ids_agree": 12, "within_tol": 12, "bitwise_identical_logits": 12, "route_weights_bitwise_equal": 0, "route_weights_within_tol": 12, "length_match": 12, "positions_compared": 1722, "logits_max_abs_diff": 0.0, "route_id_mismatches": 0, "route_weight_max_abs_diff": 8.940696716308594e-08, "pass": true, "binding": {"reference": {"records_sha256": "45eb5e89038b33cce9a76138d6f7839f6e04b05713ab75947aa901a33014f12b", "journal_sha256": "5b4f4c70027d806b4af5885bdb0ebe3b281372fbba13e00f12915e90bfbbe285", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "d0dfc2313599e9a1df51f266d2021aa45a13026b4a178a5167c0cdae88d87c3a", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}, "candidate": {"records_sha256": "02f025a6e2e2c22fa47a371aac22992a12655862e8a351bc3425e7961f0f2bcb", "journal_sha256": "ccabc165457ffb05e02518e52e7908676b0f7505476e4b87d77d41ddbdef7de9", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "c99602619bdef3aaa1ea54c764e00ee07226dbed2e5e5e70cd08704318a9f75f", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}, "masked_witness_changed": 10}}
+{"status": "PROVISIONAL_VALIDATION_SELECTION_ONLY", "chosen_keep": 64, "test_execution_authorized": false}
+{"status": "SELECTION_FROM_COVERAGE_CHECKED_CALIBRATION", "retained_mass": {"128": {"zh-my": 1.0, "my-zh": 1.0, "zh-en": 1.0, "en-zh": 1.0, "en-my": 1.0, "my-en": 1.0}}}
+{"status": "SELECTION_FROM_COVERAGE_CHECKED_CALIBRATION", "retained_mass": {"96": {"zh-my": 1.0, "my-zh": 0.999937, "zh-en": 1.0, "en-zh": 1.0, "en-my": 1.0, "my-en": 1.0}, "64": {"zh-my": 0.981946, "my-zh": 0.983492, "zh-en": 0.989031, "en-zh": 0.994188, "en-my": 0.989466, "my-en": 0.982905}}}
+{"sentences": 12, "abs_tol": 0.125, "compared_logits": "64 largest per position", "route_weight_abs_tol": 1e-06, "row_hash_algorithm": "BLAKE2b-128 per position logit row", "claim": "engine logit-row fingerprints (BLAKE2b-128) identical at every compared position, route ids identical, route weights within float32 rounding, on the traced witness sentences only; fingerprint equality of the engine's rows: not raw full-logit retention, not a mathematical proof, and not a whole-run claim", "identical_text": 12, "all_argmax_agree": 12, "all_route_ids_agree": 12, "within_tol": 12, "bitwise_identical_logits": 12, "route_weights_bitwise_equal": 12, "route_weights_within_tol": 12, "length_match": 12, "positions_compared": 1722, "logits_max_abs_diff": 0.0, "route_id_mismatches": 0, "route_weight_max_abs_diff": 0.0, "pass": true, "binding": {"reference": {"records_sha256": "8c901ec69b68b81162a6d7efb920502cc8a888c317de68398ea2659bf50bce73", "journal_sha256": "806a82cd23cf2b778feb2b3b5aeca40c423b3caa99811786d216dc17956de718", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "5bb978b53d29dba033d36b712d513324e3816e2be92faca1e93605e3eb5b3185", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}, "candidate": {"records_sha256": "2479c15e96351d9ee1a0fa77947bd4a86ff349225c087fe45ca836e608f15366", "journal_sha256": "5edcc7f345a4971a2ea587d408a0c6abf468493158aa2599be549e89af917782", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "80c210e1e02788f33eaee414e4b4fb2e219a55b674805dfdb9749064069889d9", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}}}
+{"sentences": 12, "abs_tol": 0.125, "compared_logits": "64 largest per position", "route_weight_abs_tol": 1e-06, "row_hash_algorithm": "BLAKE2b-128 per position logit row", "claim": "engine logit-row fingerprints (BLAKE2b-128) identical at every compared position, route ids identical, route weights within float32 rounding, on the traced witness sentences only; fingerprint equality of the engine's rows: not raw full-logit retention, not a mathematical proof, and not a whole-run claim", "identical_text": 12, "all_argmax_agree": 12, "all_route_ids_agree": 12, "within_tol": 12, "bitwise_identical_logits": 12, "route_weights_bitwise_equal": 0, "route_weights_within_tol": 12, "length_match": 12, "positions_compared": 1722, "logits_max_abs_diff": 0.0, "route_id_mismatches": 0, "route_weight_max_abs_diff": 8.940696716308594e-08, "pass": true, "binding": {"reference": {"records_sha256": "89c63ee7d12a0679ad886642b3fb9f3c0bfca056f7ca2517cd9357f78756b868", "journal_sha256": "f52a24a6a3b53045e8846b26daaf9f4adcd3a94b4c4793a6f927bdd17181eb13", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "addc507cf0098e9303d16d849637a63fe838f7a5fe4da981aadc22f14495615a", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}, "candidate": {"records_sha256": "afc1ff04b26f0e430b315f55e661084aa30dd48bdc2c3ced09c780de537d0016", "journal_sha256": "8a0f766c54b28cfa18f282d04d5d7a40ae21539864ae28dc41c3cf0be1d38122", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "c99602619bdef3aaa1ea54c764e00ee07226dbed2e5e5e70cd08704318a9f75f", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}, "masked_witness_changed": 10}}/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/_prims_common/wrappers.py:292: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a020>
+  @wraps(fn)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+
+Loading weights:   0%|          | 0/44 [00:00<?, ?it/s]Loading weights: 100%|██████████| 44/44 [00:00<00:00, 1135.73it/s]
+/home/cc/mt-pruning-platform/mtpruning/prune.py:94: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6b4c0>
+  header[name] = {"dtype": _DTYPES[tensor.dtype], "shape": list(tensor.shape), "data_offsets": [offset, end]}
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/ast.py:50: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6b790>
+  return compile(source, filename, mode, flags,
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/cc/miniconda3/envs/mt-pruning/lib/python3.13/site-packages/torch/_prims_common/wrappers.py:292: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6a7a0>
+  @wraps(fn)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+{"sentences": 6, "text_equal": 6}
+{"sentences": 12, "abs_tol": 0.125, "compared_logits": "64 largest per position", "route_weight_abs_tol": 1e-06, "row_hash_algorithm": "BLAKE2b-128 per position logit row", "claim": "engine logit-row fingerprints (BLAKE2b-128) identical at every compared position, route ids identical, route weights within float32 rounding, on the traced witness sentences only; fingerprint equality of the engine's rows: not raw full-logit retention, not a mathematical proof, and not a whole-run claim", "identical_text": 12, "all_argmax_agree": 12, "all_route_ids_agree": 12, "within_tol": 12, "bitwise_identical_logits": 12, "route_weights_bitwise_equal": 0, "route_weights_within_tol": 12, "length_match": 12, "positions_compared": 1722, "logits_max_abs_diff": 0.0, "route_id_mismatches": 0, "route_weight_max_abs_diff": 8.940696716308594e-08, "pass": true, "binding": {"reference": {"records_sha256": "b9f8b8921662668c77a45bde1b355884075d084a1515bbb20ecb39058ca95fea", "journal_sha256": "b5ae784b9f7a5856f2177685dfefe57d9e8fa6ef7a7daca2619765fd0fb2b655", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "5ded4e29f00a83f0748c4efe6be042abaec4c4c22e7dbc4a59342dddea32acf0", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}, "candidate": {"records_sha256": "7ad18a1fa72670d1c7bb222f0a5e011fbb05094a23181b93eca3cdc219b7a96b", "journal_sha256": "e115e052eecdc395d2118744f8314fb6e516623275b52fcea1a6fa565a97ddb9", "teacher": "445468f7a915116a12d37d7cf3d4e103e8bc3dea89f97d43e53965597441e69e", "corpus": "ed2417a34d4114ca49fc0c58b27cf6a19504009850bca3ae38b6c027209f42b1", "code": "ab141cd3b71ae1c2789a4c9e85dedd570bb087c31651700d9b9b6aa6b34b5afa", "candidate": "b4bb13794d13b91fa2b76cfbcea588d6309a593b61c0f82924753b2068a2c597", "mode": "rehearsal", "traced": ["validation:en-my:558", "validation:en-my:89", "validation:en-zh:558", "validation:en-zh:89", "validation:my-en:223", "validation:my-en:27", "validation:my-zh:223", "validation:my-zh:27", "validation:zh-en:114", "validation:zh-en:25", "validation:zh-my:114", "validation:zh-my:25"]}, "masked_witness_changed": 450}}
+Loading weights:   0%|          | 0/44 [00:00<?, ?it/s]Loading weights: 100%|██████████| 44/44 [00:00<00:00, 1635.29it/s]
+test_a_missing_decision_fails_the_mechanism (tests.test_report.ReportCoverageTests.test_a_missing_decision_fails_the_mechanism) ... ok
+test_a_receipt_mutated_after_the_decision_is_not_qualified (tests.test_report.ReportCoverageTests.test_a_receipt_mutated_after_the_decision_is_not_qualified)
+R13-P1-03: replacing a receipt with a prior run's PASS after the decision must ... ok
+test_candidate_that_saw_the_test_split_makes_any_test_exploratory (tests.test_report.ReportCoverageTests.test_candidate_that_saw_the_test_split_makes_any_test_exploratory) ... ok
+test_changed_corpus_bytes_block_the_report (tests.test_report.ReportCoverageTests.test_changed_corpus_bytes_block_the_report) ... ok
+test_complete_rehearsal_holds_the_test_split (tests.test_report.ReportCoverageTests.test_complete_rehearsal_holds_the_test_split) ... ok
+test_duplicate_extra_and_misplaced_records_are_refused (tests.test_report.ReportCoverageTests.test_duplicate_extra_and_misplaced_records_are_refused) ... ok
+test_incomplete_baseline_leaves_no_candidate_evaluated (tests.test_report.ReportCoverageTests.test_incomplete_baseline_leaves_no_candidate_evaluated) ... ok
+test_missing_direction_is_not_evaluated_never_pass (tests.test_report.ReportCoverageTests.test_missing_direction_is_not_evaluated_never_pass) ... ok
+test_the_decision_is_bound_to_the_records_it_was_made_from (tests.test_report.ReportCoverageTests.test_the_decision_is_bound_to_the_records_it_was_made_from) ... /home/cc/miniconda3/envs/mt-pruning/lib/python3.13/ast.py:99: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ec336a6ac50>
+  return dict(zip(map(_convert, node.keys),
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_the_mechanism_needs_every_planned_receipt (tests.test_report.ReportCoverageTests.test_the_mechanism_needs_every_planned_receipt) ... ok
+test_truncated_decision_or_changed_quality_gate_is_not_evaluated (tests.test_report.ReportCoverageTests.test_truncated_decision_or_changed_quality_gate_is_not_evaluated) ... ok
+
+----------------------------------------------------------------------
+Ran 107 tests in 269.970s
+
+OK
+{"sentences": 6, "text_equal": 6}
+{"status": "PROVISIONAL_VALIDATION_SELECTION_ONLY", "chosen_keep": 64, "test_execution_authorized": false}
+
+UNITTEST_EXIT=0

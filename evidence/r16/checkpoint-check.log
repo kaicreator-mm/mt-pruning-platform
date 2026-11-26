@@ -1,0 +1,5 @@
+{"status": "CHECKPOINT_CONTENT_VERIFIED", "kind": "pinned-snapshot", "teacher": "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94", "num_experts": 128}
+real 50.25
+user 36.82
+sys 14.02
+CHECKPOINT_CHECK_EXIT=0
