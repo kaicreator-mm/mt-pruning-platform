@@ -23,8 +23,8 @@ import numpy as np
 from .corpus import DIRECTIONS
 from .evaluate import chrf_pp, failure_flags, paired_bootstrap, score_from_stats, segment_stats
 from .frozen import BlockedCorpus, load_frozen_corpus
-from .pipeline import (FINAL_TEST_DISABLED, read_json, read_run, sha256_file, verify_pilot_chain,
-                       write_text_atomic)
+from .pipeline import (FINAL_TEST_DISABLED, SHARED_FIELDS, read_json, read_run, sha256_file, validation_decision,
+                       verify_pilot_chain, write_text_atomic)
 from .reviewed import bridge, handoff
 from .spec import CORPUS_MANIFEST_SHA256, MODEL_REVISION, PLAN
 
@@ -240,43 +240,86 @@ def decide(checks: dict, quality: dict, max_drop: float, expected: list[str], ch
     }
 
 
-def decision_problems(run: Path, decision: dict | None, source: dict) -> list[str]:
-    """What stops the report from trusting the decision: missing, foreign, or bound to
-    files that have since changed. The decision's own evidence inventory (R13-P1-03)
-    is re-validated against the current files, hash by hash."""
+def decision_problems(run: Path, decision: dict | None, source: dict, current_evidence: dict,
+                      current_quality: dict | None) -> list[str]:
+    """Require a complete decision of the current canonical evidence and quality computation.
+
+    Missing runs/stages/candidates are not optional: the exact inventory must equal the
+    shared verifier's current evidence, and quality/diagnostics/gate/selection must equal
+    a fresh call to the same reviewed validator used by ``decide``.
+    """
     if decision is None:
         return ["no provisional decision"]
     if decision.get("identity", {}).get("teacher") != source["identity"]["teacher"]:
         return ["decision.json was made from another baseline run"]
-    for name, entry in decision.get("runs", {}).items():
+    expected_identity = {field: source["identity"][field] for field in SHARED_FIELDS}
+    expected_names = {"baseline", *(f"k{keep}" for keep in PLAN["candidate_keeps"])}
+    runs = decision.get("runs")
+    if not isinstance(runs, dict) or set(runs) != expected_names:
+        return ["decision.json does not carry the exact baseline/candidate run inventory"]
+    for name in sorted(expected_names):
         path = run / ("baseline/records.jsonl" if name == "baseline" else f"{name}/records.jsonl")
-        if not path.exists() or entry.get("records_sha256") != sha256_file(path):
+        header, _ = read_run(path)
+        if header is None:
+            return [f"decision.json binds {name} records that no longer match the run directory"]
+        expected = {"records_sha256": sha256_file(path), "validation_key": header["identity_keys"]["validation"],
+                    "candidate": header["identity"]["candidate"]}
+        if runs.get(name) != expected:
             return [f"decision.json binds {name} records that no longer match the run directory"]
     evidence = decision.get("evidence")
     if not isinstance(evidence, dict):
         return ["decision.json carries no evidence inventory"]
-    bound = [("selection", run / "selection.json", evidence.get("selection_sha256")),
+    bound = [("baseline records", run / "baseline/records.jsonl",
+              evidence.get("baseline", {}).get("records_sha256")),
+             ("baseline journal", run / "baseline/records.jsonl.sqlite",
+              evidence.get("baseline", {}).get("journal_sha256")),
+             ("selection", run / "selection.json", evidence.get("selection_sha256")),
              (f"k{PLAN['experts']} prune", run / f"k{PLAN['experts']}" / "prune.json",
               evidence.get("noop", {}).get("prune_sha256")),
              (f"k{PLAN['experts']} equiv", run / f"k{PLAN['experts']}" / "equiv.json",
-              evidence.get("noop", {}).get("equiv_sha256"))]
-    for keep, entry in evidence.get("candidates", {}).items():
+              evidence.get("noop", {}).get("equiv_sha256")),
+             (f"k{PLAN['experts']} mechanism records", run / f"k{PLAN['experts']}" / "mechanism/records.jsonl",
+              evidence.get("noop", {}).get("mechanism", {}).get("records_sha256")),
+             (f"k{PLAN['experts']} mechanism journal", run / f"k{PLAN['experts']}" / "mechanism/records.jsonl.sqlite",
+              evidence.get("noop", {}).get("mechanism", {}).get("journal_sha256"))]
+    for keep in PLAN["candidate_keeps"]:
+        entry = evidence.get("candidates", {}).get(str(keep), {})
         folder = run / f"k{keep}"
         bound += [(f"k{keep} prune", folder / "prune.json", entry.get("prune_sha256")),
                   (f"k{keep} equiv", folder / "equiv.json", entry.get("equiv_sha256")),
                   (f"k{keep} stock", folder / "stock_check.json", entry.get("stock_sha256"))]
         for stage, relative in (("masked", "masked/records.jsonl"), ("mechanism", "mechanism/records.jsonl"),
                                 ("validation", "records.jsonl")):
-            provenance = entry.get(stage)
-            if isinstance(provenance, dict):
-                bound += [(f"k{keep} {stage} records", folder / relative, provenance.get("records_sha256"))]
-                bound += [(f"k{keep} {stage} journal", Path(str(folder / relative) + ".sqlite"),
-                           provenance.get("journal_sha256"))]
+            provenance = entry.get(stage, {})
+            bound += [(f"k{keep} {stage} records", folder / relative, provenance.get("records_sha256")),
+                      (f"k{keep} {stage} journal", Path(str(folder / relative) + ".sqlite"),
+                       provenance.get("journal_sha256"))]
     stale = [f"{what} ({path.name})" for what, path, sha in bound
              if sha is not None and (not path.exists() or sha256_file(path) != sha)]
     if stale:
         return ["decision evidence changed since the decision: " + "; ".join(stale)]
-    return []
+    problems = []
+    if evidence != current_evidence:
+        problems.append("decision.json evidence is missing, stale, truncated or differs from the canonical full inventory")
+    if decision.get("identity") != expected_identity:
+        problems.append("decision.json identity does not equal the baseline's complete shared identity")
+    if current_quality is None:
+        problems.append("current quality/diagnostics/gate/selection cannot be recomputed")
+    else:
+        for name in ("status", "chosen_keep", "fallback_to_teacher", "candidates", "manifest_sha256",
+                     "corpus_sha256", "baseline_sha256", "max_drop", "test_execution_authorized",
+                     "production_acceptance"):
+            if decision.get(name) != current_quality[name]:
+                problems.append(f"decision.json {name} differs from the recomputed quality/gate/selection")
+    required = {
+        "synthetic": source["synthetic"], "max_new_tokens": source["max_new_tokens"],
+        "mode": source["identity"]["mode"], "checkpoint_provenance_verified": True,
+        "final_test": {"status": "HOLD", "reason": FINAL_TEST_DISABLED},
+    }
+    for name, expected in required.items():
+        if decision.get(name) != expected:
+            problems.append(f"decision.json has a missing or stale required field: {name}")
+    return problems
 
 
 def build(run_dir: Path, manifest_sha256=None, max_drop: float = 1.0, spot_n: int = 3) -> dict:
@@ -304,7 +347,12 @@ def build(run_dir: Path, manifest_sha256=None, max_drop: float = 1.0, spot_n: in
     # (R13-P1-03), and it derives its facts from the same replays decide ran.
     chain_problems, chain_evidence = verify_pilot_chain(run, manifest_sha256 or CORPUS_MANIFEST_SHA256)
     decision = read_json(run / "decision.json") if (run / "decision.json").exists() else None
-    decision_problems_list = decision_problems(run, decision, source)
+    current_quality = None
+    try:
+        current_quality = validation_decision(run, manifest_sha256 or CORPUS_MANIFEST_SHA256)
+    except SystemExit:
+        pass                                     # decision_problems makes every quality result NOT_EVALUATED
+    decision_problems_list = decision_problems(run, decision, source, chain_evidence, current_quality)
 
     # Validation: the baseline and every candidate, through the reviewed validation-only loader.
     problems, validation = {}, {}

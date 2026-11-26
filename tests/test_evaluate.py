@@ -8,7 +8,7 @@ import torch
 from mtpruning.corpus import FLORES_LANG, build_prompt, prompt_lang, sample_indices
 from mtpruning.evaluate import (EQUIV_ABS_TOL, chrf_pp, compare_runs, compare_trace,
                                 failure_flags, load_trace, paired_bootstrap, read_trace, save_trace,
-                                score_from_stats, segment_stats, trace_complete, trace_path)
+                                score_from_stats, segment_stats, trace_complete, trace_digest, trace_path)
 
 
 def flags(source, reference, hyp, tgt="en", finish="eos", tokens=(1, 2, 3)):
@@ -200,6 +200,34 @@ class TraceTests(unittest.TestCase):
             save_trace(directory, "s", self.trace(6, seed=3))
             self.assertTrue(trace_complete(directory, "s", record, expected_positions=6))
             self.assertFalse(trace_complete(directory, "s", record, expected_positions=7))
+
+    def test_malformed_trace_ranks_and_shapes_return_none_even_with_a_fresh_digest(self):
+        """R15-P2-01: structural rejection happens before any shape indexing."""
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            save_trace(directory, "s", self.trace(6, seed=3))
+            path = trace_path(directory, "s")
+            with np.load(path, allow_pickle=False) as data:
+                arrays = {name: data[name].copy() for name in data.files if name != "digest"}
+            cases = {
+                "scalar argmax": ("argmax", arrays["argmax"][0]),
+                "rank-2 argmax": ("argmax", arrays["argmax"][:, None]),
+                "rank-3 top values": ("top_values", arrays["top_values"][:, :, None]),
+                "rank-2 ids": ("ids", arrays["ids"][:, :, 0]),
+                "rank-2 weights": ("w", arrays["w"][:, :, 0]),
+                "rank-1 row hashes": ("row_hash", arrays["row_hash"][:, 0]),
+                "inconsistent top shapes": ("top_index", arrays["top_index"][:-1]),
+                "inconsistent route shapes": ("w", arrays["w"][:-1]),
+            }
+            for label, (name, value) in cases.items():
+                with self.subTest(label):
+                    broken = {**arrays, name: value}
+                    fresh = trace_digest(broken)
+                    np.savez_compressed(path, digest=np.array(fresh), **broken)
+                    self.assertIsNone(read_trace(directory, "s"))
+                    self.assertIsNone(load_trace(directory, "s"))
+            np.savez_compressed(path, digest=np.array(trace_digest(arrays)), **arrays)
+            self.assertIsNotNone(read_trace(directory, "s"))
 
     def test_a_length_mismatch_is_never_a_pass(self):
         a, b = self.trace(7, seed=1), self.trace(5, seed=1)      # the candidate stopped early

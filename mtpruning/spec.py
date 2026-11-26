@@ -17,12 +17,13 @@ MAX_CHRF_DROP = 1.0
 # The fixed real pilot plan (R14). This is the experiment of record: decide and report
 # verify the run directory against these constants, not against the mutable selection
 # file or CLI flags, so nothing can narrow the plan by editing both. The tiny rehearsal
-# fixture mirrors these counts (128 experts, top-8; 96/64 candidates), which is why one
-# plan governs both the rehearsal and the real run.
+# fixture mirrors the candidate counts (128 experts, top-8; 96/64) and uses its own
+# explicit two-witness rehearsal cap rather than silently taking the corpus maximum.
 PLAN = {
     "experts": 128,                     # released expert count = the identity no-op candidate
     "candidate_keeps": (96, 64),        # the real candidates, exactly these two
     "trace_witness_per_direction": 8,   # held-out validation witnesses per mechanism check
+    "rehearsal_trace_witness_per_direction": 2,
     "trace_split": "validation",        # held-out sentences, never the selection sentences
     "stock_per_direction": 1,           # reference-runtime witness per direction
     "stock_split": "validation",

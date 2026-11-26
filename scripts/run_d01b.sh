@@ -42,6 +42,9 @@ THREADS=${THREADS:-16}
 SKIP_WAIT=${SKIP_WAIT:-}
 MODE=${MODE:-real}
 mkdir -p "$RUN" "$PRUNED" "$CACHE_DIR" "$EVIDENCE_DIR/inputs"
+RUN=$(cd "$RUN" && pwd)
+PRUNED=$(cd "$PRUNED" && pwd)
+EVIDENCE_DIR=$(cd "$EVIDENCE_DIR" && pwd)
 cd "$REPO"
 CORPUS=$RUN/corpus/corpus.jsonl
 
@@ -66,7 +69,7 @@ fi
   lscpu | grep -E "^(Model name|CPU\(s\)|Thread\(s\) per core|Core\(s\) per socket|NUMA node\(s\)|L3 cache)"
   echo "flags of interest: $(lscpu | grep -o -E "avx[0-9a-z_]*|amx[a-z_]*" | sort -u | tr "\n" " ")"
   free -g
-  df -h / | sed -n '1p;2p'
+  df -h "$RUN" "$PRUNED" "$EVIDENCE_DIR"
   nvidia-smi --query-gpu=name,memory.total,memory.used --format=csv 2>&1
   ip -br addr | grep -v -E "^(lo|veth|br-|docker)"
   uptime
@@ -85,17 +88,9 @@ fi
 step "frozen corpus contract (a failure here is BLOCKED_CORPUS_CONTRACT: nothing is resampled)"
 "$PY" -m mtpruning corpus-check --corpus-dir "$RUN/corpus" --out "$RUN/corpus_receipt.json" "${PIN[@]}"
 
-step "baseline: calibration routing statistics and validation outputs"
-"$PY" -m mtpruning run --model "$MODEL_DIR" --corpus "$CORPUS" --out "$RUN/baseline/records.jsonl" \
-  --splits calibration,validation --stats "$RUN/baseline/stats" \
-  --trace-split validation --trace-dir "$RUN/baseline/traces" --trace-n "$TRACE_LIMIT"   --max-new-tokens "$MAX_NEW" "${LIMITED[@]}" "${COMMON[@]}"
-EXPERTS=$("$PY" -c "import json,sys; print(json.loads(open(sys.argv[1]).readline())['num_experts'])" "$RUN/baseline/records.jsonl")
-
-step "selection from the calibration routing, after the coverage check"
-"$PY" -m mtpruning select --run-dir "$RUN" --keep "$(echo "$CANDIDATES" | tr ' ' ',')" \
-  --out "$RUN/selection.json" --cache-dir "$CACHE_DIR" "${PIN[@]}"
-
-# Stop before filling the disk: a pruned checkpoint is about keep/experts of the source, plus slack.
+# Live, per-stage free-space checks on the actual output filesystems. The estimate is
+# deliberately simple and conservative: the largest identity (128-expert) copy, every
+# retained witness trace/journal, and the later evidence export. Witnesses are never reduced.
 needs_space() {
   local need avail
   need=$("$PY" - "$MODEL_DIR" "$1" <<'EOF'
@@ -109,49 +104,68 @@ EOF
   if [ "$avail" -lt "$need" ]; then echo "need $need bytes free in $PRUNED, have $avail: stopping"; exit 1; fi
 }
 
-# One full preflight before the stages that write: block early, with the numbers recorded,
-# instead of discovering a full disk mid-run (or silently reducing witnesses) (R13-P2-01).
-# It accounts for the whole retained working set with explicit assumptions: the largest
-# pruned checkpoint, every witness trace the plan retains (baseline + noop + masked and
-# mechanism per candidate), the journals, and the evidence copy of the run directory.
 disk_preflight() {
-  "$PY" - "$MODEL_DIR" "$RUN" "$EVIDENCE_DIR" <<'EOF'
-import json, os, subprocess, sys
-model_dir, run_dir, evidence_dir = sys.argv[1], sys.argv[2], sys.argv[3]
+  "$PY" - "$MODEL_DIR" "$RUN" "$PRUNED" "$EVIDENCE_DIR" "$1" "$MAX_NEW" "$TRACE_LIMIT" <<'EOF'
+import datetime, json, os, shutil, subprocess, sys
+model_dir, run_dir, pruned_dir, evidence_dir, stage = sys.argv[1:6]
+max_new, trace_limit = int(sys.argv[6]), int(sys.argv[7])
 total = json.load(open(model_dir + "/model.safetensors.index.json"))["metadata"]["total_size"]
 experts = json.load(open(model_dir + "/config.json"))["num_experts"]
-prune_peak = int(total * 96 / experts * 1.05) + 3_000_000_000      # the 96-expert candidate + slack
-# retained traces: baseline witnesses + noop + masked + mechanism per candidate; a position
-# costs at most ~1 KB on disk (top-64 logits/hashes + routing arrays), a witness sentence is
-# prompt + 640 generated positions at most; compression only shrinks this further.
-positions = 700 + 640
-witness_sentences = 6 * 8
-trace_runs = 1 + 1 + 2 * 2
+prune_peak = int(total * experts / experts * 1.05) + 3_000_000_000  # largest: the 128-copy + slack
+positions = 700 + max_new
+witness_sentences = 6 * trace_limit
+trace_runs = 1 + 1 + 2 * 2                         # baseline + noop + masked/mechanism for 96/64
 trace_budget = witness_sentences * trace_runs * positions * 1024
-journal_budget = (288 + 4 * 12) * 16_384        # payload text + routing cells, a few KB per sample
+journal_budget = (288 + 4 * 12) * 16_384
+run_budget = trace_budget + journal_budget
 def du(path):
     done = subprocess.run(["du", "-sb", path], capture_output=True, text=True)
     return int(done.stdout.split()[0]) if done.returncode == 0 else 0
-evidence_budget = int(du(run_dir) * 12 // 10) + 1_000_000_000
-needed = prune_peak + trace_budget + journal_budget + evidence_budget
-free = int(subprocess.run(["df", "--output=avail", "-B1", "/"], capture_output=True, text=True)
-           .stdout.splitlines()[1])
-receipt = {"needed_bytes": needed, "free_bytes": free, "sufficient": free >= needed,
-           "assumptions": {"prune_peak_bytes": prune_peak, "trace_budget_bytes": trace_budget,
+evidence_budget = int((du(run_dir) + run_budget) * 12 // 10) + 1_000_000_000
+requirements = (("RUN", run_dir, run_budget), ("PRUNED", pruned_dir, prune_peak),
+                ("EVIDENCE_DIR", evidence_dir, evidence_budget))
+filesystems = {}
+for label, path, needed in requirements:
+    device = os.stat(path).st_dev
+    item = filesystems.setdefault(device, {"device": device, "paths": [], "needed_bytes": 0,
+                                          "free_bytes": shutil.disk_usage(path).free})
+    item["paths"].append({"role": label, "path": os.path.abspath(path), "needed_bytes": needed})
+    item["needed_bytes"] += needed
+for item in filesystems.values():
+    item["sufficient"] = item["free_bytes"] >= item["needed_bytes"]
+checks = sorted(filesystems.values(), key=lambda item: item["device"])
+receipt = {"stage": stage, "checked": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+           "needed_bytes": sum(item["needed_bytes"] for item in checks),
+           "free_bytes": sum(item["free_bytes"] for item in checks),
+           "sufficient": all(item["sufficient"] for item in checks), "filesystems": checks,
+           "assumptions": {"largest_copy_experts": experts, "prune_peak_bytes": prune_peak,
+                           "run_budget_bytes": run_budget, "trace_budget_bytes": trace_budget,
                            "trace_positions_per_sentence": positions, "trace_runs": trace_runs,
                            "journal_budget_bytes": journal_budget, "evidence_budget_bytes": evidence_budget,
                            "witness_sentences": witness_sentences, "witness_count_never_reduced": True}}
 os.makedirs(evidence_dir + "/inputs", exist_ok=True)
-with open(evidence_dir + "/inputs/disk_preflight.json", "w") as handle:
-    json.dump(receipt, handle, indent=2, sort_keys=True)
-    handle.write("\n")
+for path in (evidence_dir + "/inputs/disk_preflight.json",
+             evidence_dir + "/inputs/disk_preflight_" + stage + ".json"):
+    with open(path, "w") as handle:
+        json.dump(receipt, handle, indent=2, sort_keys=True)
+        handle.write("\n")
 print(json.dumps(receipt))
-if free < needed:
-    sys.exit(f"disk preflight: need {needed} bytes for the retained working set, have {free}: stopping "
-             "(witness counts are never reduced to fit)")
+if not receipt["sufficient"]:
+    sys.exit(f"disk preflight {stage}: insufficient live free space on an actual output filesystem; "
+             "witness counts are never reduced to fit")
 EOF
 }
-disk_preflight
+
+step "baseline: calibration routing statistics and validation outputs"
+disk_preflight baseline
+"$PY" -m mtpruning run --model "$MODEL_DIR" --corpus "$CORPUS" --out "$RUN/baseline/records.jsonl" \
+  --splits calibration,validation --stats "$RUN/baseline/stats" \
+  --trace-split validation --trace-dir "$RUN/baseline/traces" --trace-n "$TRACE_LIMIT"   --max-new-tokens "$MAX_NEW" "${LIMITED[@]}" "${COMMON[@]}"
+EXPERTS=$("$PY" -c "import json,sys; print(json.loads(open(sys.argv[1]).readline())['num_experts'])" "$RUN/baseline/records.jsonl")
+
+step "selection from the calibration routing, after the coverage check"
+"$PY" -m mtpruning select --run-dir "$RUN" --keep "$(echo "$CANDIDATES" | tr ' ' ',')" \
+  --out "$RUN/selection.json" --cache-dir "$CACHE_DIR" "${PIN[@]}"
 
 mechanism() {       # mechanism <keep> <model dir> <equiv args...>
   local keep=$1 model=$2 folder=$RUN/k$1
@@ -167,6 +181,7 @@ mechanism() {       # mechanism <keep> <model dir> <equiv args...>
 }
 
 step "identity reload of the unpruned checkpoint ($EXPERTS experts) against the baseline traces"
+disk_preflight "k$EXPERTS"
 needs_space "$EXPERTS"
 rm -rf "$PRUNED/k$EXPERTS"    # leftovers of an interrupted prune; the record is only written after verification
 "$PY" -m mtpruning prune --model "$MODEL_DIR" --keep "$EXPERTS" --out "$PRUNED/k$EXPERTS" \
@@ -178,6 +193,7 @@ rm -rf "$PRUNED/k$EXPERTS"    # rebuildable from the selection; manifest, hashes
 for keep in $CANDIDATES; do
   folder=$RUN/k$keep
   step "k$keep: physical prune and tensor-level verification of the reload"
+  disk_preflight "k$keep"
   needs_space "$keep"
   rm -rf "$PRUNED/k$keep"
   "$PY" -m mtpruning prune --model "$MODEL_DIR" --selection "$RUN/selection.json" --keep "$keep" \
@@ -210,14 +226,18 @@ step "report"
 "$PY" -m mtpruning report --run-dir "$RUN" "${PIN[@]}"
 
 step "collect evidence"
+disk_preflight evidence
 # A retained-evidence manifest first: relative path -> sha256 for EVERY file the run kept,
 # witness traces included. The evidence directory carries the manifest plus the small
 # artifacts themselves; the large raw traces stay in $RUN at their recorded location and
 # can be re-verified against this manifest (R13-P2-01).
-(cd "$RUN" && find . -type f -not -name "*.timings.jsonl" -not -name "retained_manifest.json") | sort | while read -r f; do
+(cd "$RUN" && find . -type f -not -name "*.timings.jsonl" -not -name "retained_manifest.json" \
+    -not -name "retained_manifest.sha256") | sort | while read -r f; do
   sha=$(sha256sum "$RUN/$f" | cut -d' ' -f1)
   printf '%s  %s\n' "$sha" "$f"
 done > "$RUN/retained_manifest.sha256"
+printf '%s\n' "$RUN" > "$EVIDENCE_DIR/inputs/retained_run_location.txt"
+(cd "$RUN" && sha256sum -c retained_manifest.sha256) > "$EVIDENCE_DIR/inputs/retained_manifest.check.txt"
 step "evidence copy (JSON/JSONL/NPZ/SQLite/manifests; raw traces stay in the run directory)"
 (cd "$RUN" && find . -type f \( -name "*.json" -o -name "*.jsonl" -o -name "*.npz" -o -name "*.sqlite" \
     -o -name "*.identity.json" -o -name "report.md" -o -name "retained_manifest.sha256" \) \

@@ -107,10 +107,11 @@ def checkpoint_identity(model_dir, cache_dir=None, fresh: bool = True, exact_inv
     """Bind a checkpoint directory by content; refuse one that declares no provenance.
 
     ``fresh`` hashes the actual bytes; the trusted cache is only for stage-boundary
-    rechecks (see content_hashes). With ``exact_inventory`` (real qualification), the
-    pinned snapshot must carry exactly the pinned listing's files - every shard, config,
-    index and all four tokenizer files, and nothing else a loader could pick up
-    (R13-P1-02). Rehearsal checkpoints keep the two-file tokenizer requirement.
+    rechecks (see content_hashes). With ``exact_inventory`` (real qualification), a
+    pinned snapshot must carry exactly the pinned listing's files; a pruned checkpoint
+    must carry only its manifest-declared weights, config/index, four tokenizer files
+    and prune manifest. Nothing else a loader could pick up is allowed (R15-P1-01).
+    Rehearsal checkpoints keep the two-file tokenizer requirement.
     """
     from .spec import MODEL_REPO, MODEL_REVISION
     model_dir = Path(model_dir)
@@ -125,13 +126,23 @@ def checkpoint_identity(model_dir, cache_dir=None, fresh: bool = True, exact_inv
         _require(files, {**{f["name"]: f["sha256"] for f in manifest["files"]},
                          "model.safetensors.index.json": manifest["index_sha256"],
                          "config.json": manifest["config_sha256"]}, "prune manifest")
-        # The candidate's effective tokenizer bytes are bound separately: run_identity hashes
-        # them into the prompt field, and the shared identity fields refuse a candidate whose
-        # tokenizer differs from its baseline's (R13-P1-02).
-        missing = [name for name in REQUIRED_TOKENIZER_FILES if not (model_dir / name).exists()]
+        # The candidate's effective tokenizer bytes are bound separately from its weight
+        # digest. Real qualification also closes the loader's effective input inventory.
+        tokenizer = [name for name in TOKENIZER_FILES if (model_dir / name).exists()]
+        required = TOKENIZER_FILES if exact_inventory else REQUIRED_TOKENIZER_FILES
+        missing = [name for name in required if name not in tokenizer]
         if missing:
             raise ValueError(f"{model_dir} does not carry the tokenizer: {', '.join(missing)} missing")
-        return {"kind": "pruned", "num_experts": num_experts, "files": files, "teacher": manifest["source"]["digest"],
+        if exact_inventory:
+            on_disk = {name for name in os.listdir(model_dir) if not name.startswith(".")}
+            wanted = {*names, *TOKENIZER_FILES, "prune_manifest.json"}
+            if on_disk != wanted:
+                extra, absent = sorted(on_disk - wanted), sorted(wanted - on_disk)
+                raise ValueError(f"{model_dir} is not the exact pruned loader inventory (R15-P1-01): "
+                                 f"extra={extra[:4]} missing={absent[:4]}")
+        tokenizer_files = content_hashes(model_dir, tokenizer, cache_dir, trust_cache=not fresh)
+        return {"kind": "pruned", "num_experts": num_experts, "files": files, "tokenizer": tokenizer_files,
+                "teacher": manifest["source"]["digest"],
                 "candidate": digest({"kind": "pruned", "num_experts": num_experts, "kept": manifest["kept"],
                                      "files": files})}
     if provenance.exists():

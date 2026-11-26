@@ -65,6 +65,20 @@ class StageTests(unittest.TestCase):
         self.assertEqual(len(data["files"]), 4)          # config, index and two shards
         self.assertEqual(data["teacher"], read_json(self.world["run"] / "baseline" / "records.jsonl.identity.json")["teacher"])
 
+    def test_real_pruned_loader_inventory_is_exact(self):
+        from mtpruning.identity import TOKENIZER_FILES, checkpoint_identity
+        model = self.world["root"] / "pruned" / "k64"
+        bound = checkpoint_identity(model, self.world["cache"], fresh=False, exact_inventory=True)
+        self.assertEqual(bound["kind"], "pruned")
+        self.assertEqual(sorted(bound["tokenizer"]), sorted(TOKENIZER_FILES))
+        extra = model / "unapproved-loader-input.bin"
+        extra.write_bytes(b"x")
+        try:
+            with self.assertRaisesRegex(ValueError, "exact pruned loader inventory"):
+                checkpoint_identity(model, self.world["cache"], fresh=False, exact_inventory=True)
+        finally:
+            extra.unlink()
+
     def test_run_refuses_the_test_split_outside_the_final_test_stage(self):
         with self.assertRaisesRegex(SystemExit, "FINAL_TEST_DISABLED"):
             pipeline.execute_run(util.options(self.world, splits=["test"]))
@@ -142,6 +156,37 @@ class StageTests(unittest.TestCase):
         def stale_noop(run):     # a prior run's no-op receipt in place of this one's
             shutil.copy(run / "k96" / "equiv.json", run / "k128" / "equiv.json")
 
+        def stale_same_reference_noop(run):
+            path = run / "k128" / "equiv.json"
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["binding"]["candidate"] = data["binding"]["reference"]
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+        def noop_trace_deleted(run):
+            next((run / "k128" / "mechanism" / "traces").glob("*.trace.npz")).unlink()
+
+        def baseline_trace_deleted(run):
+            next((run / "baseline" / "traces").glob("*.trace.npz")).unlink()
+
+        def foreign_noop_trace(run):
+            source = next((run / "k128" / "mechanism" / "traces").glob("*.trace.npz"))
+            shutil.copyfile(source, source.with_name("calibration__zh-my__1.trace.npz"))
+
+        def noop_journal_deleted(run):
+            (run / "k128" / "mechanism" / "records.jsonl.sqlite").unlink()
+
+        def stock_setting(run):
+            path = run / "k64" / "stock_check.json"
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["binding"]["max_new_tokens"] += 1
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+        def stock_results(run):
+            path = run / "k64" / "stock_check.json"
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["results"][0]["reference_runtime"] += " altered"
+            path.write_text(json.dumps(data), encoding="utf-8")
+
         def witness_deleted(run):    # a retained witness trace damaged after the equivalence
             path = next((run / "k64" / "masked" / "traces").glob("*.trace.npz"))
             path.write_bytes(path.read_bytes()[:64])
@@ -150,6 +195,13 @@ class StageTests(unittest.TestCase):
                                 (drop_noop, "the identity no-op equivalence receipt is missing"),
                                 (swapped, "k64's equivalence receipt does not belong"),
                                 (stale_noop, "the identity no-op receipt does not belong"),
+                                (stale_same_reference_noop, "current no-op mechanism run"),
+                                (noop_trace_deleted, "identity no-op mechanism replay.*fixed witness IDs"),
+                                (baseline_trace_deleted, "baseline replay.*fixed witness IDs"),
+                                (foreign_noop_trace, "identity no-op mechanism replay.*fixed witness IDs"),
+                                (noop_journal_deleted, "identity no-op mechanism replay.*journal is missing"),
+                                (stock_setting, "stale tokenizer/runtime/decoding settings"),
+                                (stock_results, "results do not equal the exact validation record witnesses"),
                                 (altered, "k64 validation replay"),
                                 (interrupted_journal, "k64 validation replay"),
                                 (narrowed, "are not exactly the plan's"),
@@ -182,8 +234,11 @@ class StageTests(unittest.TestCase):
             util.cli(self.world, "equiv", "--run-dir", run, "--kind", "masked", "--keep", 64, "--trace-n", 2,
                      "--reference-records", masked / "records.jsonl", "--reference-traces", masked / "traces",
                      "--selection", run / "selection.json", *candidate(96))
+        with self.assertRaisesRegex(SystemExit, "fixed pilot traces validation, not calibration"):
+            util.cli(self.world, *common, "--kind", "noop", "--keep", 128, "--trace-split", "calibration",
+                     *candidate(128))                         # same count, wrong held-out split
         incomplete = self.copy(lambda run: next((run / "baseline" / "traces").glob("*.trace.npz")).unlink())
-        with self.assertRaisesRegex(SystemExit, "does not match the journal's record"):
+        with self.assertRaisesRegex(SystemExit, "fixed witness IDs"):
             util.cli(self.world, "equiv", "--run-dir", incomplete, "--kind", "noop", "--keep", 128, "--trace-n", 2,
                      "--reference-records", incomplete / "baseline" / "records.jsonl",
                      "--reference-traces", incomplete / "baseline" / "traces",
@@ -191,6 +246,28 @@ class StageTests(unittest.TestCase):
                      "--candidate-traces", incomplete / "k128" / "mechanism" / "traces",
                      "--prune-record", incomplete / "k128" / "prune.json", "--out", incomplete / "never.json")
         self.assertFalse((incomplete / "never.json").exists())
+
+    def test_equiv_refuses_a_genuine_mixed_mode_pair(self):
+        """A supported real-labelled run and a rehearsal counterpart cannot form a pair."""
+        from unittest import mock
+        from mtpruning import identity
+        run = self.copy()
+        actual = identity.checkpoint_identity(self.world["model"])
+        pinned = {"kind": "pinned-snapshot", "num_experts": 128, "files": actual["files"],
+                  "teacher": actual["teacher"], "candidate": actual["candidate"]}
+        mixed = run / "mixed-real"
+        with mock.patch.object(pipeline, "CORPUS_MANIFEST_SHA256", self.world["manifest_sha256"]), \
+                mock.patch.object(identity, "checkpoint_identity", return_value=pinned):
+            pipeline.execute_run(util.options(self.world, out=mixed / "records.jsonl", splits=["validation"],
+                                              limit=2, stats=None, trace_dir=mixed / "traces", trace_n=2,
+                                              mode="real", manifest_sha256=None))
+        with self.assertRaisesRegex(SystemExit, "equivalence: run reference differs in mode"):
+            util.cli(self.world, "equiv", "--run-dir", run, "--kind", "noop", "--keep", 128, "--trace-n", 2,
+                     "--reference-records", mixed / "records.jsonl", "--reference-traces", mixed / "traces",
+                     "--candidate-records", run / "k128" / "mechanism" / "records.jsonl",
+                     "--candidate-traces", run / "k128" / "mechanism" / "traces",
+                     "--prune-record", run / "k128" / "prune.json", "--out", run / "never-mixed.json")
+        self.assertFalse((run / "never-mixed.json").exists())
 
     def test_decide_refuses_mixed_identity_and_unnamed_candidates(self):
         def mixed(run):
@@ -210,7 +287,7 @@ class StageTests(unittest.TestCase):
             rows = lines(path)
             rows[0]["splits"] = ["validation", "test"]
             write(path, rows)
-        for change, message in ((mixed, "does not match the journal's identity: teacher"),
+        for change, message in ((mixed, "run identity differs from the baseline in teacher"),
                                 (renamed, "not pruned the way the recomputed selection names"),
                                 (exposed, "reference-runtime receipt does not match")):
             with self.subTest(message):
@@ -299,6 +376,30 @@ class StageTests(unittest.TestCase):
                                  "--cache-dir", self.world["cache"])
                 self.assertFalse((run / "never.json").exists())
 
+    def test_stock_refuses_wrong_tokenizer_or_generation_settings_before_loading(self):
+        from unittest import mock
+        run = self.copy()
+        other = self.world["root"] / "wrong-tokenizer-model"
+        shutil.copytree(self.world["root"] / "pruned" / "k64", other)
+        (other / "tokenizer.json").write_bytes((other / "tokenizer.json").read_bytes() + b" ")
+        original = self.world["root"] / "pruned" / "k64"
+
+        def no_load(model_cls, path, **kwargs):
+            raise AssertionError("a refused stock check must not invoke either reference loader")
+        for model, max_new, threads, message in (
+                (other, 6, 2, "tokenizer bytes differ"),
+                (original, 7, 2, "greedy/max_new_tokens settings differ"),
+                (original, 6, 3, "runtime/threads differ")):
+            with self.subTest(message):
+                with mock.patch("transformers.AutoModelForCausalLM.from_pretrained", side_effect=no_load), \
+                        mock.patch("transformers.AutoTokenizer.from_pretrained", side_effect=no_load):
+                    with self.assertRaisesRegex(SystemExit, message):
+                        util.cli(self.world, "stock-check", "--model", model, "--corpus", self.world["corpus"],
+                                 "--records", run / "k64" / "records.jsonl", "--out", run / "never-stock.json",
+                                 "--splits", "validation", "--limit", 1, "--max-new-tokens", max_new,
+                                 "--threads", threads, "--cache-dir", self.world["cache"])
+                self.assertFalse((run / "never-stock.json").exists())
+
     def test_selection_and_decision_are_bound_to_the_run_identity(self):
         run = self.world["run"]
         selection = json.loads((run / "selection.json").read_text(encoding="utf-8"))
@@ -312,6 +413,13 @@ class StageTests(unittest.TestCase):
         self.assertEqual(decision["identity"]["corpus"], selection["identity"]["corpus"])
         self.assertNotIn("test", decision["runs"]["k64"]["validation_key"])     # keys are hashes
         self.assertEqual(decision["runs"]["k64"]["records_sha256"], util.sha256(run / "k64" / "records.jsonl"))
+        self.assertEqual(decision["evidence"]["witness_count"], 2)
+        self.assertEqual(len(decision["evidence"]["witness_ids"]), 12)
+        self.assertTrue(all(sample_id.startswith("validation:") for sample_id in decision["evidence"]["witness_ids"]))
+        self.assertEqual(sorted(decision["evidence"]["baseline"]["trace_digests"]),
+                         sorted(decision["evidence"]["witness_ids"]))
+        self.assertEqual(decision["evidence"]["noop"]["mechanism"]["candidate"],
+                         decision["evidence"]["noop"]["candidate"])
 
     def test_the_editable_summary_never_drives_the_witness_gate(self):
         """R13-P1-03: equiv and decide count the changed-route witness from the committed
@@ -345,7 +453,7 @@ class StageTests(unittest.TestCase):
         # the masked run's journal carries changed=0, and its physical no-op counterpart passes
         util.cli(self.world, "select", "--run-dir", run, "--keep", "128", "--out", run / "sel128.json",
                  "--cache-dir", self.world["cache"])
-        identity_mask = dict(splits=["validation"], limit=2, stats=None, trace_n=2,
+        identity_mask = dict(splits=["validation"], limit=3, stats=None, trace_n=2,
                              mask=str(run / "sel128.json"), mask_keep=128)
         zero_folder = run / "zero"
         pipeline_module.execute_run(util.options(self.world, out=zero_folder / "masked" / "records.jsonl",
@@ -359,7 +467,25 @@ class StageTests(unittest.TestCase):
         pipeline_module.execute_run(util.options(self.world, model=self.world["root"] / "pruned" / "k128",
                                                  out=zero_folder / "mechanism" / "records.jsonl",
                                                  trace_dir=zero_folder / "mechanism" / "traces",
-                                                 splits=["validation"], limit=2, stats=None, trace_n=2))
+                                                 splits=["validation"], limit=3, stats=None, trace_n=2))
+        # Inflate only the extra, untraced journal rows with valid payload digests. They must
+        # not manufacture a changed-route witness for the two fixed IDs per direction.
+        from mtpruning.reviewed import trace as reviewed_trace
+        masked_records = zero_folder / "masked" / "records.jsonl"
+        untraced = {row["id"] for row in lines(masked_records)[1:] if not row.get("traced")}
+        self.assertEqual(len(untraced), 6)
+        database = sqlite3.connect(str(masked_records) + ".sqlite")
+        for sample_id, payload, _sha in database.execute("SELECT id, payload, sha FROM samples").fetchall():
+            if sample_id in untraced:
+                value = json.loads(payload)
+                for audit in value["audit"].values():
+                    audit["changed"] = audit["decisions"]
+                database.execute("UPDATE samples SET payload = ?, sha = ? WHERE id = ?",
+                                 (reviewed_trace.canon(value), reviewed_trace.digest(value), sample_id))
+        database.commit()
+        database.close()
+        forged["journal"]["sha256"] = util.sha256(str(masked_records) + ".sqlite")
+        summary_path.write_text(json.dumps(forged), encoding="utf-8")
         with self.assertRaisesRegex(SystemExit, "insufficient evidence"):
             util.cli(self.world, "equiv", "--kind", "masked", "--keep", 128, "--run-dir", run,
                      "--prune-record", run / "k128" / "prune.json", "--trace-n", 2,

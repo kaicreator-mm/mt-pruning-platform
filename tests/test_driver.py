@@ -2,6 +2,7 @@
 split, the final test needs the review, and a changed corpus blocks everything."""
 import json
 import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -52,14 +53,27 @@ class DriverTests(unittest.TestCase):
         for name in ("corpus_receipt.json", "decision.json", "report.md", "selection.json",
                      "k128/equiv.json", "k96/equiv.json", "k64/equiv.json", "k96/prune.json", "k64/prune.json",
                      "k96/masked/records.jsonl.summary.json", "inputs/checkpoint_content.json", "inputs/host.txt",
-                     "inputs/disk_preflight.json", "retained_manifest.sha256"):
+                     "inputs/disk_preflight.json", "inputs/retained_run_location.txt",
+                     "inputs/retained_manifest.check.txt", "retained_manifest.sha256"):
             self.assertTrue((evidence / name).exists(), name)
         preflight = json.loads((evidence / "inputs" / "disk_preflight.json").read_text(encoding="utf-8"))
         self.assertTrue(preflight["sufficient"])
         self.assertTrue(preflight["assumptions"]["witness_count_never_reduced"])
+        self.assertEqual(preflight["assumptions"]["largest_copy_experts"], 128)
+        self.assertTrue(all(item["sufficient"] for item in preflight["filesystems"]))
+        self.assertEqual({path["role"] for item in preflight["filesystems"] for path in item["paths"]},
+                         {"RUN", "PRUNED", "EVIDENCE_DIR"})
+        for stage in ("baseline", "k128", "k96", "k64", "evidence"):
+            self.assertTrue((evidence / "inputs" / f"disk_preflight_{stage}.json").exists(), stage)
+        self.assertEqual((evidence / "inputs" / "retained_run_location.txt").read_text().strip(), str(run.resolve()))
         # the retained manifest covers the run directory's evidence, witness traces included
         retained = (evidence / "retained_manifest.sha256").read_text(encoding="utf-8").splitlines()
         self.assertTrue(any("baseline/traces/" in line and line.endswith(".trace.npz") for line in retained), retained)
+        self.assertFalse(any(line.endswith("retained_manifest.sha256") for line in retained))
+        checked = subprocess.run(["sha256sum", "-c", "retained_manifest.sha256"], cwd=run,
+                                 capture_output=True, text=True)
+        self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+        self.assertNotIn("FAILED", (evidence / "inputs" / "retained_manifest.check.txt").read_text())
         # The journals and their identity bindings are evidence too: an independent reviewer
         # can reconstruct every aggregate and every trace digest from them (R11-P1-04).
         journals = sorted(p.relative_to(evidence).as_posix() for p in evidence.rglob("*.sqlite"))

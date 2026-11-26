@@ -37,11 +37,12 @@ import torch
 
 from . import __version__
 from .calibration import SampleAudit, SampleRouting, mask_audit_report, rebuild, save_stats, select, validate_payload
-from .corpus import DIRECTIONS, SPLITS, build_corpus
+from .corpus import DIRECTIONS, PROMPT, SPLITS, TARGET_NAME, build_corpus
 from .engine import Checkpoint, Engine
 from .evaluate import chrf_pp, compare_runs, save_trace, trace_complete
 from .frozen import BlockedCorpus, load_frozen_corpus
-from .identity import FIELDS, TOKENIZER_FILES, checkpoint_identity, digest, key, run_identity, sha256_file
+from .identity import (FIELDS, checkpoint_identity, code_identity, digest, key, run_identity, runtime_identity,
+                       sha256_file)
 from .prune import verify_pruned, write_pruned
 from .reviewed import bridge, handoff, trace
 from .spec import CORPUS_MANIFEST_SHA256, DECODING, MAX_CHRF_DROP, PLAN
@@ -158,7 +159,7 @@ def committed_samples(journal, contexts: dict, identity: dict, checkpoint: Check
 
 def run_provenance(records_path: Path, contexts: dict, expected_traced: list[str] | None = None,
                    traces_dir: Path | None = None, checkpoint: Checkpoint | None = None,
-                   audit_required: bool | None = None) -> dict:
+                   audit_required: bool | None = None, shared_header: dict | None = None) -> dict:
     """Replay a run's journal against its exported records, and its traces against the journal.
 
     The records export must be exactly what the journal replays to - every row checked
@@ -170,15 +171,21 @@ def run_provenance(records_path: Path, contexts: dict, expected_traced: list[str
     position count matching prompt + generated tokens (R13-P1-01/P1-03). Every payload is
     checked against its stored digest and the run's sample keys even without
     ``checkpoint``; with it, every payload is also validated in full, and with
-    ``audit_required`` the mask-audit presence rule is enforced and the accumulated
-    changed-decision count of the journal (not of any editable summary) is returned. A
-    checkpoint is only available while its bytes are on disk - the driver deletes a pruned
+    ``audit_required`` the mask-audit presence rule is enforced and the changed-decision
+    count is accumulated only over the fixed traced IDs, never over extra untraced
+    samples. ``shared_header`` pins every non-protocol identity field to the baseline.
+    A checkpoint is only available while its bytes are on disk - the driver deletes a pruned
     checkpoint after its receipts, which is why later stages replay without one.
     """
     records_path = Path(records_path)
     header, rows = read_run(records_path)
     if header is None:
         raise SystemExit(f"{records_path} has no run header")
+    if shared_header is not None:
+        differ = [name for name in SHARED_FIELDS
+                  if header["identity"].get(name) != shared_header["identity"].get(name)]
+        if differ:
+            raise SystemExit(f"{records_path}: run identity differs from the baseline in {', '.join(differ)}")
     journal_file = journal_path(records_path)
     if not journal_file.exists():
         raise SystemExit(f"{records_path}: the run journal is missing")
@@ -196,7 +203,7 @@ def run_provenance(records_path: Path, contexts: dict, expected_traced: list[str
     if header.get("identity_keys") != full["sample_keys"]:
         raise SystemExit(f"{records_path}: the exported identity keys are not the journal's")
     journal = trace.Journal(journal_file, binding)
-    samples, audit_changed = [], 0
+    samples = []
     for sample_id, payload in journal.records():        # verifies every payload against its stored digest
         if sample_id not in contexts:
             raise SystemExit(f"the journal holds {sample_id}, which is not in the frozen corpus")
@@ -209,8 +216,6 @@ def run_provenance(records_path: Path, contexts: dict, expected_traced: list[str
                              audit_required)
         elif audit_required is not None and (sample.get("audit") is not None) is not audit_required:
             raise SystemExit(f"{sample_id}: mask audit presence does not match the run kind")
-        if audit_required and sample.get("audit") is not None:
-            audit_changed += sum(entry["changed"] for entry in sample["audit"].values())
         samples.append(sample)
     journal.close()
     by_id = {row["id"]: row for row in rows}
@@ -226,10 +231,17 @@ def run_provenance(records_path: Path, contexts: dict, expected_traced: list[str
     if expected_traced is not None and traced != sorted(expected_traced):
         raise SystemExit(f"{records_path}: traced sentences {len(traced)} do not cover exactly the expected "
                          f"{len(expected_traced)}")
+    witness_ids = set(expected_traced if expected_traced is not None else traced)
+    audit_changed = sum(entry["changed"] for sample in samples if sample["id"] in witness_ids
+                        and sample.get("audit") is not None for entry in sample["audit"].values())
     if traces_dir is not None:
         trace_digests = {}
+        trace_files = sorted(path.name[:-len(".trace.npz")].replace("__", ":")
+                             for path in Path(traces_dir).glob("*.trace.npz"))
+        if trace_files != sorted(witness_ids):
+            raise SystemExit(f"{traces_dir}: trace files do not cover exactly the fixed witness IDs")
         for sample in samples:
-            if sample["id"] in (expected_traced or traced):
+            if sample["id"] in witness_ids:
                 expected_positions = sample["prompt_tokens"] + sample["new_tokens"]
                 if not sample.get("trace") or not trace_complete(traces_dir, sample["id"], sample["trace"],
                                                                  expected_positions):
@@ -261,6 +273,25 @@ def first_per_direction(contexts: dict, split: str, count: int) -> list[str]:
     if len(ids) != count * len(DIRECTIONS):
         raise SystemExit(f"the frozen corpus has fewer than {count} {split} sentences in some direction")
     return ids
+
+
+def pilot_witness_ids(contexts: dict, mode: str) -> list[str]:
+    """The fixed held-out witness IDs; only rehearsal may use the explicit corpus-size cap."""
+    available = min(sum(1 for record in contexts.values()
+                        if record["split"] == PLAN["trace_split"] and record["direction"] == direction)
+                    for direction in DIRECTIONS)
+    if mode not in ("real", "rehearsal"):
+        raise SystemExit(f"unknown pilot mode: {mode!r}")
+    if mode == "real":
+        if available < PLAN["trace_witness_per_direction"]:
+            raise SystemExit(f"a real pilot requires {PLAN['trace_witness_per_direction']} validation witnesses "
+                             f"per direction, the corpus supports {available}")
+        count = PLAN["trace_witness_per_direction"]
+    else:
+        count = min(PLAN["rehearsal_trace_witness_per_direction"], available)
+    if count < 1:
+        raise SystemExit(f"the corpus holds no {PLAN['trace_split']} sentences")
+    return first_per_direction(contexts, PLAN["trace_split"], count)
 
 
 @dataclass
@@ -608,21 +639,27 @@ def cmd_verify(args) -> None:
 
 
 def cmd_equiv(args) -> None:
-    """Compare two traced runs; the reference traces must cover exactly the expected sentences."""
+    """Compare two traced runs against the baseline and the fixed held-out witness IDs."""
     _, contexts = frozen(args.run_dir, args.manifest_sha256)
-    expected = first_per_direction(contexts, args.trace_split, args.trace_n)
+    baseline_header, _ = read_run(Path(args.run_dir) / "baseline" / "records.jsonl")
     reference_header, reference_rows = read_run(args.reference_records)
     candidate_header, candidate_rows = read_run(args.candidate_records)
-    if reference_header is None or candidate_header is None:
-        raise SystemExit("both runs are needed")
-    differ = [name for name in SHARED_FIELDS
-              if reference_header["identity"][name] != candidate_header["identity"][name]]
-    if differ:
-        raise SystemExit(f"the two runs were not made under the same {', '.join(differ)}")
+    if baseline_header is None or reference_header is None or candidate_header is None:
+        raise SystemExit("the baseline and both compared runs are needed")
+    if args.trace_split != PLAN["trace_split"]:
+        raise SystemExit(f"the fixed pilot traces {PLAN['trace_split']}, not {args.trace_split}")
+    expected = pilot_witness_ids(contexts, baseline_header["identity"]["mode"])
+    if args.trace_n != len(expected) // len(DIRECTIONS):
+        raise SystemExit(f"this corpus's fixed rehearsal cap/plan requires {len(expected) // len(DIRECTIONS)} "
+                         f"witnesses per direction, not {args.trace_n}")
+    shared_identity({"baseline": baseline_header, "reference": reference_header, "candidate": candidate_header},
+                    "equivalence")
     prune = read_json(args.prune_record)
+    expected_digest = pruned_candidate_digest(prune["manifest"])
     pruned = (prune["verify"]["pass"] and candidate_header["masked_keep"] is None
-              and candidate_header["identity"]["candidate"] == pruned_candidate_digest(prune["manifest"])
-              and prune["manifest"]["source"]["digest"] == reference_header["identity"]["teacher"])
+              and candidate_header["identity"]["candidate"] == expected_digest
+              and prune.get("candidate_digest") == expected_digest
+              and prune["manifest"]["source"]["digest"] == baseline_header["identity"]["teacher"])
     if args.kind == "noop":
         pair = pruned and reference_header["masked_keep"] is None and prune["verify"]["identity_mapping"] \
             and reference_header["num_experts"] == candidate_header["num_experts"] == args.keep
@@ -644,14 +681,16 @@ def cmd_equiv(args) -> None:
         if header is None:
             raise SystemExit(f"{records_path} has no run header")
         provenance[label] = receipt_binding(run_provenance(records_path, contexts, expected, Path(traces_dir),
-                                                           checkpoint=Checkpoint(header["model"])))
+                                                           checkpoint=Checkpoint(header["model"]),
+                                                           shared_header=baseline_header))
     if args.kind == "masked":
         # A masked mechanism check without a real changed-route witness proves nothing:
         # zero changes are insufficient evidence, not an automatic pass (R11-P1-03). The
         # count comes from the masked run's committed journal payloads - not from the
         # editable summary - and the journal replay enforces the audit's presence.
         masked_reference = run_provenance(args.reference_records, contexts, expected, Path(args.reference_traces),
-                                          checkpoint=Checkpoint(reference_header["model"]), audit_required=True)
+                                          checkpoint=Checkpoint(reference_header["model"]), audit_required=True,
+                                          shared_header=baseline_header)
         if masked_reference["audit_changed"] == 0:
             raise SystemExit("the mask changed no routing decision on this witness (counted from the journal): "
                              "zero changes are insufficient evidence, not an automatic pass")
@@ -707,16 +746,41 @@ def cmd_stock_check(args) -> None:
             raise SystemExit(f"{sentence_id}: a test-context sentence can never be a witness, "
                              "whatever the exported row claims")
         picked.append(row)
-    # The actually loaded checkpoint must be the candidate the records came from.
-    actual = checkpoint_identity(args.model, args.cache_dir, fresh=False)
-    if actual["candidate"] != header["identity"]["candidate"] or actual["teacher"] != header["identity"]["teacher"]:
+    # The actually loaded checkpoint, its effective tokenizer and every generation/runtime
+    # setting must be the validated run's before either reference loader is called.
+    validated = read_json(binding_path(args.records))
+    mode = header["identity"].get("mode")
+    actual = checkpoint_identity(args.model, args.cache_dir, fresh=False, exact_inventory=(mode == "real"))
+    if actual["kind"] != "pruned" or actual["candidate"] != header["identity"]["candidate"] \
+            or actual["teacher"] != header["identity"]["teacher"]:
         raise SystemExit(f"{args.model} is not the checkpoint whose records this reference check is defined for")
+    if mode == "real" and read_json(Path(args.model) / "prune_manifest.json")["source"]["kind"] != "pinned-snapshot":
+        raise SystemExit("a real reference-runtime check requires a candidate pruned from the pinned teacher")
+    tokenizer_files = actual["tokenizer"]
+    if tokenizer_files != validated["detail"]["tokenizer"]:
+        raise SystemExit("the reference runtime's tokenizer bytes differ from the validated run; refusing to load")
+    if args.limit != PLAN["stock_per_direction"]:
+        raise SystemExit(f"the fixed reference check uses {PLAN['stock_per_direction']} witness per direction")
+    if args.max_new_tokens != header["max_new_tokens"] or args.max_new_tokens != validated["detail"]["max_new_tokens"] \
+            or DECODING != header["decoding"] or DECODING != validated["detail"]["decoding"]:
+        raise SystemExit("the reference runtime's greedy/max_new_tokens settings differ from the validated run")
+    runtime = runtime_identity(args.threads)
+    if runtime != validated["detail"]["runtime"] or args.threads != validated["detail"]["runtime"]["threads"]:
+        raise SystemExit("the reference runtime/threads differ from the validated run; refusing to load")
+    code = code_identity()
+    actual_shared = {
+        "teacher": actual["teacher"], "corpus": header["identity"]["corpus"],
+        "prompt": digest({"templates": PROMPT, "target_names": TARGET_NAME, "tokenizer": tokenizer_files}),
+        "runtime": digest(runtime), "code": digest(code["files"]),
+        "decoding": digest({"decoding": DECODING, "max_new_tokens": args.max_new_tokens}), "mode": mode,
+    }
+    differ = [name for name in SHARED_FIELDS if actual_shared[name] != header["identity"].get(name)]
+    if differ:
+        raise SystemExit(f"the reference runtime differs from the validated run in {', '.join(differ)}")
     torch.set_num_threads(args.threads)
     model = AutoModelForCausalLM.from_pretrained(args.model, dtype=torch.bfloat16,
                                                  attn_implementation="eager").eval()
     tokenizer = AutoTokenizer.from_pretrained(args.model)
-    tokenizer_files = {name: sha256_file(Path(args.model) / name) for name in TOKENIZER_FILES
-                       if (Path(args.model) / name).exists()}
     results = []
     for row in picked:
         ids = torch.tensor([contexts[row["id"]]["prompt_ids"]])
@@ -728,11 +792,11 @@ def cmd_stock_check(args) -> None:
     same = sum(r["text_equal"] for r in results)
     # The receipt binds what was actually loaded and run, not what the records merely claim.
     binding = {"candidate": actual["candidate"], "teacher": header["identity"]["teacher"],
-               "corpus": header["identity"]["corpus"], "mode": header["identity"].get("mode"),
+               "corpus": header["identity"]["corpus"], "mode": mode, "shared": actual_shared,
                "records_sha256": sha256_file(args.records),
                "journal_sha256": sha256_file(journal_path(Path(args.records))),
                "picked_ids": [r["id"] for r in results], "model_path": str(Path(args.model).resolve()),
-               "model_kind": actual["kind"], "tokenizer": tokenizer_files,
+               "model_kind": actual["kind"], "tokenizer": tokenizer_files, "runtime": runtime,
                "decoding": DECODING, "max_new_tokens": args.max_new_tokens, "threads": args.threads}
     dump(args.out, {"model": str(Path(args.model).resolve()), "sentences": len(results), "text_equal": same,
                     "transformers": transformers.__version__, "attention": "eager", "binding": binding,
@@ -790,18 +854,13 @@ def verify_pilot_chain(run: Path, manifest_sha256: str, cache_dir=None) -> tuple
         return [f"{baseline} has no run header"], evidence
     try:
         manifest, contexts = frozen(run, manifest_sha256)
-        # The witness count is the plan's, capped by what this corpus actually holds: the
-        # frozen real corpus guarantees the plan's count, the tiny rehearsal fixture is
-        # deliberately smaller. A real decision is refused unless the plan count is met.
-        available = min(sum(1 for record in contexts.values()
-                            if record["split"] == PLAN["trace_split"] and record["direction"] == direction)
-                        for direction in DIRECTIONS)
-        witness_count = min(PLAN["trace_witness_per_direction"], available)
-        if witness_count < 1:
-            raise SystemExit(f"the corpus holds no {PLAN['trace_split']} sentences")
+        witness_ids = pilot_witness_ids(contexts, baseline_header["identity"]["mode"])
+        witness_count = len(witness_ids) // len(DIRECTIONS)
         stock_ids = first_per_direction(contexts, PLAN["stock_split"], PLAN["stock_per_direction"])
         evidence["corpus_sha256"] = manifest["corpus_sha256"]
         evidence["witness_count"] = witness_count
+        evidence["witness_split"] = PLAN["trace_split"]
+        evidence["witness_ids"] = witness_ids
     except SystemExit as error:                    # a blocked corpus blocks everything
         return [str(error)], evidence
 
@@ -823,9 +882,11 @@ def verify_pilot_chain(run: Path, manifest_sha256: str, cache_dir=None) -> tuple
     # The teacher on disk must still be the one the baseline journal bound.
     baseline_checkpoint = None
     try:
-        current = checkpoint_identity(baseline_header["model"], cache_dir, fresh=False)
-        if current["teacher"] != binding["teacher"]:
-            problems.append("the baseline checkpoint on disk is no longer the teacher the journal recorded")
+        current = checkpoint_identity(baseline_header["model"], cache_dir, fresh=False,
+                                      exact_inventory=(mode == "real"))
+        if current["teacher"] != binding["teacher"] or current["candidate"] != binding["candidate"] \
+                or current["kind"] != checkpoint_kind:
+            problems.append("the baseline checkpoint on disk is no longer the identity the journal recorded")
         baseline_checkpoint = Checkpoint(baseline_header["model"])
     except (ValueError, RuntimeError, OSError, KeyError) as error:
         problems.append(f"the baseline checkpoint cannot be verified: {type(error).__name__}: {error}")
@@ -840,9 +901,11 @@ def verify_pilot_chain(run: Path, manifest_sha256: str, cache_dir=None) -> tuple
                             f"per direction, the corpus supports {evidence.get('witness_count')}")
     baseline_provenance = None
     try:
-        baseline_provenance = run_provenance(baseline, contexts, checkpoint=baseline_checkpoint)
+        baseline_provenance = run_provenance(baseline, contexts, expected_traced=witness_ids,
+                                             traces_dir=run / "baseline" / "traces", checkpoint=baseline_checkpoint)
         evidence["baseline"] = {name: baseline_provenance[name]
-                                for name in ("records_sha256", "journal_sha256", "teacher", "mode")}
+                                for name in ("records_sha256", "journal_sha256", "teacher", "candidate", "mode",
+                                             "traced", "trace_digests")}
     except SystemExit as error:
         problems.append(f"baseline replay: {error}")
     if baseline_checkpoint is not None:
@@ -886,22 +949,45 @@ def verify_pilot_chain(run: Path, manifest_sha256: str, cache_dir=None) -> tuple
                 problems.append(f"the selection cannot be recomputed from the baseline journal: "
                                 f"{type(error).__name__}: {error}")
 
-    # The identity no-op receipt of the unpruned checkpoint is part of the chain.
+    # The identity no-op is a full controlled stage, not just two receipts: replay both
+    # sides, their exact witness files, the recomputed pruned digest and the source teacher.
     noop_prune = read_receipt(run / f"k{noop_keep}" / "prune.json", "the identity no-op prune record")
     noop_equiv = read_receipt(run / f"k{noop_keep}" / "equiv.json", "the identity no-op equivalence receipt")
     if noop_prune is not None and noop_equiv is not None and baseline_provenance is not None:
+        noop_folder = run / f"k{noop_keep}"
         verify = noop_prune.get("verify", {})
         if not (verify.get("pass") and verify.get("identity_mapping")):
             problems.append("the identity no-op prune did not verify")
         expected_digest = pruned_candidate_digest(noop_prune["manifest"])
+        if noop_prune.get("candidate_digest") != expected_digest:
+            problems.append("the identity no-op prune record carries a stale candidate digest")
+        if noop_prune["manifest"].get("num_experts") != noop_keep \
+                or noop_prune["manifest"].get("source", {}).get("digest") != binding["teacher"]:
+            problems.append("the identity no-op receipt does not belong to the current baseline teacher")
+        if mode == "real" and noop_prune["manifest"].get("source", {}).get("kind") != "pinned-snapshot":
+            problems.append("a real identity no-op must be pruned from the pinned teacher")
         if noop_equiv.get("pass") is not True:
             problems.append("the identity no-op equivalence did not pass")
-        if noop_equiv.get("binding", {}).get("reference") != receipt_binding(baseline_provenance) \
-                or noop_prune["manifest"]["source"]["digest"] != binding["teacher"]:
+        if noop_equiv.get("binding", {}).get("reference") != receipt_binding(baseline_provenance):
             problems.append("the identity no-op receipt does not belong to the current baseline")
-        evidence["noop"] = {"prune_sha256": sha256_file(run / f"k{noop_keep}" / "prune.json"),
-                            "equiv_sha256": sha256_file(run / f"k{noop_keep}" / "equiv.json"),
-                            "candidate": expected_digest}
+        noop_entry = {"prune_sha256": sha256_file(noop_folder / "prune.json"),
+                      "equiv_sha256": sha256_file(noop_folder / "equiv.json"),
+                      "candidate": expected_digest, "source_teacher": noop_prune["manifest"]["source"]["digest"]}
+        try:
+            mechanism = run_provenance(noop_folder / "mechanism" / "records.jsonl", contexts,
+                                       expected_traced=witness_ids, traces_dir=noop_folder / "mechanism" / "traces",
+                                       shared_header=baseline_header)
+            noop_entry["mechanism"] = {"records_sha256": mechanism["records_sha256"],
+                                       "journal_sha256": mechanism["journal_sha256"], "traced": mechanism["traced"],
+                                       "trace_digests": mechanism.get("trace_digests", {}),
+                                       "candidate": mechanism["candidate"]}
+            if mechanism["candidate"] != expected_digest:
+                problems.append("the identity no-op mechanism run has the wrong actual candidate digest")
+            if noop_equiv.get("binding", {}).get("candidate") != receipt_binding(mechanism):
+                problems.append("the identity no-op receipt does not belong to the current no-op mechanism run")
+        except SystemExit as error:
+            problems.append(f"identity no-op mechanism replay: {error}")
+        evidence["noop"] = noop_entry
     elif noop_prune is not None:
         evidence["noop"] = {"prune_sha256": sha256_file(run / f"k{noop_keep}" / "prune.json")}
 
@@ -927,7 +1013,7 @@ def verify_pilot_chain(run: Path, manifest_sha256: str, cache_dir=None) -> tuple
             problems.append(f"k{keep}'s prune reload did not pass (verify.pass is {verify.get('pass')!r})")
         if verify.get("identity_mapping") is not False:
             problems.append(f"k{keep} is not a real (non-identity) prune candidate")
-        header, _ = read_run(folder / "records.jsonl")
+        header, validation_rows = read_run(folder / "records.jsonl")
         if header is None:
             problems.append(f"k{keep} has no validation run header")
             evidence["candidates"][str(keep)] = entry
@@ -935,6 +1021,8 @@ def verify_pilot_chain(run: Path, manifest_sha256: str, cache_dir=None) -> tuple
         entry["candidate"] = header["identity"]["candidate"]
         entry["kept"] = {str(layer): ids for layer, ids in prune_manifest.get("kept", {}).items()}
         recomputed_digest = pruned_candidate_digest(prune_manifest)
+        if prune.get("candidate_digest") != recomputed_digest:
+            problems.append(f"k{keep}'s prune record carries a stale candidate digest")
         if header["identity"]["candidate"] != recomputed_digest:
             problems.append(f"k{keep}'s validation run is not the checkpoint its prune manifest describes")
         if prune_manifest.get("source", {}).get("digest") != binding["teacher"]:
@@ -945,20 +1033,28 @@ def verify_pilot_chain(run: Path, manifest_sha256: str, cache_dir=None) -> tuple
         named_kept = evidence.get("selection_kept", {}).get(str(keep))
         if named_kept is not None and {str(k): v for k, v in prune_manifest.get("kept", {}).items()} != named_kept:
             problems.append(f"k{keep} was not pruned the way the recomputed selection names")
+        expected_masked_digest = None
         try:
-            masked = run_provenance(folder / "masked" / "records.jsonl", contexts,
-                                    traces_dir=folder / "masked" / "traces",
-                                    checkpoint=baseline_checkpoint, audit_required=True)
+            mask, selection_sha256 = load_selection_mask(run / "selection.json", keep)
+            expected_masked_digest = masked_candidate_digest(mask, selection_sha256)
+        except (OSError, ValueError, KeyError) as error:
+            problems.append(f"k{keep}'s mask identity cannot be recomputed from the selection: {error}")
+        try:
+            masked = run_provenance(folder / "masked" / "records.jsonl", contexts, expected_traced=witness_ids,
+                                    traces_dir=folder / "masked" / "traces", checkpoint=baseline_checkpoint,
+                                    audit_required=True, shared_header=baseline_header)
             entry["masked"] = {"records_sha256": masked["records_sha256"], "journal_sha256": masked["journal_sha256"],
                                "witness_changed": masked["audit_changed"], "traced": masked["traced"],
-                               "trace_digests": masked.get("trace_digests", {})}
+                               "trace_digests": masked.get("trace_digests", {}), "candidate": masked["candidate"]}
+            if masked["candidate"] != expected_masked_digest:
+                problems.append(f"k{keep}'s masked run identity does not match the recomputed selection mask")
             if masked["audit_changed"] == 0:
-                problems.append(f"k{keep}'s masked witness changed no routing decision (counted from the journal)")
+                problems.append(f"k{keep}'s masked witness changed no routing decision (counted on traced IDs only)")
         except SystemExit as error:
             problems.append(f"k{keep} masked replay: {error}")
         try:
-            mechanism = run_provenance(folder / "mechanism" / "records.jsonl", contexts,
-                                       traces_dir=folder / "mechanism" / "traces")
+            mechanism = run_provenance(folder / "mechanism" / "records.jsonl", contexts, expected_traced=witness_ids,
+                                       traces_dir=folder / "mechanism" / "traces", shared_header=baseline_header)
             entry["mechanism"] = {"records_sha256": mechanism["records_sha256"],
                                   "journal_sha256": mechanism["journal_sha256"], "traced": mechanism["traced"],
                                   "trace_digests": mechanism.get("trace_digests", {}),
@@ -969,9 +1065,10 @@ def verify_pilot_chain(run: Path, manifest_sha256: str, cache_dir=None) -> tuple
             problems.append(f"k{keep} mechanism replay: {error}")
         # The two witness runs of one candidate must cover exactly the same sentences, and a
         # real run must carry the plan's witness count - never a silently reduced one.
-        if "masked" in entry and "mechanism" in entry                 and entry["masked"]["traced"] != entry["mechanism"]["traced"]:
+        if "masked" in entry and "mechanism" in entry \
+                and entry["masked"]["traced"] != entry["mechanism"]["traced"]:
             problems.append(f"k{keep}'s masked and mechanism witness sentences differ")
-        traced_count = len(entry.get("masked", entry.get("mechanism", {})).get("traced", []))             if isinstance(entry.get("masked", entry.get("mechanism")), dict) else 0
+        traced_count = len(entry.get("masked", entry.get("mechanism", {})).get("traced", []))
         if mode == "real" and traced_count != len(DIRECTIONS) * PLAN["trace_witness_per_direction"]:
             problems.append(f"a real k{keep} must trace the plan's "
                             f"{len(DIRECTIONS) * PLAN['trace_witness_per_direction']} witness sentences, "
@@ -979,7 +1076,7 @@ def verify_pilot_chain(run: Path, manifest_sha256: str, cache_dir=None) -> tuple
         if mode != "real" and traced_count == 0:
             problems.append(f"k{keep} traced no witness sentences at all")
         try:
-            validation = run_provenance(folder / "records.jsonl", contexts)
+            validation = run_provenance(folder / "records.jsonl", contexts, shared_header=baseline_header)
             entry["validation"] = {"records_sha256": validation["records_sha256"],
                                    "journal_sha256": validation["journal_sha256"]}
         except SystemExit as error:
@@ -995,18 +1092,57 @@ def verify_pilot_chain(run: Path, manifest_sha256: str, cache_dir=None) -> tuple
         stock_binding = stock.get("binding", {})
         if stock.get("pass") is not True:
             problems.append(f"k{keep} did not pass the reference-runtime check")
-        if sorted(stock_binding.get("picked_ids", [])) != sorted(expected_stock):
-            problems.append(f"k{keep}'s reference-runtime receipt does not cover exactly the plan's witness "
-                            f"sentences {sorted(expected_stock)}")
+        if stock_binding.get("picked_ids") != expected_stock:
+            problems.append(f"k{keep}'s reference-runtime receipt does not cover exactly the plan's ordered witness "
+                            f"sentences {expected_stock}")
         validation_records_sha = entry.get("validation", {}).get("records_sha256")
+        validation_journal_sha = entry.get("validation", {}).get("journal_sha256")
         if validation_records_sha is not None and stock_binding.get("records_sha256") != validation_records_sha:
             problems.append(f"k{keep}'s reference-runtime receipt does not match the current validation records")
-        if stock_binding.get("candidate") != header["identity"]["candidate"] \
-                or stock_binding.get("teacher") != binding["teacher"] \
-                or stock_binding.get("mode") != mode:
-            problems.append(f"k{keep}'s reference-runtime receipt is not bound to this run's actual identity")
+        if validation_journal_sha is not None and stock_binding.get("journal_sha256") != validation_journal_sha:
+            problems.append(f"k{keep}'s reference-runtime receipt does not match the current validation journal")
+        expected_shared = {field: baseline_header["identity"][field] for field in SHARED_FIELDS}
+        if stock_binding.get("shared") != expected_shared or stock_binding.get("candidate") != header["identity"]["candidate"] \
+                or stock_binding.get("teacher") != binding["teacher"] or stock_binding.get("mode") != mode:
+            problems.append(f"k{keep}'s reference-runtime receipt is not bound to the baseline's actual shared identity")
+        validated_binding = read_json(binding_path(folder / "records.jsonl"))
+        expected_settings = (stock_binding.get("tokenizer") == validated_binding["detail"]["tokenizer"]
+                             and stock_binding.get("max_new_tokens") == header["max_new_tokens"]
+                             and stock_binding.get("decoding") == DECODING
+                             and stock_binding.get("threads") == validated_binding["detail"]["runtime"]["threads"]
+                             and stock_binding.get("runtime") == validated_binding["detail"]["runtime"]
+                             and stock_binding.get("model_kind") == "pruned"
+                             and stock.get("transformers") == validated_binding["detail"]["runtime"]["transformers"]
+                             and stock.get("attention") == "eager")
+        if not expected_settings:
+            problems.append(f"k{keep}'s reference-runtime receipt has stale tokenizer/runtime/decoding settings")
+        by_id = {row["id"]: row for row in validation_rows}
+        expected_results = [{"id": sentence_id, "engine": by_id[sentence_id]["text"],
+                             "reference_runtime": by_id[sentence_id]["text"], "text_equal": True}
+                            for sentence_id in expected_stock if sentence_id in by_id]
+        if stock.get("results") != expected_results or stock.get("sentences") != len(expected_stock) \
+                or stock.get("text_equal") != len(expected_stock):
+            problems.append(f"k{keep}'s reference-runtime results do not equal the exact validation record witnesses")
         evidence["candidates"][str(keep)] = entry
     return problems, evidence
+
+
+def validation_decision(run: Path, manifest_sha256: str) -> dict:
+    """Recompute quality, diagnostics, gate and selection through the one reviewed validator."""
+    import sacrebleu
+    if sacrebleu.__version__ != "2.6.0":
+        raise SystemExit(f"expected the pinned sacrebleu 2.6.0, found {sacrebleu.__version__}")
+    run = Path(run)
+    baseline = run / "baseline" / "records.jsonl"
+    paths = {keep: run / f"k{keep}" / "records.jsonl" for keep in sorted(PLAN["candidate_keeps"])}
+    metric = chrf_pp()
+    manifest_path, corpus_path = corpus_paths(run)
+    try:
+        return handoff.evaluate(manifest_path, manifest_sha256, corpus_path, baseline, paths,
+                                lambda hypotheses, references: float(metric.corpus_score(hypotheses, [references]).score),
+                                PLAN["max_chrf_drop"])
+    except (ValueError, OSError, KeyError, TypeError, IndexError) as error:
+        raise SystemExit(f"candidate decision refused: {error}") from error
 
 
 def cmd_decide(args) -> None:
@@ -1016,7 +1152,6 @@ def cmd_decide(args) -> None:
     chain present, current and plan-compliant before anything qualifies; any problem
     blocks the decision instead of qualifying a subset (R13-P1-03).
     """
-    import sacrebleu
     run = Path(args.run_dir)
     if sorted(int(k) for k in args.candidates.split(",")) != sorted(PLAN["candidate_keeps"]):
         raise SystemExit(f"the fixed pilot plan's candidates are {sorted(PLAN['candidate_keeps'])}, "
@@ -1034,16 +1169,7 @@ def cmd_decide(args) -> None:
     for keep, path in ((None, baseline), *paths.items()):
         header, _ = read_run(path)
         headers[keep] = header
-    if sacrebleu.__version__ != "2.6.0":
-        raise SystemExit(f"expected the pinned sacrebleu 2.6.0, found {sacrebleu.__version__}")
-    metric = chrf_pp()
-    manifest_path, corpus_path = corpus_paths(run)
-    try:
-        result = handoff.evaluate(manifest_path, manifest_sha256, corpus_path, baseline, paths,
-                                  lambda hypotheses, references: float(metric.corpus_score(hypotheses, [references]).score),
-                                  args.max_drop)
-    except ValueError as error:
-        raise SystemExit(f"candidate decision refused: {error}") from error
+    result = validation_decision(run, manifest_sha256)
     result["identity"] = shared_identity(headers, "candidate decision")
     result["runs"] = {
         ("baseline" if keep is None else f"k{keep}"): {

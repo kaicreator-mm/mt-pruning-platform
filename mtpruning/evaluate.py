@@ -154,16 +154,20 @@ def read_trace(directory: Path, sentence_id: str, expected: dict | None = None,
             if stored.dtype.kind not in "US" or stored.shape != ():
                 return None
             stored = str(stored)
-    except Exception:                              # truncated or otherwise unreadable
-        return None
-    positions = int(arrays["argmax"].shape[0])
-    top = int(arrays["top_values"].shape[1])
-    layers, k = int(arrays["ids"].shape[1]), int(arrays["ids"].shape[2])
-    if (positions < 1 or top < 1 or layers < 1 or k < 1
-            or arrays["top_values"].shape != (positions, top) or arrays["top_index"].shape != (positions, top)
-            or arrays["row_hash"].shape != (positions, 16)
-            or arrays["w"].shape != (positions, layers, k)
-            or not bool(np.isfinite(arrays["w"]).all())):
+            ranks = {"argmax": 1, "top_values": 2, "top_index": 2, "row_hash": 2, "ids": 3, "w": 3}
+            if any(arrays[name].ndim != rank for name, rank in ranks.items()):
+                return None
+            positions = int(arrays["argmax"].shape[0])
+            top = int(arrays["top_values"].shape[1])
+            layers, k = int(arrays["ids"].shape[1]), int(arrays["ids"].shape[2])
+            if (positions < 1 or top < 1 or layers < 1 or k < 1
+                    or arrays["top_values"].shape != (positions, top)
+                    or arrays["top_index"].shape != (positions, top)
+                    or arrays["row_hash"].shape != (positions, 16)
+                    or arrays["w"].shape != (positions, layers, k)
+                    or not bool(np.isfinite(arrays["w"]).all())):
+                return None
+    except Exception:                              # truncated, malformed or otherwise unreadable
         return None
     if trace_digest(arrays) != stored:             # the stored digest counts only when the
         return None                                 # actual bytes recompute to it

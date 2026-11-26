@@ -307,6 +307,49 @@ class ReportCoverageTests(unittest.TestCase):
         for name in ("64", "96"):
             self.assertEqual(self.quality(built, name, "validation")["status"], "NOT_EVALUATED")
 
+    def test_truncated_decision_or_changed_quality_gate_is_not_evaluated(self):
+        def edit(run, change):
+            path = run / "decision.json"
+            data = json.loads(path.read_text(encoding="utf-8"))
+            change(data)
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+        def empty_evidence(run):
+            edit(run, lambda data: data.update(evidence={}))
+
+        def missing_noop_stage(run):
+            edit(run, lambda data: data["evidence"]["noop"].pop("mechanism"))
+
+        def missing_run(run):
+            edit(run, lambda data: data["runs"].pop("k64"))
+
+        def changed_quality(run):
+            edit(run, lambda data: data["candidates"]["64"].update(
+                **{"pass": not data["candidates"]["64"]["pass"]}))
+
+        def changed_gate(run):
+            edit(run, lambda data: data.update(max_drop=99.0))
+
+        def changed_selection(run):
+            edit(run, lambda data: data.update(chosen_keep=128))
+
+        def empty_status(run):
+            edit(run, lambda data: data.update(status=""))
+
+        def deleted_noop_trace(run):
+            next((run / "k128" / "mechanism" / "traces").glob("*.trace.npz")).unlink()
+
+        def deleted_noop_journal(run):
+            (run / "k128" / "mechanism" / "records.jsonl.sqlite").unlink()
+        for change in (empty_evidence, missing_noop_stage, missing_run, changed_quality, changed_gate,
+                       changed_selection, empty_status, deleted_noop_trace, deleted_noop_journal):
+            with self.subTest(change=change.__name__):
+                run, built = self.build(change)
+                self.assertFalse(built["evidence_chain"]["decision_bound"])
+                self.assertFalse(built["verdict"]["mechanism_pass"])
+                for name in ("64", "96"):
+                    self.assertEqual(self.quality(built, name, "validation")["status"], "NOT_EVALUATED")
+
     def test_the_mechanism_needs_every_planned_receipt(self):
         def drop(run):       # one candidate's reference-runtime receipt is missing
             (run / "k64" / "stock_check.json").unlink()
