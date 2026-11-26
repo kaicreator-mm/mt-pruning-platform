@@ -1,0 +1,33 @@
+
+=== SAMPLE 2026-11-26T10:08:34Z
+ ===
+               total        used        free      shared  buff/cache   available
+Mem:     66142515200  2849390592 27771068416    16670720 36287647744 63293124608
+Swap:     4294963200   105123840  4189839360
+Filesystem                           1B-blocks         Used    Available Use% Mounted on
+/dev/mapper/ubuntu--vg-ubuntu--lv 500235124736 194432880640 284337369088  41% /
+/dev/mapper/ubuntu--vg-ubuntu--lv 500235124736 194432880640 284337369088  41% /
+/dev/mapper/ubuntu--vg-ubuntu--lv 500235124736 194432880640 284337369088  41% /
+LOAD 0.13 0.07 0.06 2/813 181976
+    PID    PPID     ELAPSED %CPU %MEM   RSS    VSZ COMMAND
+   1499       1    21:22:26  0.0  1.2 791024 10033572 /home/cc/miniconda3/envs/comfy-enterprise/bin/python main.py --listen 0.0.0.0 --port 8188 --highvram --dont-upcast-attention --force-channels-last
+702554	/home/cc/.cache/mt-pruning/run-d01b
+0	/home/cc/.cache/mt-pruning/pruned
+6342	/home/cc/mt-pruning-platform/evidence/d01b
+
+=== SAMPLE 2026-11-26T10:09:34Z
+ ===
+               total        used        free      shared  buff/cache   available
+Mem:     66142515200  3241713664 20495552512    16678912 43170836480 62900801536
+Swap:     4294963200   105123840  4189839360
+Filesystem                           1B-blocks         Used    Available Use% Mounted on
+/dev/mapper/ubuntu--vg-ubuntu--lv 500235124736 194441302016 284328947712  41% /
+/dev/mapper/ubuntu--vg-ubuntu--lv 500235124736 194441302016 284328947712  41% /
+/dev/mapper/ubuntu--vg-ubuntu--lv 500235124736 194441302016 284328947712  41% /
+LOAD 0.68 0.24 0.12 2/861 182316
+    PID    PPID     ELAPSED %CPU %MEM   RSS    VSZ COMMAND
+ 182265  181970       00:06  247 10.2 6649044 60872544 /home/cc/miniconda3/envs/mt-pruning/bin/python -m mtpruning run --model /home/cc/.cache/mt-pruning/hf_home/hub/models--tencent--Hy-MT3-30B-A3B/snapshots/08ae9acea91abe265c6236e757e49d8851e1ce06 --corpus /home/cc/.cache/mt-pruning/run-d01b/corpus/corpus.jsonl --out /home/cc/.cache/mt-pruning/run-d01b/baseline/records.jsonl --splits calibration,validation --stats /home/cc/.cache/mt-pruning/run-d01b/baseline/stats --trace-split validation --trace-dir /home/cc/.cache/mt-pruning/run-d01b/baseline/traces --trace-n 8 --max-new-tokens 640 --mode real --threads 16 --cache-dir /home/cc/.cache/mt-pruning/content-hashes
+   1499       1    21:23:26  0.0  1.2 791024 10033572 /home/cc/miniconda3/envs/comfy-enterprise/bin/python main.py --listen 0.0.0.0 --port 8188 --highvram --dont-upcast-attention --force-channels-last
+702554	/home/cc/.cache/mt-pruning/run-d01b
+0	/home/cc/.cache/mt-pruning/pruned
+12321	/home/cc/mt-pruning-platform/evidence/d01b

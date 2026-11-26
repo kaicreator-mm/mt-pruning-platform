@@ -1,0 +1,44 @@
+{
+  "assumptions": {
+    "evidence_budget_bytes": 1481667589,
+    "journal_budget_bytes": 5505024,
+    "largest_copy_experts": 128,
+    "prune_peak_bytes": 66135936998,
+    "run_budget_bytes": 400687104,
+    "trace_budget_bytes": 395182080,
+    "trace_positions_per_sentence": 1340,
+    "trace_runs": 6,
+    "witness_count_never_reduced": true,
+    "witness_sentences": 48
+  },
+  "checked": "2026-11-26T10:09:28+00:00",
+  "filesystems": [
+    {
+      "device": 64512,
+      "free_bytes": 284328960000,
+      "needed_bytes": 68018291691,
+      "paths": [
+        {
+          "needed_bytes": 400687104,
+          "path": "/home/cc/.cache/mt-pruning/run-d01b",
+          "role": "RUN"
+        },
+        {
+          "needed_bytes": 66135936998,
+          "path": "/home/cc/.cache/mt-pruning/pruned",
+          "role": "PRUNED"
+        },
+        {
+          "needed_bytes": 1481667589,
+          "path": "/home/cc/mt-pruning-platform/evidence/d01b",
+          "role": "EVIDENCE_DIR"
+        }
+      ],
+      "sufficient": true
+    }
+  ],
+  "free_bytes": 284328960000,
+  "needed_bytes": 68018291691,
+  "stage": "baseline",
+  "sufficient": true
+}
