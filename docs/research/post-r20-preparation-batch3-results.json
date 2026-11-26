@@ -1,0 +1,1948 @@
+{
+  "r23-real-pilot-driver": {
+    "job": "job_01M8CTSTB000FRSPVD2N5TFNCN",
+    "exit_code": 0,
+    "results": [
+      {
+        "status": "PASS_ADMISSION_CONTRACT_TEST",
+        "negative_cases": 5,
+        "real_execution": "NOT_RUN"
+      },
+      {
+        "status": "BLOCKED",
+        "blockers": [
+          "ACTIVE_GPU_OR_MODEL_PROCESS"
+        ],
+        "gpu_pids": [
+          418772
+        ],
+        "model_processes": [
+          {
+            "pid": 418772,
+            "comm": "llama-server"
+          },
+          {
+            "pid": 418918,
+            "comm": "python"
+          },
+          {
+            "pid": 437840,
+            "comm": "llama-cli"
+          }
+        ],
+        "memory": {
+          "MemAvailable": 61551034368,
+          "SwapFree": 3694206976
+        },
+        "source": "/home/cc/.cache/mt-pruning/hf_home/hub/models--tencent--Hy-MT3-30B-A3B/snapshots/08ae9acea91abe265c6236e757e49d8851e1ce06",
+        "shard_count": 13,
+        "teacher_full_hash_rechecked": false,
+        "sample_id": "calibration:zh-my:348",
+        "candidate_masks": {
+          "original96": "23d615b5f6e33af73c008729a34b3a0dbe9713508a5fd299b72ee9559180e8e7",
+          "guarded96": "4589d613512ac0a07f02be500e8b2fabe3f4beb78ddd171e14fd26cd8078960c",
+          "balanced": "4410fdd5dec984f19c766ee0d133035c910b12770c8c09de4756962bdaa9d631",
+          "robust": "250ce92b01077c4d65ee77c92a9db5cabe9ec6d2907ea7525e5789ea7eb57d1b",
+          "myanmar2": "d6c365d360bc47052fb64d3811b303cea0309b7670d734e16b6de7f63b552cc0"
+        },
+        "planned_token_expert_evaluations": 24064
+      }
+    ]
+  },
+  "r21-v2-96-prefix-quality-replay": {
+    "job": "job_01M8CTVG5X0030W90Z37D8YP56",
+    "exit_code": 0,
+    "results": [
+      {
+        "status": "MATCHED_V2_PREFIX_REPLAY_NOT_QUALIFICATION",
+        "metric_signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:2|space:no|version:2.6.0",
+        "receipts": {
+          "96": {
+            "status": "PREFIX_RAW_OUTPUT_TOKEN_REPLAY_NOT_QUALIFICATION",
+            "driver_completed": false,
+            "keep": 96,
+            "rows": 110,
+            "manifest_sha256": "b4fd031ae37e5fff2ac50d7cd7b098e5c2a7c4a11f23a7420c983a3eb80098d9",
+            "records_sha256": "6990164d45f57dab762908fa6a517a4a076e0dcbb3f9ff1b1ff977ebe2f7bd78",
+            "server_log_snapshot_sha256": "2272abf1b58e6f17b1ea14a1e758f58d9d4dca8407164401c7db9777ef08ad48",
+            "config_sha256": "f5324f5898c5fff20e996a017dee94049bbeb055942748b74fe1149574b832c9",
+            "raw_log_task_count": 110,
+            "slots": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "directions": {
+              "zh-my": 20,
+              "my-zh": 20,
+              "zh-en": 20,
+              "en-zh": 20,
+              "en-my": 20,
+              "my-en": 10
+            },
+            "totals": {
+              "raw_tokens": 9798,
+              "normalized_tokens": 9688,
+              "finish_eos": 110,
+              "server_truncated": 0,
+              "empty": 0
+            },
+            "notes": [],
+            "request_token_bindings": [
+              {
+                "id": "validation:zh-my:6",
+                "task": 0,
+                "token_sha256": "5a0e9bdea56c40f25ced70522fc8b84df20efb7771ee36354a30d7d538fe6b9c",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:25",
+                "task": 70,
+                "token_sha256": "cabff75f325926c5b47d95cbfc5b88a71bf0e5e24c194b1eb2e4b0730bb6efc3",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:27",
+                "task": 193,
+                "token_sha256": "cd516c16e44b648db6d18849437a6cbd01d573140d83f9019bf40aa588e6ca2a",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:30",
+                "task": 541,
+                "token_sha256": "6b751cfeeb413d8eb1d2a2f21b5da6f48c052b2d6af3c3d383f1f3960727594b",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:32",
+                "task": 917,
+                "token_sha256": "e810282a3051cc621c112d8cc35b665a6a1d969aa98e5ac5306361ab32295a45",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:89",
+                "task": 1102,
+                "token_sha256": "cf86c32225503d6e4e327faec00b594a07959c01a5c43e08564dc4400f41a321",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:95",
+                "task": 1256,
+                "token_sha256": "08b5f4e34e5ddb01c317672171b833d0dcf9122de3e1a55ca7c55463827e5533",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:104",
+                "task": 1461,
+                "token_sha256": "65f96dca071bea75a29766c762ac5da1ae41ed1d27475bb6ee554f70795252da",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:114",
+                "task": 1585,
+                "token_sha256": "c570e627665ea3602067b9a6f6c61e511a43ca4e2b58c4bbe2789b21b8079b10",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:142",
+                "task": 1858,
+                "token_sha256": "439dcb3e3dd96dee6f23cf28edb7a916bfe057433ab3bb3700b3675d2e83581d",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:203",
+                "task": 2037,
+                "token_sha256": "4dad27c779b4d03752b35562837d30598b44e49717aeb08bc2bd6380f788809a",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:223",
+                "task": 2386,
+                "token_sha256": "c4c75e1cc0d8dcfc25c80bcc9c66731693f8ce1ffecd8c16179aa7462d9eece9",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:225",
+                "task": 2567,
+                "token_sha256": "3403026965d22acb91c3d856f58ec6a3e9b8e497e1ded8c05e09610142ccc048",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:228",
+                "task": 2770,
+                "token_sha256": "7b2b018f2a27fc5df818d6db3ad5e0b17d7b61e01504432a3b4efbd7f1198b22",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:238",
+                "task": 2922,
+                "token_sha256": "a7ba03eba104afcd4863431d9d1d56a5c37d25b6d6cf7b38bc7a448b0ad69cb3",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:250",
+                "task": 3077,
+                "token_sha256": "710419c74ebfd98abdfa5c4cb15f1031bd67000d405911f472d5e7a5855bf8ad",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:281",
+                "task": 3316,
+                "token_sha256": "b3a0d162b9909d01dc9517abda82cf824f6c0173356f7fdaee52366a02e9971b",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:284",
+                "task": 3453,
+                "token_sha256": "f427338bbbc4e672a330243966979781cd631ac7d558b5f3293607ae138c566d",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:429",
+                "task": 3555,
+                "token_sha256": "1a52f8ea3b7220a52b492942e93f90a0e89ee6c8bc423e5a82aba80177e80736",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:432",
+                "task": 3742,
+                "token_sha256": "4cb02215291270f6199a8c32825d77f107801ca2f291add7f112399cf29c4a12",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:32",
+                "task": 3921,
+                "token_sha256": "2e1a3debd13384714ff3923aa2af94776b013980feb894cee5c378d053a23fc5",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:57",
+                "task": 3951,
+                "token_sha256": "2b65c49e9fc7b8b088ec8f009be8e51fe949163e7c1f0c89029102eebfb15abb",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:67",
+                "task": 3996,
+                "token_sha256": "5dba1090f5b59a3c5d2917d98ffcc25b72f0ac3a8cbe3d8589cc496994e9f936",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:142",
+                "task": 4032,
+                "token_sha256": "1e1ff62da584f206db649ebcfa7e018b4b7bd40072b2a6c02b912de9da9db5a3",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:146",
+                "task": 4057,
+                "token_sha256": "bb959a03b2aa443c27b9be14f078fbb455ee5f39d333a060baec4f59bfd7d384",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:216",
+                "task": 4080,
+                "token_sha256": "09e45269e1cfb86defb02e69f486b2d1f5fd8a5495aee0c77971f156b2b04525",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:217",
+                "task": 4097,
+                "token_sha256": "674eef4b276a671366f0c809eb3b9bf1a9543c1bd97c28a01709d3689ed8e2b7",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:234",
+                "task": 4122,
+                "token_sha256": "add71560ee27b6c20c41d6118e6ec4491ab5dc04978519dd77c81e3f0ecbc3eb",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:252",
+                "task": 4172,
+                "token_sha256": "350cb408ee3a2ebcf959af2761f878246f7bcbe4d959f87ede439988683e5481",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:269",
+                "task": 4201,
+                "token_sha256": "57b1a8329e9f49a8e6b6cab5e16a641270f9c7954fa14931216f1d3c0dd2dceb",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:271",
+                "task": 4232,
+                "token_sha256": "4e9f80dabf76cada2818d0f56a60a339439140ba053a0d20d565eb135182e722",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:274",
+                "task": 4272,
+                "token_sha256": "b03c0f4b34656b7de8e26e287a24f121601a3cdc1ae5702e3d9ce85f444ae7ae",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:322",
+                "task": 4310,
+                "token_sha256": "1a0b5ab53b35cff4103bdd0dde1e6f90f6666abe97363866f9b112afd34b85ee",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:323",
+                "task": 4343,
+                "token_sha256": "18d2bad85599e3334cb773db66bb5b701797eee5c89fc71a05592a2987f849d1",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:370",
+                "task": 4381,
+                "token_sha256": "b21529a5a5152a494b0e28bbc5e71151f9c9d0465ecfbbfcf45e3a571afe5b5f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:405",
+                "task": 4413,
+                "token_sha256": "fa921070b8ce8b82f9377b2cd4fcbb6f6709bded11f75521cc629cbc82bd68f9",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:408",
+                "task": 4429,
+                "token_sha256": "b1d71bb5299ac191c8174ea8811d241d1ad90dcab5c564522a63c8faad716ce8",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:410",
+                "task": 4452,
+                "token_sha256": "d1501eba78bfd3456fda06087427642301abf48cdd30dee2df7225331ac42ecd",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:438",
+                "task": 4474,
+                "token_sha256": "82c0a3a6c169cb1b35e2b04be4d52576ddb0e0c0a6c1f5ae568c87dc6f91581a",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:469",
+                "task": 4493,
+                "token_sha256": "68bc6fdc0dc93543173fd9a53ad3b2f1fb29a00256d4d3c4f4b79ae1dd0e6fc1",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:6",
+                "task": 4517,
+                "token_sha256": "12359f54a788ff8ecd7c69985d05fb66bd732d389675a4412a58987544ed0583",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:25",
+                "task": 4528,
+                "token_sha256": "e4292f992f7defa5026b25f93bb4bb77ea4911c34421dab4bb5163e2481990f4",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:27",
+                "task": 4549,
+                "token_sha256": "90c96ec9580d748bca06d6eeca98a79f2e8c8b5cd43054150e2274943d65aed1",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:30",
+                "task": 4590,
+                "token_sha256": "37870f50eb9b144feb396cdf75c7bc8b5be78dc7333754aa7319a4fe5d66415e",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:32",
+                "task": 4647,
+                "token_sha256": "8e79b8e285cfa89ca91eec9bd86732908c314fd9101ea1182399cf90e0f5438c",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:89",
+                "task": 4679,
+                "token_sha256": "b2863d748adcbaf0c830f9152e65e947eb215ddb4ccf0ed83ee7182300df1e74",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:95",
+                "task": 4711,
+                "token_sha256": "178f31e1977b9049ae23c3dba7a77ec678143087dabdb248d9f6514a173e8404",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:104",
+                "task": 4736,
+                "token_sha256": "8874cbe06eeace6fcff64c0e1c5afa80d0a56082d855767f00bc0edc7edfff18",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:114",
+                "task": 4755,
+                "token_sha256": "13a2264b83c5f8d6682312e2cf0e88915adde72bb6ff13845f8501cc87f92948",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:142",
+                "task": 4792,
+                "token_sha256": "ea52e4d7ded7cb6a6b43d41c44669184cdd85619a1f652cff0d04200205ade96",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:203",
+                "task": 4821,
+                "token_sha256": "32c260df6d657134db04707aca8b11a7638f5da831acb69f99e30af38d126b07",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:223",
+                "task": 4875,
+                "token_sha256": "97e909411a51480060b11d28dda98e39dbd05555f36e32a8a14f95b4a4e4b4a6",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:225",
+                "task": 4905,
+                "token_sha256": "44f5194b593118b878fae5e9176141c8265ab475d0da44b1905d3ee748265086",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:228",
+                "task": 4930,
+                "token_sha256": "2c50cb7ced650c30f4b68e3ea3c18db4f327720796e28d4c15d040fbbaef600f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:238",
+                "task": 4962,
+                "token_sha256": "0222aaf52588d181139eaee1d3b9e1a7d0d45d5f84fd4768d8a7b8a266ec62b0",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:250",
+                "task": 4983,
+                "token_sha256": "013fc4c1bfd712d81ec02dfb4b7eab1cb893cc349e430286405a99f9a4d56683",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:281",
+                "task": 5021,
+                "token_sha256": "def1e90bcf29e8ac3a059594a21e1e6ac78fddacdb78e0d57c15ad318b14f5f8",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:284",
+                "task": 5044,
+                "token_sha256": "3dd7c989e893fdf0d30391b804b468b76061a67de77ce8fe151d8e36d3057e1d",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:429",
+                "task": 5064,
+                "token_sha256": "d1cd32164ac3826516d3b5ae7628b8f982d398e486a366b6e91147b7c246bf67",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:432",
+                "task": 5093,
+                "token_sha256": "eef7844793e81809aece5ed683395dcf2a60de08ede7c2c6ea7c058fd0d1c18b",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:46",
+                "task": 5122,
+                "token_sha256": "1eb8c2b11ecb03a6bf8aa913944808ae4d46e6a8f4c91f598ed23d31d3a93093",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:71",
+                "task": 5147,
+                "token_sha256": "37ef6eab6074dd5d3b86855a28b9fe3c96b5f40c96036fda8b1b08168bb54487",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:80",
+                "task": 5197,
+                "token_sha256": "05f9804685562a144b21363d0061181f4f4b48ca659a26b66d4c1fea5283e515",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:81",
+                "task": 5221,
+                "token_sha256": "56a2c6cc7ba8e576117e281e00b138695c865bd9c586a8d606d6584d5d47cb1f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:103",
+                "task": 5236,
+                "token_sha256": "9cc69124586d9dc07f3b5ecf831a385b07874252da1684ab52843bc21a222c3a",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:127",
+                "task": 5247,
+                "token_sha256": "444faa2a8885b98d4971094db9b97a92ef05eda00adc478b1868e73cdbf7cfa3",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:166",
+                "task": 5279,
+                "token_sha256": "ed5d1fa0a14954d3186b79792c72694c044090810f261fd017890dd2870d75e4",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:196",
+                "task": 5307,
+                "token_sha256": "b6646d154c4a4d48fa13afa53b54b708eb6c3bdd5d9fdbe188640bde372f4695",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:214",
+                "task": 5349,
+                "token_sha256": "fa5ee6602ae07da88d97b30e54ac6f271113a659357195fa253050dc8d1b9085",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:233",
+                "task": 5380,
+                "token_sha256": "19c824053065fe3bcb0647dc4e6f969cc0d9d5d69bcddb15f513f57bd90ecc61",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:238",
+                "task": 5397,
+                "token_sha256": "de85b1b2b3b5063e6360178c3246bff6a782b0b4db5354a922da571b8e22f12f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:273",
+                "task": 5415,
+                "token_sha256": "b8a7a2dde004c9fdf466b8d587d4e37f694930fb30325683f2ec87c24f70a66d",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:284",
+                "task": 5437,
+                "token_sha256": "16ebcbe8d6c7f3ec26822536cff0ea3ccc78b357243cacaa9085bc8aefe313ad",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:296",
+                "task": 5453,
+                "token_sha256": "73c600c82fb301b6b10b6a7b1cf8f0ada458e7102f78704c0395cab63551a4ca",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:300",
+                "task": 5486,
+                "token_sha256": "e14cb18f5604dc94997fbe1f5eca3117758943f7ef5f7d1c6bf130af58662e84",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:363",
+                "task": 5505,
+                "token_sha256": "66753e725ebdfcf3d613659b5e4f1e7671a6f6cdc3dfed5ca946170ad941e166",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:370",
+                "task": 5532,
+                "token_sha256": "6086705651d883657513632e12e800376cefc78dad76c8e7d643e7cda437e0dc",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:373",
+                "task": 5567,
+                "token_sha256": "3f7757522ec36ab7db461e741013f74f91ee36ead53112214a76657f468e93f1",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:379",
+                "task": 5600,
+                "token_sha256": "cd2ae37bf5c99f7a38f75338050ca06bb706b50d28c0a0d555d568aa07a358b0",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:387",
+                "task": 5616,
+                "token_sha256": "68cc1450d9535fed4d5c52e11fc0470a3140c7cd6c70f9228e5e0e1394511484",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:46",
+                "task": 5636,
+                "token_sha256": "3fb8abd08367d8bd2dcb1d4df3bfc5f14729035514c4e0ece4f048bc4bc6e1f7",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:71",
+                "task": 5870,
+                "token_sha256": "f0aabd7867a7f09806ec73638e93a114ae40c5166e460c8086bcc119b5eed1fa",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:80",
+                "task": 6168,
+                "token_sha256": "7e1eb23e43e72780c6bb3af0b408f82bd993cae99623cd808f7baf7c9012c347",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:81",
+                "task": 6341,
+                "token_sha256": "17ed198a067caca487ca4ae9a5dd37e23c5118381fc7022139495342a2a20653",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:103",
+                "task": 6463,
+                "token_sha256": "8b3eeed2db78d13d33e345d62589875aab96887af49fec2fdc0fadb615d4780d",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:127",
+                "task": 6582,
+                "token_sha256": "b2597cc4cae67121b638c805f469fd1fbe73d23b49de9bbf9b078b6b6db08058",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:166",
+                "task": 6858,
+                "token_sha256": "93597f5976a71c86c3c0ce922aede4b5eea8c6c11d0ba3de2baaefc01285848f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:196",
+                "task": 7146,
+                "token_sha256": "5fefd57ca8d67f3c6d9c719f29994a3a8e218febec4f6f4d7a2b16e9b0c5633f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:214",
+                "task": 7483,
+                "token_sha256": "0a190e14dd6bb2e2a2af2170ec15245be92c1683e95f2737da7c8a60c18eb624",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:233",
+                "task": 7687,
+                "token_sha256": "4831a7bffc6d21ec120b6a97f6e97bbaca1a0ad981bc35655128b30671e5181d",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:238",
+                "task": 7768,
+                "token_sha256": "f4c8c7083b8cba1eed42965d9aa985783eae3e0d41e5b39feb182313a0177f00",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:273",
+                "task": 7936,
+                "token_sha256": "1932bea240caa86137e50ee45157912ce1c16724c01a3073dbb0488c2c120ee7",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:284",
+                "task": 8070,
+                "token_sha256": "201c9bfcbe69f9ab561bcf5edaacde13899697632a69c2ab001f1108ae371a8c",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:296",
+                "task": 8167,
+                "token_sha256": "8a5b2c247cb909fc94556124f3f752c7c2729d8bb61ca8252aed37ebe607be13",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:300",
+                "task": 8457,
+                "token_sha256": "87d7f02e817153cdb040c749df24875a154b588eed7425175a64d507b8f22fc7",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:363",
+                "task": 8599,
+                "token_sha256": "e5883a71f673e5b36c401b47a681fcacf1deb2d3137a1bd6cc2fceb4156907d6",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:370",
+                "task": 8767,
+                "token_sha256": "de64240b72d1d9d25a0600be7e0dfdebfab6d559f3fe832322cec668302b5d29",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:373",
+                "task": 8987,
+                "token_sha256": "ba47ff1393d347b4c9b231d5124ea35ff3880585059e5c7edbff8433f4aa07bf",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:379",
+                "task": 9250,
+                "token_sha256": "6d157c163bfa3e237c6f1357354f51a81cc63fdc2f1df78b7ed5921de979f9ca",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:387",
+                "task": 9397,
+                "token_sha256": "32f115c172d2c6acd8b77052267062310044ed94805578f31f789ccf277fb185",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:32",
+                "task": 9571,
+                "token_sha256": "2c38e7cc2ac16ca6532326bddcc03085e5cf229362135592f097232e913779d0",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:57",
+                "task": 9608,
+                "token_sha256": "a045cbd89b0b0f78dcf1d7df48b793fdcd171d8c99303c2245848944d5c1d55c",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:67",
+                "task": 9648,
+                "token_sha256": "8a8573e3f40466a210ab22e006939f35f88675cd24afadd1a65fc0b4fa5c5a25",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:142",
+                "task": 9686,
+                "token_sha256": "8ec773167c5d38961e28522369de054dda66ba24a1631d98bd8d625b9ff7ff68",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:146",
+                "task": 9710,
+                "token_sha256": "3220b037b96ee180419db9d51a8963fc3fe80e7dee0b88d97844af7181c8cab0",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:216",
+                "task": 9741,
+                "token_sha256": "3a62579f2eec7a2170fda3e6e8fea93323c9521b6123b91163befe2bc73b7b82",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:217",
+                "task": 9761,
+                "token_sha256": "50a5df7a088daf628961e3fb91635b96aa742904c4dd0b4264329e48966f07c2",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:234",
+                "task": 9789,
+                "token_sha256": "d32d21cc52605665cdf1b99e5289d969932499b7df3d5c7ed6ee82d813fd102f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:252",
+                "task": 9841,
+                "token_sha256": "2b2fd311bf05134c687f8f8806c03453054b3975b210677bdb7b8c971c3ed859",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:269",
+                "task": 9873,
+                "token_sha256": "96094da5fcdd9133a27aa62de9982ae778713eee6e322569c3203976520eacd5",
+                "finish": "eos",
+                "server_truncated": 0
+              }
+            ],
+            "limitations": [
+              "Independent raw log order/token replay only; sequential task order association, not a cryptographic request-ID binding.",
+              "Rendered prompt token equivalence and model full hash/quality/stock checks not completed.",
+              "Server truncated flag is distinct from generation length limit. EOS removed only for normalized count, raw tokens retained."
+            ]
+          },
+          "128": {
+            "status": "PREFIX_RAW_OUTPUT_TOKEN_REPLAY_NOT_QUALIFICATION",
+            "driver_completed": true,
+            "keep": 128,
+            "rows": 120,
+            "manifest_sha256": "b4fd031ae37e5fff2ac50d7cd7b098e5c2a7c4a11f23a7420c983a3eb80098d9",
+            "records_sha256": "2b977c4b18a697b24057b140f6c9ef3f7298ba0b959bdd1900822cd8e5d169db",
+            "server_log_snapshot_sha256": "b0f96af991b3921d4392869b83b830fd2044786e4970703b6fb0b0430f0d3293",
+            "config_sha256": "0cfc80a5d92014b75bbc43de08ad7810928f743007ee9b049f6d13a1e1b4d832",
+            "raw_log_task_count": 120,
+            "slots": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "directions": {
+              "zh-my": 20,
+              "my-zh": 20,
+              "zh-en": 20,
+              "en-zh": 20,
+              "en-my": 20,
+              "my-en": 20
+            },
+            "totals": {
+              "raw_tokens": 10069,
+              "normalized_tokens": 9949,
+              "finish_eos": 120,
+              "server_truncated": 0,
+              "empty": 0
+            },
+            "notes": [],
+            "request_token_bindings": [
+              {
+                "id": "validation:zh-my:6",
+                "task": 0,
+                "token_sha256": "b4b6515bcfe64584cc834df8d15b9c9e2a0fb70b13f78806f35607960387ea65",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:25",
+                "task": 63,
+                "token_sha256": "6aa88b2864608c9d30a25f6f1804b18098ac2f07eea9a459611f8d00517353d8",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:27",
+                "task": 182,
+                "token_sha256": "25f9371e2b441e188a56b309c68a34ff81d4c1f52050f0009c86fd988d532722",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:30",
+                "task": 486,
+                "token_sha256": "aaaa37b3154bf4b6ef6193ca4fe8dc019a4a7d1264666ca8fdff3dd344199de4",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:32",
+                "task": 820,
+                "token_sha256": "2155bd124c030ff80440ad2a744e20c5f5124f1ab522f5a66ef4b4770f86874f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:89",
+                "task": 1005,
+                "token_sha256": "22266f03c0f0a5467a4164380595376c9830483975485176b0eeb0d7aa227951",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:95",
+                "task": 1171,
+                "token_sha256": "bb00a0de48c3f082c53d433773c30d18d7c5113260f74220b8c2b30bc86e71b1",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:104",
+                "task": 1372,
+                "token_sha256": "c38ddfde4b9c2ced95e94d3b1a3c9743552355c2a9e41ebcc73094d7405e2eeb",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:114",
+                "task": 1493,
+                "token_sha256": "fe06f79872678a9e6681c6b5591f874a6412ef39eee9697e70f0a0ae83bbaa6f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:142",
+                "task": 1748,
+                "token_sha256": "fcaccbef8bac69e318a343b4f052a0de581142741188d4580486f1a68d05ee9d",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:203",
+                "task": 1921,
+                "token_sha256": "a76b1ab6912cd7a81addb1a7ebe950d96a8984b9cac7ee7d18a3aebd5773aaea",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:223",
+                "task": 2264,
+                "token_sha256": "afee2f054126db38965326fb9cf72085ee4f7d297434ddf715d1872c581be98c",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:225",
+                "task": 2427,
+                "token_sha256": "aa8c469809a3d1f9db0b817c38dd125f105fe89b13946a37e9c12cfbcb100370",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:228",
+                "task": 2616,
+                "token_sha256": "8582a742139cc34205cae72b166d246b230b73982a69f9c22a3f36629e62a774",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:238",
+                "task": 2770,
+                "token_sha256": "ae5c724e705ae2641eff2a680b0e845a2267028d57e0c35607f18c14d4a8484d",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:250",
+                "task": 2938,
+                "token_sha256": "77a4f4a770115ded7aaae94666388af09806e31084b0af8e1ea3ad4f8532e161",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:281",
+                "task": 3173,
+                "token_sha256": "b2f9dae2116d6e0b227ba3aa0d4f9a0e7197853504603c7623f322c6d050d75d",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:284",
+                "task": 3315,
+                "token_sha256": "5c8f3044ed1620fccce37e9dd5167dc24013fdf3f70e7c2d5e712abefd7cfac1",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:429",
+                "task": 3418,
+                "token_sha256": "6eb45f7ed3df32782db45b556b2e2e725d096c5990ce96f7c69c288cfd8df679",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-my:432",
+                "task": 3605,
+                "token_sha256": "c4784049a6e40fab95d7842038839885ba15fa890dedeb1d61fcc1e981ffb9ad",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:32",
+                "task": 3769,
+                "token_sha256": "c0de978d12623977ad52416c722cc3ba2afc2b612726fdc6b30fcbd2e14fc27c",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:57",
+                "task": 3797,
+                "token_sha256": "4d33240d821eedc9842b42d37f57fcc75f0faccbf560cf9ea8cf0a05aa2fc39f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:67",
+                "task": 3844,
+                "token_sha256": "40014bfad1e2e7de6a44e28a5d840a5a55b1b202cdfc024fe022a0ff2a67ba49",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:142",
+                "task": 3877,
+                "token_sha256": "e28a969dd94c9cd1600757dd873e8fddf460b357c33e29c8f555d590581ca28e",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:146",
+                "task": 3901,
+                "token_sha256": "bb959a03b2aa443c27b9be14f078fbb455ee5f39d333a060baec4f59bfd7d384",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:216",
+                "task": 3924,
+                "token_sha256": "4eb918659b3f0e22752dcc03447b64c4d122e545ba54a46485391c34bf5edbff",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:217",
+                "task": 3940,
+                "token_sha256": "25c5ecd0245279dbf53d3b28d53ecd5a6945f0a0324b8bd8da08393ff51f9829",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:234",
+                "task": 3966,
+                "token_sha256": "b28124e483591d30fabbf3a4092e87a902966d84e92c14ffd386e5b60805ffb1",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:252",
+                "task": 4020,
+                "token_sha256": "403316e34e1e0c0795b4795d0db57ca5c0bd01f385aa3355d120775b4181ebbd",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:269",
+                "task": 4048,
+                "token_sha256": "e22dc5598dca460e7eb8a7d20ab10c12402980e7ee271dfc124b3edcf18da0b6",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:271",
+                "task": 4080,
+                "token_sha256": "f45e58cb47ce508cbc3d85227d161d27a89d7d9c9c31650b7993bdf152e3aeb4",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:274",
+                "task": 4118,
+                "token_sha256": "6f34ed411a611df8cca1492114a547259c7fa6c66a56af5226a90317e0e8e98c",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:322",
+                "task": 4155,
+                "token_sha256": "23861c8d5a3759bf4471841aca1c9850049c71f6a4f2b12cd708703a9ff45fb9",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:323",
+                "task": 4188,
+                "token_sha256": "a59de0eaff9e0fb60e3ca9475086043c8e6ed0d18aa7820a972c098a0ff2cde5",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:370",
+                "task": 4226,
+                "token_sha256": "adf673954317492a138d9375d6406fe82bd3aea5708949c03ed26d98bf8716ab",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:405",
+                "task": 4260,
+                "token_sha256": "ee82b05e81861843b9833cad162cfb7ae2de67de917375ae2de3bf840e13e704",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:408",
+                "task": 4273,
+                "token_sha256": "b770e5c1323b5d8bff5742fd4f5643162dfd548860434af5476f830e05460236",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:410",
+                "task": 4296,
+                "token_sha256": "bcafae999d0d12d6f86dfa259741b8c40df5117203377122712bf11b96c748c4",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:438",
+                "task": 4316,
+                "token_sha256": "5acb9c7063dfc481ac697ea31181720899bb94783c9f859cfc89620398ee47d1",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-zh:469",
+                "task": 4337,
+                "token_sha256": "b6d4759142f2508612718bf87e1c9bc657fe77747c4c7b94b0ccdcc13194aa9c",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:6",
+                "task": 4360,
+                "token_sha256": "45423fbea2aa7305fb87a26f6c2e5da19f44d3c6b776ce18bcbe428a7c294427",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:25",
+                "task": 4372,
+                "token_sha256": "f372e1a1f53da0949101f1a4ec8c8acd04a28b423e0667479769ab87c5f27439",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:27",
+                "task": 4395,
+                "token_sha256": "90c96ec9580d748bca06d6eeca98a79f2e8c8b5cd43054150e2274943d65aed1",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:30",
+                "task": 4436,
+                "token_sha256": "b0f7522816f10050c182c4e5449d2ec3db00048d0129d849c62b6580a3f13db7",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:32",
+                "task": 4498,
+                "token_sha256": "e786cbe931f9ac8a90e1e7a141b831baf26108869445893859adfc3b262dc8c2",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:89",
+                "task": 4528,
+                "token_sha256": "b2863d748adcbaf0c830f9152e65e947eb215ddb4ccf0ed83ee7182300df1e74",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:95",
+                "task": 4560,
+                "token_sha256": "e56da7dc04b8df0fd291e9c06e860fadbd7e9aa231c84a3771c70a734eebb22c",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:104",
+                "task": 4583,
+                "token_sha256": "8874cbe06eeace6fcff64c0e1c5afa80d0a56082d855767f00bc0edc7edfff18",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:114",
+                "task": 4602,
+                "token_sha256": "2b368c678696d0e5c48fcfef5d1fcac224d05c26a19d655e0e2cf64ec51ef776",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:142",
+                "task": 4637,
+                "token_sha256": "f0240423e6d9c0983151c0c7b71ab4b370144c75f023c9a86ac56cd251f332a2",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:203",
+                "task": 4666,
+                "token_sha256": "d040cae945dd471bc954e1d2ccb1b60a21b6a312274a12209be18e40f4d5c2a3",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:223",
+                "task": 4716,
+                "token_sha256": "2239aa9fe89682531d276b71dfd8ca0ddd9be26ce2e9caf07fa85b18a8dcd32f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:225",
+                "task": 4745,
+                "token_sha256": "44f5194b593118b878fae5e9176141c8265ab475d0da44b1905d3ee748265086",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:228",
+                "task": 4770,
+                "token_sha256": "ac228c5e6e4888dc6dc9e1f20043336371a906abda8bea087a29ed4e2b6ab50a",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:238",
+                "task": 4806,
+                "token_sha256": "0222aaf52588d181139eaee1d3b9e1a7d0d45d5f84fd4768d8a7b8a266ec62b0",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:250",
+                "task": 4827,
+                "token_sha256": "830d2eedb8cfa35666daaa60551f1d5227388f60f47ce2f6fd1852c455ade770",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:281",
+                "task": 4869,
+                "token_sha256": "93190d8d0af15a2a85b1b248c2d6688505d0cb2f8ab9b1fe14227c25b2366200",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:284",
+                "task": 4893,
+                "token_sha256": "3dd7c989e893fdf0d30391b804b468b76061a67de77ce8fe151d8e36d3057e1d",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:429",
+                "task": 4913,
+                "token_sha256": "e274085743a9b2132b25651721e3e9fcdb41b356811e6ec9c2164320bc6e01dc",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:zh-en:432",
+                "task": 4941,
+                "token_sha256": "18746f9012c33854f160c18f3457bf169b044ee1726dda0105d7e0e7bfea04f9",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:46",
+                "task": 4971,
+                "token_sha256": "0a93db39da2765089392897edb4e84e17cc0a924f22931d2053ea3c8010f22b7",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:71",
+                "task": 4996,
+                "token_sha256": "40bcaed09c9c8e7068a616aa073c691516dae0615064a88925c7bb3756806407",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:80",
+                "task": 5046,
+                "token_sha256": "c1098cd46547aa564d831328daf4966ea4c964f11b6dd62b54e6a346c1b38dd0",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:81",
+                "task": 5069,
+                "token_sha256": "9c734cfe2a816c5d97415c7788d117fc5a2001a27d1ff98e549684e08058facb",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:103",
+                "task": 5086,
+                "token_sha256": "68352146f58c9bdce19e1a3aebac2e77a7f65c07ecf49a95639b773687e9da9c",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:127",
+                "task": 5097,
+                "token_sha256": "99d913d000103a5b6f2786b8b557a05974dc97ad5a0defde05845f443307ba87",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:166",
+                "task": 5128,
+                "token_sha256": "ab75018bd4e440812d11b06f9f5cd85a063574e6f9c2b4fb93cd5954878581d6",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:196",
+                "task": 5155,
+                "token_sha256": "3831697fad98ab6354a4efe5aaa50f8a166992d7337c240d1f1a4ebb98e1b628",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:214",
+                "task": 5197,
+                "token_sha256": "6057c86100fb819355503786a1da0eaeba3bea5045da2915463c3a38d740d47a",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:233",
+                "task": 5230,
+                "token_sha256": "9809c5160e94b233a59b8be094dc11e9b20467cebd1d315ba9926b53e9198da4",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:238",
+                "task": 5246,
+                "token_sha256": "294d119c7486cfbd9eb4c35a5c2bbe48043bd268a1c22a46a852886b4d100a42",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:273",
+                "task": 5263,
+                "token_sha256": "f9d003a5b4b2c23119f58990ab4fed6118121545a86fc396965437b940f2d521",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:284",
+                "task": 5283,
+                "token_sha256": "16ebcbe8d6c7f3ec26822536cff0ea3ccc78b357243cacaa9085bc8aefe313ad",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:296",
+                "task": 5299,
+                "token_sha256": "abb299f41cf9fc8e24208c384f471f1c2ca2d6695dbbd249379334c9b63c0577",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:300",
+                "task": 5332,
+                "token_sha256": "26d60add96f3d4c76378496525b6538d987191e6a3629407e37bb7180d568b78",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:363",
+                "task": 5352,
+                "token_sha256": "58f3ef04356689f02340195e00d827d8ac98b3c9de31d25c06c8dfdb674c1970",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:370",
+                "task": 5379,
+                "token_sha256": "3d5eb483b17fbf00764239f92ed7affd83f6537cc03bbe831522938c0e8e8de6",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:373",
+                "task": 5409,
+                "token_sha256": "e57d20e11d58f7b6ada0ebfcb2b40ca521b639032b1e8990ed5989ffb9e51bf4",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:379",
+                "task": 5441,
+                "token_sha256": "47c7308aa6d7ff5b9ce4ef24502ccfb9d264e40dce28263a79c0d93ff761b75b",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-zh:387",
+                "task": 5457,
+                "token_sha256": "99cbc6f04ba01da2245412d3524bc3dd88e744163e23ed143157ae8e165916e0",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:46",
+                "task": 5479,
+                "token_sha256": "3f780409c28bbb2098e1541bc308aadfbeb249f7607064c363a21670f4f330e6",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:71",
+                "task": 5689,
+                "token_sha256": "c165897f7cd2b2df6b792c57dcea54ae7e3ef04a9670f1347e9a65b9de7c4bd7",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:80",
+                "task": 6031,
+                "token_sha256": "ae550ad82df52626183818904b96e34bb785c24b3ea374cba35b557c27c26d98",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:81",
+                "task": 6231,
+                "token_sha256": "c1f0b25a57c3728ec4eb1c060f044c1442a67f1cc4ed93d2eb4238ef526eddee",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:103",
+                "task": 6349,
+                "token_sha256": "8b3eeed2db78d13d33e345d62589875aab96887af49fec2fdc0fadb615d4780d",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:127",
+                "task": 6468,
+                "token_sha256": "08fe48912d34110228e19a47ededc62fb1ba4c0c171d174d5e42d181fd424d78",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:166",
+                "task": 6738,
+                "token_sha256": "7254b4b3892309126f18bf683751ed987c64d3ccff0f5a82d1b08879e745468f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:196",
+                "task": 7003,
+                "token_sha256": "5f9b9cb1968937a93cde97dd71582684b9d5e571e308a70912e9e6d7b0edcd40",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:214",
+                "task": 7324,
+                "token_sha256": "745b69bf3895bdbced96a1aaefb3c889695426eecd03fa6d6dc3a6f36852bd18",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:233",
+                "task": 7559,
+                "token_sha256": "73b7a3dd6afd66da440aa1061e21d70251c573a0182e84e74afe12796b30e734",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:238",
+                "task": 7630,
+                "token_sha256": "1747cc2ec394dc350eaa3d3b5f40bd3dc100ea50c8d05de04edf65210cdaf24d",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:273",
+                "task": 7802,
+                "token_sha256": "3ab0ee12af0f9eb0f523a5f20083a3d69e78e10a52ed13424452e06ed81f7f4f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:284",
+                "task": 7941,
+                "token_sha256": "67599832b5721dcc84d0f9863a60e12a686efbc6982b95f870fc242875b1f26b",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:296",
+                "task": 8043,
+                "token_sha256": "e1783d429a62a30771b5067409d16fa1beced86093ded0ceb1064fcdd968d874",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:300",
+                "task": 8353,
+                "token_sha256": "7d25b33ff84ffe54744b97f6dfdb68ff01bccb0e552c56b54b63672b6c06d2de",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:363",
+                "task": 8506,
+                "token_sha256": "ac9dc7ac02476b15d8d27fc12077e748e77790d45298231c316b4dea563d365f",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:370",
+                "task": 8722,
+                "token_sha256": "63429f10992bc2e12b072cfb1d958ea7105ab870ec353c3ee6c038d98752e7b6",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:373",
+                "task": 8950,
+                "token_sha256": "4d068c8c7d2c066c1b99b5cda76651510b2bfa45bd42278932d68ab1ef238cd3",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:379",
+                "task": 9238,
+                "token_sha256": "dd6ae53757e9543ee7e75bce786dad655c3ddff5227356b1fda03d5935fee9ff",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:en-my:387",
+                "task": 9357,
+                "token_sha256": "e943b50493033b27c966ef685e15ea838d79e13003d462b00d64e76a8fd963d6",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:32",
+                "task": 9528,
+                "token_sha256": "9ee97b56e5ed0000f6b5353ef6177367381a953302d6490dc10b00b66f8df98e",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:57",
+                "task": 9562,
+                "token_sha256": "181a13241e3c7a3642b206f41b0d59b296799926047fb89fcb35e4179de5d7b9",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:67",
+                "task": 9602,
+                "token_sha256": "715ca6944251ba07f051b67cb36a0c81c1808175269fb38bc348af0801a5e5bf",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:142",
+                "task": 9639,
+                "token_sha256": "97aee52c60f1926fceca7c966c2f91cb2491da9ac7f6ba59334fcd00dd4e391d",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:146",
+                "task": 9662,
+                "token_sha256": "b7f52b17c3e497b189bb69074f8c4132636428a991fecaef6975c3288929abd4",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:216",
+                "task": 9693,
+                "token_sha256": "39e1ff50abb570b1749cbfbbd78db555fc44b4cf7e7366ab9bf2c9e6b09dfd3a",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:217",
+                "task": 9713,
+                "token_sha256": "21de9f6766d31002dfe3407f0c269e4c8330434cb43155b56b281ab564f28499",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:234",
+                "task": 9739,
+                "token_sha256": "681d968e7286ea24be0d51d6966ef1fdcb95d1b868d7cb234e7ea3a1d5ae6e21",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:252",
+                "task": 9796,
+                "token_sha256": "1fc4b89556df183ed4d9ad7e22f6f91e72929e9d00a852218a189e2d5f76cba2",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:269",
+                "task": 9828,
+                "token_sha256": "db743c492c22a6a086cbe23915a5ce230fe467daaaf10a02fead4b788da3a990",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:271",
+                "task": 9859,
+                "token_sha256": "210b6b16cf3fee4ec5d76c4ecde066556c4e23f5dd56c47e3347422a6fb5c917",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:274",
+                "task": 9904,
+                "token_sha256": "857bb6dc72ed4915176b14007c08dbb82c499f5bb04f6bdd3bffb611675a8daf",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:322",
+                "task": 9940,
+                "token_sha256": "357f331f3e79b515190212f3c964c9b7675380ce7ee673ccb9260573c0c7b086",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:323",
+                "task": 9986,
+                "token_sha256": "8044912a3e1934599d68c69cd0ab5513853dac626dc373fcfa34c208355d817b",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:370",
+                "task": 10023,
+                "token_sha256": "44304738f5250fdbc37d7af970ea25dd4268c6c9be1ba20ebebfc79b13ac9826",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:405",
+                "task": 10072,
+                "token_sha256": "4f86a2f1957ff2c3131f0f978c19be2020c001703c9e4921b809b2e48eadbf8b",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:408",
+                "task": 10090,
+                "token_sha256": "fb4166a344385ceb1b228bccb3154d2381a2e6b9a4ba173fe45a304adf335fbf",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:410",
+                "task": 10117,
+                "token_sha256": "ca8359be1f7137903d5b0315e470016cec001376d251dd143947d0d4367cc4b9",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:438",
+                "task": 10142,
+                "token_sha256": "05268bc82fe83cbc732adcd79661f208c60fdcb5aada2f7af889b8b9426195e7",
+                "finish": "eos",
+                "server_truncated": 0
+              },
+              {
+                "id": "validation:my-en:469",
+                "task": 10165,
+                "token_sha256": "72f8c390a96c6837d841d10e2566e55465d47538c4d5cc1be485290ec882c2b4",
+                "finish": "eos",
+                "server_truncated": 0
+              }
+            ],
+            "limitations": [
+              "Independent raw log order/token replay only; sequential task order association, not a cryptographic request-ID binding.",
+              "Rendered prompt token equivalence and model full hash/quality/stock checks not completed.",
+              "Server truncated flag is distinct from generation length limit. EOS removed only for normalized count, raw tokens retained."
+            ]
+          }
+        },
+        "directions": {
+          "zh-my": {
+            "n": 20,
+            "scores": {
+              "96": 38.70845849160883,
+              "128": 38.9471496577379
+            },
+            "delta": {
+              "delta": -0.23869116612907249,
+              "ci95_low": -2.476533006977981,
+              "ci95_high": 2.1697531177497464,
+              "resamples": 2000,
+              "seed": 42
+            },
+            "flags": {
+              "96": {
+                "degenerate_repetition": 19,
+                "digits_differ_from_reference": 4
+              },
+              "128": {
+                "degenerate_repetition": 19,
+                "digits_differ_from_reference": 3
+              }
+            },
+            "same_text": 0,
+            "full_direction_observed": true,
+            "descriptive_gate": false
+          },
+          "my-zh": {
+            "n": 20,
+            "scores": {
+              "96": 19.747622024243025,
+              "128": 21.505914860598423
+            },
+            "delta": {
+              "delta": -1.7582928363553982,
+              "ci95_low": -3.25682081283668,
+              "ci95_high": -0.21460435353756976,
+              "resamples": 2000,
+              "seed": 42
+            },
+            "flags": {
+              "96": {
+                "length_ratio_outlier": 1,
+                "digits_differ_from_reference": 2
+              },
+              "128": {
+                "length_ratio_outlier": 1,
+                "digits_differ_from_reference": 1
+              }
+            },
+            "same_text": 1,
+            "full_direction_observed": true,
+            "descriptive_gate": false
+          },
+          "zh-en": {
+            "n": 20,
+            "scores": {
+              "96": 57.04073403278507,
+              "128": 58.166290855234735
+            },
+            "delta": {
+              "delta": -1.125556822449667,
+              "ci95_low": -2.94265166252655,
+              "ci95_high": 0.8455983641309709,
+              "resamples": 2000,
+              "seed": 42
+            },
+            "flags": {
+              "96": {
+                "digits_differ_from_reference": 3
+              },
+              "128": {
+                "digits_differ_from_reference": 3
+              }
+            },
+            "same_text": 6,
+            "full_direction_observed": true,
+            "descriptive_gate": false
+          },
+          "en-zh": {
+            "n": 20,
+            "scores": {
+              "96": 31.4511256140607,
+              "128": 31.342729485305703
+            },
+            "delta": {
+              "delta": 0.10839612875499682,
+              "ci95_low": -1.5598600061166816,
+              "ci95_high": 1.935703892780889,
+              "resamples": 2000,
+              "seed": 42
+            },
+            "flags": {
+              "96": {
+                "digits_differ_from_reference": 1
+              },
+              "128": {
+                "digits_differ_from_reference": 1
+              }
+            },
+            "same_text": 1,
+            "full_direction_observed": true,
+            "descriptive_gate": true
+          },
+          "en-my": {
+            "n": 20,
+            "scores": {
+              "96": 42.40050833302436,
+              "128": 43.84411083285272
+            },
+            "delta": {
+              "delta": -1.4436024998283585,
+              "ci95_low": -3.637450318764452,
+              "ci95_high": 0.5458389492584187,
+              "resamples": 2000,
+              "seed": 42
+            },
+            "flags": {
+              "96": {
+                "degenerate_repetition": 20,
+                "digits_differ_from_reference": 1,
+                "length_ratio_outlier": 1
+              },
+              "128": {
+                "degenerate_repetition": 20,
+                "digits_differ_from_reference": 1
+              }
+            },
+            "same_text": 1,
+            "full_direction_observed": true,
+            "descriptive_gate": false
+          },
+          "my-en": {
+            "n": 10,
+            "scores": {
+              "96": 53.438525200600694,
+              "128": 56.37765028812063
+            },
+            "delta": {
+              "delta": -2.9391250875199333,
+              "ci95_low": -8.00541374110444,
+              "ci95_high": 0.5981158489741382,
+              "resamples": 2000,
+              "seed": 42
+            },
+            "flags": {
+              "96": {
+                "digits_differ_from_reference": 1
+              },
+              "128": {}
+            },
+            "same_text": 0,
+            "full_direction_observed": false,
+            "descriptive_gate": false
+          }
+        },
+        "limits": [
+          "Only completed prefix; full direction score descriptive, not canonical qualification.",
+          "No validation fitting. No inference or final-test scoring.",
+          "EOS removed only for normalized diagnostics, raw evidence retained."
+        ]
+      }
+    ]
+  },
+  "r23-output-error-layer-selection": {
+    "job": "job_01M8CTQYD900MDD78B2TH463CG",
+    "exit_code": 0,
+    "compile": "PASS",
+    "results": [
+      {
+        "status": "PASS_SYNTHETIC_ONLY",
+        "groups": 12,
+        "fit_samples": 12,
+        "holdout_samples": 12,
+        "layer_choices": {
+          "1": "guarded96",
+          "2": "balanced"
+        },
+        "holdout_primary_relative_improvement": 0.5,
+        "holdout_rejection_without_refit": true,
+        "negative_checks": 6
+      },
+      {
+        "status": "EXACT_REAL_MASK_INVENTORY_VERIFIED",
+        "masks": {
+          "original96": "23d615b5f6e33af73c008729a34b3a0dbe9713508a5fd299b72ee9559180e8e7",
+          "guarded96": "4589d613512ac0a07f02be500e8b2fabe3f4beb78ddd171e14fd26cd8078960c",
+          "balanced": "4410fdd5dec984f19c766ee0d133035c910b12770c8c09de4756962bdaa9d631",
+          "robust": "250ce92b01077c4d65ee77c92a9db5cabe9ec6d2907ea7525e5789ea7eb57d1b",
+          "myanmar2": "d6c365d360bc47052fb64d3811b303cea0309b7670d734e16b6de7f63b552cc0"
+        },
+        "layers": 47,
+        "keep": 96
+      }
+    ]
+  }
+}
