@@ -1,4 +1,4 @@
-import pathlib,tarfile,hashlib,json,gzip
+import pathlib,tarfile,hashlib,json
 R=pathlib.Path.home()/".cache/mt-pruning";Q=R/"r23-results"
 B=Q/"r23h-all8-ablation-primary-v3";BR=R/"r23h-all8-ablation-primary-run-v3"
 A=Q/"r23h-pareto-all10-propagation-v2";AR=R/"r23h-pareto-all10-run-v2"
@@ -31,12 +31,8 @@ for x in ["recovery-receipt.json","expanded.json","prop-plan.json"]:files["recov
 for i in range(18):files[f"prior-r23g/{i:02d}.json"]=P/f"{i:02d}.json"
 assert len([k for k in files if k.startswith("batch/") and k.endswith(".json") and "-" in k])==20
 assert all(p.is_file() and not p.is_symlink() and p.stat().st_size<=2*1024*1024 for p in files.values())
-dest=pathlib.Path("/tmp/r23h-all8-ablation-primary-v3.tgz")
-with dest.open("wb") as raw:
- with gzip.GzipFile(filename="",fileobj=raw,mode="wb",compresslevel=9,mtime=0) as gz:
-  with tarfile.open(fileobj=gz,mode="w",format=tarfile.USTAR_FORMAT) as t:
-   for k,p in sorted(files.items()):
-    info=t.gettarinfo(str(p),arcname=k);info.uid=0;info.gid=0;info.uname="";info.gname="";info.mtime=0;info.mode=0o600
-    with p.open("rb") as f:t.addfile(info,f)
-with tarfile.open(dest,"r:gz") as t:assert len(t.getmembers())==len(files)
+dest=pathlib.Path("/tmp/r23h-all8-ablation-primary-v1.tgz")
+with tarfile.open(dest,"w:gz") as t:
+ for k,p in sorted(files.items()):t.add(p,arcname=k,recursive=False)
+with tarfile.open(dest) as t:assert len(t.getmembers())==len(files)
 print("ARCHIVE_SHA256="+hashlib.sha256(dest.read_bytes()).hexdigest(),"FILES="+str(len(files)),"BYTES="+str(dest.stat().st_size))
