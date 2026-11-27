@@ -3,11 +3,11 @@ set -euo pipefail
 R=$HOME/.cache/mt-pruning
 SCREEN=$R/r23h-pareto-screen-v1
 D=$R/r23h-all8-ablation-screen-run-v2
-RUN=$R/r23h-all8-ablation-primary-run-v2
+RUN=$R/r23h-all8-ablation-primary-run-v3
 mkdir -m700 "$RUN"
 cd "$RUN"
-curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/b74c9f59c476c416d5a88739121c5c3c45b8dc84/docs/research/r23h-all8-ablation-primary-cpu-batch.py -o primary.py
-test "$(git hash-object primary.py)" = undefined
+curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/a7d78a19dff7828b9bf49c5e9ce82081284df439/docs/research/r23h-all8-ablation-primary-cpu-batch.py -o primary.py
+test "$(git hash-object primary.py)" = 39b31553ca1b8d6adb05931440dba68961c4631b
 test -f "$SCREEN/driver.py"
 test -f "$SCREEN/collector.py"
 test -f "$SCREEN/prop.py"
@@ -28,6 +28,8 @@ test -f "$R/r23g-recovery-ssd-38ed4798/recovery-receipt.json"
 test -f "$R/r23g-recovery-ssd-38ed4798/expanded.json"
 test -f "$R/r23g-recovery-ssd-38ed4798/prop-plan.json"
 test -f "$R/r23-results/r23g-l38-propagation-v1/17.json"
+test "$("$HOME/miniconda3/envs/mt-pruning/bin/python" -c 'import torch; print(torch.__version__)')" = "2.10.0+cpu"
+test "$("$HOME/miniconda3/envs/mt-pruning/bin/python" -c 'import transformers; print(transformers.__version__)')" = "5.24.1"
 python3 -m py_compile primary.py
 flock -n "$R/r23-admissions/batch.lock" -c true
 cat > run.sh <<'RUN'
