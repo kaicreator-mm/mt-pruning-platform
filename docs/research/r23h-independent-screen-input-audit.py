@@ -11,6 +11,9 @@ def sha_bytes(raw):
     return hashlib.sha256(raw).hexdigest()
 def sha_file(path):
     return sha_bytes(path.read_bytes())
+def git_blob(path):
+    raw = path.read_bytes()
+    return hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\\0" + raw).hexdigest()
 def load_json(path):
     raw = path.read_bytes()
     if raw.endswith(bytes((92, 110))):
@@ -26,7 +29,7 @@ source_path = inputs / "r23h-pareto-v2.json"
 screen_script = base / "screen.py"
 assert sha_file(screen_path) == "cbdc65097cce87cfc6ddb8934604c690e744b9f3d8f7f52b3708bf035c20fa2f"
 assert sha_file(source_path) == "df87768617f17ed7c2c6756400a3ebb36c51269867659c3481a49445dec2bc98"
-assert sha_file(screen_script) == "9cc6218f0aa89dab335dfde8aa40ad5ec12c74fd"
+assert git_blob(screen_script) == "9cc6218f0aa89dab335dfde8aa40ad5ec12c74fd"
 ast.parse(screen_script.read_text(encoding="utf-8"))
 screen = load_json(screen_path)
 source = load_json(source_path)
@@ -79,7 +82,7 @@ assert "holdout" in screen_script.read_text(encoding="utf-8")
 result = {
     "status": "R23H_PARETO_SCREEN_INPUT_INDEPENDENT_VALIDATION_PASS_NOT_MODEL_ADMISSION",
     "machine": "DESKTOP-5K3AHE4",
-    "screen_script_sha256": sha_file(screen_script),
+    "screen_script_git_blob": git_blob(screen_script),
     "screen_input_sha256": sha_file(screen_path),
     "source_report_sha256": sha_file(source_path),
     "fit_rows": 48,
