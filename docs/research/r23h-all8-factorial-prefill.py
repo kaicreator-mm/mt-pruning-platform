@@ -4,7 +4,7 @@ P=pathlib.Path
 R=P.home()/".cache/mt-pruning";RR=R/"r23-results"
 D=R/"r23h-pareto-screen-v1";USB=R/"r23g-recovery-ssd-38ed4798"
 SD=RR/"r23h-pareto-prefill-v1";PREP=RR/"r23h-all8-factorial-prefill-v2"
-RUN=R/"r23h-all8-factorial-prefill-run-v4"
+RUN=R/"r23h-all8-factorial-prefill-run-v5"
 PLAN="7b627cedeb7e3732af8e740aec213791e888324cb6c8db3dbe67cd747ca180ac"
 PLAN_BLOB="415f2526c82356e216d74105301771b3060f3461"
 OLD_PLAN="b6777f68cad735a5d59b2b4de07220fdc3fa007bbda7ee594a8d5bf65497577e"
@@ -122,14 +122,12 @@ def main():
    receipt=dict(status="R23H_ALL8_FACTORIAL_PREFILL_CAPTURED_NOT_ADMISSION",id=r["id"],index=i,plan_sha256=PLAN,teacher_sha256=th,metrics={})
    for n,m in masks.items():
     h,z=prefill(prompt,m);q=metric(t,z)
-    if n=="original96":
-     need(h==th,"original96 no-op")
+    if n in ("original96","all8","all10"):
+     o=oldscreen[r["id"]]["metrics"][n]
+     need(h==o["logits_sha256"] and abs(q["kl"]-o["kl"])<1e-12 and abs(q["nmse"]-o["nmse"])<1e-12 and q["argmax_mismatch"]==o["argmax_mismatch"],"old screen replay")
     if n=="r23g":
      o=old["candidate96"]["logits"][0]
      need(h==old["candidate96"]["masked_hashes"][0]["sha256"] and abs(q["kl"]-o["teacher_to_masked_kl"])<1e-12 and abs(q["nmse"]-o["nmse"])<1e-12 and q["argmax_mismatch"]==int(o["teacher_argmax"]!=o["masked_argmax"]),"R23G replay")
-    if n in ("all8","all10"):
-     o=oldscreen[r["id"]]["metrics"][n]
-     need(h==o["logits_sha256"] and abs(q["kl"]-o["kl"])<1e-12 and abs(q["nmse"]-o["nmse"])<1e-12 and q["argmax_mismatch"]==o["argmax_mismatch"],"old screen replay")
     receipt["metrics"][n]=dict(q,logits_sha256=h,mask_sha256=sha(canon(m)))
    h,_=prefill(prompt,None);need(h==th,"teacher restoration")
    rh=publish(PREP/f"{i:02d}.json",receipt);receipts.append(receipt)
