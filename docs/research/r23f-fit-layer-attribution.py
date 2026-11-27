@@ -2,7 +2,7 @@
 Receipts replay exact decision; single-layer reversions are algebraic local estimates,
 not measured hybrid-mask or propagated inference. Never admit a model here.
 """
-import argparse, hashlib, importlib.util, json, math, pathlib, re
+import argparse, ast, hashlib, json, math, pathlib, types
 P=pathlib.Path
 DEC='7821abc55b356520bdd02e4b60f32057a95d204b8cc723b894e2fdce3d9d100d'
 CAND='488a27afd5e75019cb6cc7355b9f847bbca515fc7570da081020a23b3e6213ef'
@@ -30,6 +30,20 @@ def strict(b):
     return json.loads(b,object_pairs_hook=pairs,parse_constant=lambda x: (_ for _ in ()).throw(ValueError(x)))
 def pinned(p,h,git=False):
     b=read(p);need((blob if git else sha)(b)==h,'hash mismatch '+str(p));return b
+def pure_proxy(raw):
+    # Compile only the exact pinned pure replay functions and constants.
+    # No fcntl, server imports, model load, lock monkeypatch, or runtime main.
+    tree=ast.parse(raw)
+    wanted={'need','sha','canon','checked_capture','decision','DIRS','GROUPS','NAMES'}
+    nodes=[];seen=set()
+    for n in tree.body:
+        name=n.name if isinstance(n,ast.FunctionDef) else (n.targets[0].id if isinstance(n,ast.Assign) and len(n.targets)==1 and isinstance(n.targets[0],ast.Name) else None)
+        if name in wanted:
+            need(name not in seen,'duplicate pure definition');seen.add(name);nodes.append(n)
+    need(seen==wanted,'pure proxy inventory')
+    m=types.ModuleType('proxy_pure');m.__dict__.update(math=math,hashlib=hashlib,json=json)
+    exec(compile(ast.Module(body=nodes,type_ignores=[]),'<pinned proxy pure replay>','exec'),m.__dict__)
+    return m
 def mean(xs):
     need(bool(xs),'nonempty group');return math.fsum(xs)/len(xs)
 def analyze(rows,caps,layers,orig,stable):
@@ -82,7 +96,7 @@ def main():
     original=strict(pinned(d/'original.json',ORIG,True))['candidates']['96']['kept'];c=strict(pinned(d/'candidate.json',CAND));stable=c['kept'];masks={'original96':original,'stable96':stable};layers=list(range(1,48))
     need(set(original)==set(stable)=={str(l) for l in layers} and all(len(v)==96 and v==sorted(set(v)) and all(type(i) is int and 0<=i<128 for i in v) for m in masks.values() for v in m.values()),'mask shape')
     need(c['fit_ids']==[r['id'] for r in rows] and sha(canon(stable))==c['mask_sha256'],'candidate scope')
-    pinned(d/'proxy.py',PROXY,True);s=importlib.util.spec_from_file_location('proxy',d/'proxy.py');proxy=importlib.util.module_from_spec(s);s.loader.exec_module(proxy)
+    proxy=pure_proxy(pinned(d/'proxy.py',PROXY,True))
     need(sorted(p.name for p in (d/'fit').iterdir())==sorted([f'{i:02d}.json' for i in range(48)]+['decision.json']),'fit inventory')
     captures={};hashes=[]
     for b in range(2):
