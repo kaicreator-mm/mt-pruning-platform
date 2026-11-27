@@ -81,6 +81,11 @@ def main():
     captures=[x for x in ev if x["status"]=="R23H_PROPAGATION_CAPTURED"]
     terminal=[x for x in ev if x["status"]==("R23H_WINNER_FIT_PROPAGATION_COMPLETE_NOT_FRESH_ADMISSION" if name=="all8" else "R23H_ALL10_FIT_PROPAGATION_COMPLETE_NOT_FRESH_ADMISSION")]
     need(len(captures)==18 and len(terminal)==1,"terminal inventory")
+    old=read(d/"pareto-actual-v1.tgz");need(sha(old)=="d6d83db734d1f4eda6eefa14c8861a551d739c91e5ae0511b1f2dc5de5b6be71","prior audited archive")
+    with tarfile.open(fileobj=io.BytesIO(old),mode="r:gz") as t:
+        for i in range(8):
+            k=f"{i:02d}.json";m=t.getmember("r23-results/r23h-pareto-prefill-v1/"+k)
+            need(m.isfile() and t.extractfile(m).read()==b[S+k],"audited prefill exact bytes")
     sc={p["ids"][i]:strict(b[S+f"{i:02d}.json"]) for i in range(8)}
     caps={}
     for i,r in enumerate(rows):
