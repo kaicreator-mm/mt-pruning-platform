@@ -12,6 +12,7 @@ OLD_REPORT="8f2663c26d8d0153fec68f9b22f37fc507ad86a7f064df34d951c7866cc2131b"
 REC="ae81e98342add7ea9d366f0d1f1c7fa2d5e6f84c432331a6870ecc25ff72d5ad"
 PRIMARY_REPORT="8ab5c2fc607ad49a589636df39ab46f801327d7c39cbbf70ce29b0fb2b23d2af"
 PRIMARY_REPLAY="89ab4d14f73563ee6e1a05cdeeb2143cf67c277a43c78629c2468b310514c552"
+PRIMARY_REPLAY_BLOB="1ae914e4e1e0c9729c43b237100b6fc20a5fbefb"
 TEACHER="0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94"
 ORIGINAL_BLOB="d8bcafe0fe1d8c6bacd0a425dfde57890b18f1ed"
 EXPANDED_SHA="21b4a54f626c32727284f32f34f3b43b54ff6e68d56ac4499934ee652fb6d166"
@@ -57,8 +58,8 @@ def main():
  rec=json.loads(pin(USB/"recovery-receipt.json",REC));need(rec["status"]=="R23G_RECOVERED_DISK_REPLAY_REJECT_STOP_FRESH","R23G recovery")
  prev=json.loads(pin(RR/"r23h-all8-ablation-primary-v3"/"report.json",PRIMARY_REPORT))
  need(prev["status"]=="R23H_ALL8_ABLATION_PRIMARY_BATCH_COMPLETE_NOT_FRESH_ADMISSION" and prev["eligible_for_secondary_fit_only"]==[],"previous primary rejection")
- replay=json.loads(pin(RUN/"primary-replay.json",PRIMARY_REPLAY))
- need(replay["status"]=="R23H_ALL8_ABLATION_PRIMARY_INDEPENDENT_RECEIPT_REPLAY_PASS" and replay["eligible_for_secondary_fit_only"]==[],"previous independent replay")
+ replay=json.loads(pin(RUN/"primary-replay.json",PRIMARY_REPLAY_BLOB,True))
+ need(replay["status"]=="R23H_ALL8_ABLATION_PRIMARY_INDEPENDENT_RECEIPT_REPLAY_PASS" and replay["archive_sha256"]=="5154ce5979b93ec849c25a688bf4a99180643f40a95f78f3dfe4fdd7f729a752" and replay["batch_report_sha256"]==PRIMARY_REPORT and replay["eligible_for_secondary_fit_only"]==[],"previous independent replay")
  oldplan=json.loads(pin(SD/"plan.json",OLD_PLAN));oldreport=json.loads(pin(SD/"report.json",OLD_REPORT))
  need(oldreport["selected"]=="all8" and oldreport["samples"]==8,"old screen")
  base=json.loads(pin(D/"original.json",ORIGINAL_BLOB,True))["candidates"]["96"]["kept"]
