@@ -13,8 +13,10 @@ ALL10_ADMISSION="bfd5267613c493558d3e0deece69aa4472cce53ea6aea5ad859b5754117ded2
 BATCH_ADMISSION="PENDING"
 BATCH_REPORT="PENDING"
 NAMES=("all8_revert42","all8_revert40_42")
-MASKS={"all8_revert42":"054614572884a518ce2a6538a0f39c7884667d1551312216df767ee4720f1f0b","all8_revert40_42":"96d26e3699ee87f2560fbbf15a53b6016b7d96aadc744f5aade4b076a90dab2b"}
-BLOBS={"all8_revert42":"f738ea900952ab19dbf6fd4cbca235dc40e56d05","all8_revert40_42":"97809cb5092ee6b903a4def8ee0139902d24f17d"}
+MASKS={"all8_revert40":"02de6ad74290659e3bd9b301ef606c45c129e032abcbbaaf867fe61bb26af84e","all8_revert42":"054614572884a518ce2a6538a0f39c7884667d1551312216df767ee4720f1f0b","all8_revert40_42":"96d26e3699ee87f2560fbbf15a53b6016b7d96aadc744f5aade4b076a90dab2b"}
+BLOBS={"all8_revert40":"255c95382a5888f9749d7626395182ba514c3c8d","all8_revert42":"f738ea900952ab19dbf6fd4cbca235dc40e56d05","all8_revert40_42":"97809cb5092ee6b903a4def8ee0139902d24f17d"}
+SCREEN_MASKS=("all8_revert40","all8_revert42","all8_revert40_42")
+SCREEN_NAMES=("original96","r23g","all8","all10",*SCREEN_MASKS)
 INDICES=(0,1,2,3,12,13,14,15,16,17)
 DIRS=("zh-my","my-zh")
 def need(x,m):
@@ -56,7 +58,7 @@ def main():
       "prior-all10/admission.json","prior-all10/report.json","prior-all10/run.log","prior-all10/run.stderr","prior-all10/exit-code",
       *("prior-all10/"+f"{i:02d}.json" for i in range(18)),
       "screen/plan.json","screen/report.json","screen/run.log","screen/run.stderr","screen/exit-code",
-      *("screen/"+f"{i:02d}.json" for i in range(8)),*("screen/masks/"+n+".json" for n in NAMES),
+      *("screen/"+f"{i:02d}.json" for i in range(8)),*("screen/masks/"+n+".json" for n in SCREEN_MASKS),
       "old-screen/plan.json","old-screen/report.json","old-screen/run.log","old-screen/run.stderr","old-screen/exit-code","old-screen/original.json",
       *("old-screen/"+f"{i:02d}.json" for i in range(8)),
       "recovery/recovery-receipt.json","recovery/expanded.json","recovery/prop-plan.json",
@@ -105,7 +107,7 @@ def main():
     base=exact("old-screen/original.json","d8bcafe0fe1d8c6bacd0a425dfde57890b18f1ed",True)["candidates"]["96"]["kept"]
     newplan=exact("screen/plan.json",PLAN);need(newplan["status"]=="R23H_ALL8_ABLATION_PREFILL_SCREEN_ONLY" and newplan["recovery_sha256"]==REC and newplan["teacher"]==TEACHER and newplan["holdout"]=="FORBIDDEN" and newplan["ids"]==oldplan["ids"],"new screen plan")
     masks={};masksha={}
-    for n in NAMES:
+    for n in SCREEN_MASKS:
         rawmask=b["screen/masks/"+n+".json"];need(blob(rawmask)==BLOBS[n],"mask blob "+n)
         z=strict(rawmask);m=z["mask"];need(z["status"]=="R23H_ALL8_SINGLE_LAYER_ABLATION_EXPLORATORY_NOT_ADMITTED" and z["method"]==n and z["mask_sha256"]==MASKS[n] and sha(canon(m))==MASKS[n],"mask identity "+n)
         need(newplan["hybrid_sources"][n]["blob_sha"]==BLOBS[n] and newplan["hybrid_sources"][n]["mask_sha256"]==MASKS[n] and newplan["masks"][n]==MASKS[n],"plan mask binding "+n)
@@ -116,7 +118,7 @@ def main():
     send=[x for x in se if x["status"]=="R23H_ALL8_ABLATION_PREFILL_SCREEN_COMPLETE_NOT_FRESH_ADMISSION"]
     need(len(sce)==8 and len(send)==1,"new screen events")
     scaps={}
-    screen_names=["original96","r23g","all8","all10",*NAMES]
+    screen_names=list(SCREEN_NAMES)
     for i,e in enumerate(sce):
         x=exact("screen/"+f"{i:02d}.json",e["receipt_sha256"])
         need(e["index"]==i and x["index"]==i and e["id"]==x["id"]==newplan["ids"][i] and x["plan_sha256"]==PLAN and set(x["metrics"])==set(screen_names),"new screen capture")
@@ -126,15 +128,15 @@ def main():
             need(x["metrics"][n]==oldscreen[x["id"]]["metrics"][n],"screen control replay")
         scaps[x["id"]]=x
     sm={n:{k:(sum if k=="argmax_mismatch" else avg)([x["metrics"][n][k] for x in scaps.values()]) for k in ("kl","nmse","argmax_mismatch")} for n in screen_names}
-    eligible=[n for n in NAMES if all(sm[n][k]<=sm["original96"][k]+1e-12 for k in sm[n]) and sm[n]["kl"]<sm["r23g"]["kl"]]
+    eligible=[n for n in SCREEN_MASKS if all(sm[n][k]<=sm["original96"][k]+1e-12 for k in sm[n]) and sm[n]["kl"]<sm["r23g"]["kl"]]
     eligible.sort(key=lambda n:(sm[n]["kl"],sm[n]["nmse"],n))
     sr=exact("screen/report.json",SCREEN_REPORT)
-    need(sr["status"]=="R23H_ALL8_ABLATION_PREFILL_SCREEN_COMPLETE_NOT_FRESH_ADMISSION" and sr["plan_sha256"]==PLAN and sr["samples"]==8 and sr["metrics"]==sm and sr["eligible_for_primary_fit_only"]==eligible and sr["selected"]==(eligible[0] if eligible else None) and eligible==list(NAMES),"new screen aggregate")
+    need(sr["status"]=="R23H_ALL8_ABLATION_PREFILL_SCREEN_COMPLETE_NOT_FRESH_ADMISSION" and sr["plan_sha256"]==PLAN and sr["samples"]==8 and sr["metrics"]==sm and sr["eligible_for_primary_fit_only"]==eligible and sr["selected"]==(eligible[0] if eligible else None) and eligible==["all8_revert42","all8_revert40_42"],"new screen aggregate")
     need(send[0]["report_sha256"]==SCREEN_REPORT,"screen terminal report")
     # Audit primary batch admission and receipts.
     ad=exact("batch/admission.json",BATCH_ADMISSION)
     need(ad["status"]=="R23H_ALL8_ABLATION_PRIMARY_BATCH_FIT_ONLY" and ad["screen_plan_sha256"]==PLAN and ad["screen_report_sha256"]==SCREEN_REPORT and ad["prior_all10_report_sha256"]==ALL10_REPORT and ad["teacher"]==TEACHER and ad["holdout"]=="FORBIDDEN" and ad["indices"]==list(INDICES) and ad["ids"]==[r["id"] for i,r in selected],"batch admission")
-    need(ad["candidates"]==masksha,"candidate masks")
+    need(ad["candidates"]=={n:masksha[n] for n in NAMES},"candidate masks")
     ev=[strict(x) for x in b["batch/run.log"].splitlines() if x.startswith(b"{")]
     ready=[x for x in ev if x["status"]=="R23H_PROPAGATION_TEACHER_READY"]
     captures=[x for x in ev if x["status"]=="R23H_ALL8_ABLATION_PRIMARY_CAPTURED"]
