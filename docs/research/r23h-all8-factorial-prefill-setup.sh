@@ -31,7 +31,7 @@ test -f "$D/run.log"
 test -f "$R/run-d01b-r19/corpus/corpus.jsonl"
 test -f "$R/r23-admissions/batch.lock"
 for i in $(seq -w 0 17); do test -f "$RR/r23g-l38-propagation-v1/$i.json"; done
-for i in $(seq -w 0 7); do test -f "$SD/$i.json"; done
+for i in 00 01 02 03 04 05 06 07; do test -f "$SD/$i.json"; done
 mkdir -m 700 "$RUN"
 cd "$RUN"
 curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/d08b0c80e77c69fee36189ebcce57596a3be033d/docs/research/r23h-all8-factorial-prefill.py -o factorial.py
