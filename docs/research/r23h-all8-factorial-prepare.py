@@ -8,7 +8,7 @@ D=R/"r23h-pareto-screen-v1"
 USB=R/"r23g-recovery-ssd-38ed4798"
 SD=RR/"r23h-pareto-prefill-v1"
 PREV=RR/"r23h-all8-ablation-primary-v3"
-OUT=RR/"r23h-all8-factorial-prefill-v1"
+OUT=RR/"r23h-all8-factorial-prefill-v2"
 
 OLD_PLAN="b6777f68cad735a5d59b2b4de07220fdc3fa007bbda7ee594a8d5bf65497577e"
 OLD_REPORT="8f2663c26d8d0153fec68f9b22f37fc507ad86a7f064df34d951c7866cc2131b"
