@@ -98,7 +98,7 @@ def screen():
         need(c["receipt_sha256"]==FACTORIAL_RECEIPTS[n] and c["git_blob_sha"]==bh and c["mask_sha256"]==FACTORIAL_MASKS[n] and c["changed_layers"]==FACTORIAL_CHANGED[n],"factorial plan binding")
         need(set(x["mask"])==set(map(str,range(1,48))) and all(len(v)==96 and v==sorted(set(v)) and all(type(i) is int and 0<=i<128 for i in v) for v in x["mask"].values()),"factorial mask structure")
         all_cs.append(dict(name=n,mask_sha256=FACTORIAL_MASKS[n],kept=x["mask"]))
-    cs=[x for x in all_cs if x["name"] in PRIMARY_CANDIDATES]
+    cs=[next(x for x in all_cs if x["name"]==n) for n in PRIMARY_CANDIDATES]
     need([x["name"] for x in cs]==list(PRIMARY_CANDIDATES),"primary candidate ordering")
 
     runevents=[json.loads(l) for l in (FACTORIAL_RUN/"run.log").read_bytes().splitlines() if l.startswith(b"{")]
@@ -179,7 +179,7 @@ def main():
     need(not drv.preflight()["blockers"],"resources")
     ident=drv.checkpoint_identity(drv.SOURCE,cache_dir=None,fresh=True,exact_inventory=True)
     need(ident["teacher"]==TEACHER and ident["num_experts"]==128,"teacher")
-    dst=RR/"r23h-all8-factorial-primary-v1";dst.mkdir(mode=0o700)
+    dst=RR/"r23h-all8-factorial-primary-v2";dst.mkdir(mode=0o700)
     g=json.loads(pin(USB/"recovery-receipt.json",REC));need(g["status"]=="R23G_RECOVERED_DISK_REPLAY_REJECT_STOP_FRESH","previous recovery")
     plan=json.loads(pinblob(USB/"expanded.json","a1047d1a7c5624ed0e3a868bd5d76eef4c754915"));pp=json.loads(pinblob(USB/"prop-plan.json","cc1bbf0bb6cf19be7c7c9c95d0b5d867dd54dcde"))
     rows=pp["rows"]+[r for r in plan["fit"] if r["direction"]=="zh-my" and r["id"] not in {z["id"] for z in pp["rows"]}]
