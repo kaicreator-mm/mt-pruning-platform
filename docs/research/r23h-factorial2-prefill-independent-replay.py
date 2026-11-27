@@ -281,7 +281,7 @@ def main():
         need(receipt["id"] == rows[index]["id"] and receipt["plan_sha256"] == PARETO_PLAN_SHA, "prior Pareto receipt binding")
         old_screen[receipt["id"]] = receipt
 
-    preflight_exit = get(F, "run/preflight-v3.exit-code").decode().strip()
+    preflight_exit = get(F, "run/preflight-v3-exit-code").decode().strip()
     need(preflight_exit == "0" and get(F, "run/preflight-v3.stderr") == b"", "preflight exit/stderr")
     preflight_log = get(F, "run/preflight-v3.log")
     need(b"R23H_FACTORIAL2_PREFLIGHT_PASS" in preflight_log and b'"torch": "2.10.0+cpu"' in preflight_log, "preflight evidence")
