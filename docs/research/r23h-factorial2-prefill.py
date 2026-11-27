@@ -18,6 +18,9 @@ import time
 
 P = pathlib.Path
 R = P.home() / ".cache/mt-pruning"
+REPO = P.home() / "mt-pruning-platform"
+if str(REPO) not in sys.path:
+    sys.path.insert(0, str(REPO))
 RR = R / "r23-results"
 D = R / "r23h-pareto-screen-v1"
 USB = R / "r23g-recovery-ssd-38ed4798"
