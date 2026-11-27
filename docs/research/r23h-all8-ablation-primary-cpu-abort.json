@@ -1,5 +1,5 @@
 {
-  "status": "R23H_ALL8_ABLATION_PRIMARY_CPU_ONLY_ABORTED_NOT_ADMISSIBLE",
+  "status": "R23H_ALL8_ABLATION_PRIMARY_CPU_PARTIAL_INTERRUPTED_NOT_FINAL",
   "run_dir": "~/.cache/mt-pruning/r23h-all8-ablation-primary-run-v1",
   "output_dir": "~/.cache/mt-pruning/r23-results/r23h-all8-ablation-primary-v1",
   "admission_sha256": "d3793042e04e4b7ec806eff56e72346d8359212f13b59e04568a0bede695c9fb",
@@ -20,6 +20,6 @@
     "all8_revert40_42": "7f6bfee36fd6f2245a826098c166bd1b461a21e48d9ab809e4bcd673d3f09130"
   },
   "process_rss_kib_observed": 47839584,
-  "reason": "Launcher accidentally set CUDA_VISIBLE_DEVICES empty. The process loaded and executed on CPU; it was terminated after the first fit row. These receipts are preserved for audit only and are not admissible as GPU primary-fit evidence. No report or completion event was produced.",
-  "remediation": "A separate v2 run/output directory is used. The v2 runner fails closed unless torch.cuda.is_available() and at least one CUDA device are visible; setup pins CUDA_VISIBLE_DEVICES=0 and verifies the exact Tesla V100-SXM2-16GB."
+  "reason": "The pinned mt-pruning engine is intentionally CPU-only: mtpruning/engine.py is the lean CPU mmap engine for the approximately 60 GB checkpoint, and requirements.txt pins torch==2.10.0+cpu. CUDA_VISIBLE_DEVICES empty and zero V100 utilization are expected. The first run produced one fit row for both candidates, then was manually terminated after a mistaken assumption that this stage should use the V100. The receipts are preserved as a valid partial CPU diagnostic, but the clean v2 run recomputes all ten rows for a coherent complete batch.",
+  "remediation": "The v2 runner uses the same pinned mt-pruning CPU environment and CPU mmap engine, with a separate output directory. It does not require CUDA or use the V100. Host RAM preflight remains mandatory."
 }
