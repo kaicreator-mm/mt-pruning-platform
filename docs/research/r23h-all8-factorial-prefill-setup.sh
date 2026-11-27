@@ -5,7 +5,7 @@ RR=$R/r23-results
 D=$R/r23h-pareto-screen-v1
 USB=$R/r23g-recovery-ssd-38ed4798
 SD=$RR/r23h-pareto-prefill-v1
-PREP=$RR/r23h-all8-factorial-prefill-v1
+PREP=$RR/r23h-all8-factorial-prefill-v2
 PREV=$RR/r23h-all8-ablation-primary-v3
 RUN=$R/r23h-all8-factorial-prefill-run-v2
 PY=$HOME/miniconda3/envs/mt-pruning/bin/python
@@ -34,8 +34,8 @@ for i in $(seq -w 0 17); do test -f "$RR/r23g-l38-propagation-v1/$i.json"; done
 for i in 00 01 02 03 04 05 06 07; do test -f "$SD/$i.json"; done
 mkdir -m 700 "$RUN"
 cd "$RUN"
-curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/0557ff23ca670c34cf9ebce0b129e0a32a768306/docs/research/r23h-all8-factorial-prefill.py -o factorial.py
-test "$(git hash-object factorial.py)" = 7c641f251717ac2ed23eddb89c948d38336e1f2c
+curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/f9272e3576d5d390cb8b5a1ed11aa8dc2ff1bea2/docs/research/r23h-all8-factorial-prefill.py -o factorial.py
+test "$(git hash-object factorial.py)" = 051b425f817474ab0a9fbef6f2441e08e9cf3680
 curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/parallel-r19-offline-analysis/docs/research/r23h-all8-ablation-primary-replay.json -o primary-replay.json
 test "$(git hash-object primary-replay.json)" = 1ae914e4e1e0c9729c43b237100b6fc20a5fbefb
 python3 -m py_compile factorial.py
@@ -50,7 +50,7 @@ test -z "$(nvidia-smi --query-compute-apps=pid --format=csv,noheader,nounits)"
 cat > run.sh <<'RUN'
 #!/bin/bash
 set -uo pipefail
-export PYTHONPATH="$HOME/mt-pruning-platform" CUDA_VISIBLE_DEVICES="" OMP_NUM_THREADS=6 MKL_NUM_THREADS=6 OPENBLAS_NUM_THREADS=1
+export PYTHONPATH="$HOME/mt-pruning-platform" CUDA_VISIBLE_DEVICES="" OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=1
 "$HOME/miniconda3/envs/mt-pruning/bin/python" -B factorial.py >run.log 2>run.stderr
 x=$?
 printf "%s\n" "$x" >exit-code
