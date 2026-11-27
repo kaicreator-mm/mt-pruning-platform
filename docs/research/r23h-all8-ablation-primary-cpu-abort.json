@@ -1,0 +1,25 @@
+{
+  "status": "R23H_ALL8_ABLATION_PRIMARY_CPU_ONLY_ABORTED_NOT_ADMISSIBLE",
+  "run_dir": "~/.cache/mt-pruning/r23h-all8-ablation-primary-run-v1",
+  "output_dir": "~/.cache/mt-pruning/r23-results/r23h-all8-ablation-primary-v1",
+  "admission_sha256": "d3793042e04e4b7ec806eff56e72346d8359212f13b59e04568a0bede695c9fb",
+  "exit_code": 143,
+  "cuda_visible_devices": "",
+  "observed_gpu": {
+    "name": "Tesla V100-SXM2-16GB",
+    "memory_used_mib": 0,
+    "utilization_percent": 0
+  },
+  "captured_fit_rows": 1,
+  "captured_candidates": [
+    "all8_revert42",
+    "all8_revert40_42"
+  ],
+  "receipt_sha256": {
+    "all8_revert42": "a244c67a40d5eff329fc7f173152e62661b33ee174300d86047608c5adc727e7",
+    "all8_revert40_42": "7f6bfee36fd6f2245a826098c166bd1b461a21e48d9ab809e4bcd673d3f09130"
+  },
+  "process_rss_kib_observed": 47839584,
+  "reason": "Launcher accidentally set CUDA_VISIBLE_DEVICES empty. The process loaded and executed on CPU; it was terminated after the first fit row. These receipts are preserved for audit only and are not admissible as GPU primary-fit evidence. No report or completion event was produced.",
+  "remediation": "A separate v2 run/output directory is used. The v2 runner fails closed unless torch.cuda.is_available() and at least one CUDA device are visible; setup pins CUDA_VISIBLE_DEVICES=0 and verifies the exact Tesla V100-SXM2-16GB."
+}
