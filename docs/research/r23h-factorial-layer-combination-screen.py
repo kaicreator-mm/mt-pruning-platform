@@ -113,7 +113,7 @@ def run(d):
             rec=dict(id=r["id"],direction=r["direction"],index=i,plan_sha256=ph,teacher_sha256=th,metrics={})
             for n,m,oldn in [("original96",base,"original96"),("r23g",g,"candidate96")]+[(x["name"],x["kept"],None) for x in plan["screen"]]:
                 h,z=prefill(prompt,m);q=metric(t,z)
-                if oldn:
+                if oldn and prior is not None:
                     o=prior[oldn]["logits"][0];need(h==prior[oldn]["masked_hashes"][0]["sha256"] and abs(q["kl"]-o["teacher_to_masked_kl"])<1e-12 and abs(q["nmse"]-o["nmse"])<1e-12 and q["argmax_mismatch"]==int(o["teacher_argmax"]!=o["masked_argmax"]),"prior actual prefill replay")
                 rec["metrics"][n]=dict(q,logits_sha256=h,mask_sha256=sha(canon(m)))
             h,_=prefill(prompt,None);need(h==th,"teacher restoration");h=publish(dst/f"{i:02d}.json",rec);captures.append(rec);event("R23H_FACTORIAL_PREFILL_CAPTURED",index=i,id=r["id"],sha256=h,kl={n:q["kl"] for n,q in rec["metrics"].items()})
