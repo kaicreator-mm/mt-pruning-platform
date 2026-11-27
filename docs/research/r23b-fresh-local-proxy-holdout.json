@@ -1,0 +1,324 @@
+{
+  "status": "FROZEN_NEW_R23_LOCAL_PROXY_HOLDOUT",
+  "salt": "R23B_FRESH_LOCAL_PROXY_HOLDOUT_V1",
+  "prior_plan_blob": "3c92bd0a944637ee7eb8d36d271417396b313026",
+  "corpus_sha256": "9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4",
+  "baseline_sha256": "37d13f9a7f9d9f56e9e810b5c869d216d2c6baa6a32cccb489818bd8ae7656e8",
+  "selection": "hash-sort IDs then first2 per direction with EOS and >=8 tokens, disjoint aligned lines from all24 prior samples",
+  "limitation": "Previously used in R19 routing calibration; new to R23 local proxy, not untouched global test. No source/reference text or expert outputs used for selection.",
+  "rows": [
+    {
+      "id": "calibration:zh-my:980",
+      "line": 980,
+      "direction": "zh-my",
+      "prompt_tokens": 59,
+      "prompt_ids_sha256": "3aa765878b331fb1deb425d2c80717d7b120fba99f724a6cb4b77046ea17cfab",
+      "teacher_prefix_tokens": [
+        6668,
+        118580,
+        229,
+        6668,
+        108,
+        6668,
+        214,
+        53890
+      ],
+      "teacher_prefix_sha256": "738fe472e36e0d45910e7cb37745f9307ebcff69cfb462164e261b1d1d2f7d05",
+      "prefill_rows": [
+        28,
+        58
+      ],
+      "decode_steps_1based": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "calibration:zh-my:44",
+      "line": 44,
+      "direction": "zh-my",
+      "prompt_tokens": 74,
+      "prompt_ids_sha256": "1b7afcc4f43900c300235e951467098de507dd9ca30de20cead5c023ee3faffa",
+      "teacher_prefix_tokens": [
+        507,
+        6668,
+        230,
+        6668,
+        84575,
+        208,
+        35469,
+        226
+      ],
+      "teacher_prefix_sha256": "4978ac49bfeff393cd4af0e4c885e79a0eb9d3319bae9c26d10026c9959e3cc0",
+      "prefill_rows": [
+        36,
+        73
+      ],
+      "decode_steps_1based": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "calibration:my-zh:696",
+      "line": 696,
+      "direction": "my-zh",
+      "prompt_tokens": 264,
+      "prompt_ids_sha256": "6de8e103e6dcee77537a1ec60967b337ea59a18dd06d267c31a7d05efbe1bda3",
+      "teacher_prefix_tokens": [
+        2322,
+        1439,
+        2023,
+        389,
+        15148,
+        2764,
+        8847,
+        8534
+      ],
+      "teacher_prefix_sha256": "6bfdc2efbb097c7d6d35f6d4bda6b5b0432bcc65f0d847cbab082b1fb3a74b17",
+      "prefill_rows": [
+        131,
+        263
+      ],
+      "decode_steps_1based": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "calibration:my-zh:505",
+      "line": 505,
+      "direction": "my-zh",
+      "prompt_tokens": 264,
+      "prompt_ids_sha256": "8041d9e7e562e120df5cb02e0b33146c1a93750c3bc49d07c2aa5b880ace7682",
+      "teacher_prefix_tokens": [
+        2221,
+        9972,
+        12839,
+        3939,
+        1715,
+        59693,
+        17262,
+        270
+      ],
+      "teacher_prefix_sha256": "15a0d49391a4d3caf8787f4b81fec88292501171f564e8979a4e8190d3b6803e",
+      "prefill_rows": [
+        131,
+        263
+      ],
+      "decode_steps_1based": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "calibration:zh-en:867",
+      "line": 867,
+      "direction": "zh-en",
+      "prompt_tokens": 66,
+      "prompt_ids_sha256": "aabd510d74a2b807400806a5beb425bb959c66760ebdf521759445116d1e809f",
+      "teacher_prefix_tokens": [
+        12703,
+        42797,
+        11347,
+        289,
+        8730,
+        13332,
+        56103,
+        619
+      ],
+      "teacher_prefix_sha256": "bc2ff6f78a882b200c9ada25ccb152b3d3c295460cfbf76165e9e8e3a6ae9fa9",
+      "prefill_rows": [
+        32,
+        65
+      ],
+      "decode_steps_1based": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "calibration:zh-en:549",
+      "line": 549,
+      "direction": "zh-en",
+      "prompt_tokens": 65,
+      "prompt_ids_sha256": "d2d7938411d28e3cd94a0afc48a46162073359bc9901b2f46c74a9007c2f63e7",
+      "teacher_prefix_tokens": [
+        6264,
+        4186,
+        11,
+        287,
+        3749,
+        244,
+        2752,
+        111247
+      ],
+      "teacher_prefix_sha256": "c9f4bd1168f006a0093f39d3b84b308998c7f86116e1d468326b400278bbdd0e",
+      "prefill_rows": [
+        31,
+        64
+      ],
+      "decode_steps_1based": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "calibration:en-zh:718",
+      "line": 718,
+      "direction": "en-zh",
+      "prompt_tokens": 82,
+      "prompt_ids_sha256": "3559c6b31a30b7b7eb4a26338fa63cbcecb674b9bb6da719ca711f2f7e1349a1",
+      "teacher_prefix_tokens": [
+        10192,
+        98785,
+        536,
+        11072,
+        15,
+        585,
+        16768,
+        6212
+      ],
+      "teacher_prefix_sha256": "992c0c15a4b9241a5b62a5ff63abb23b4cdfda18687ec8f8d16a197ee29b6ca2",
+      "prefill_rows": [
+        40,
+        81
+      ],
+      "decode_steps_1based": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "calibration:en-zh:175",
+      "line": 175,
+      "direction": "en-zh",
+      "prompt_tokens": 58,
+      "prompt_ids_sha256": "d54b8442f711da48c87fd0dcb6e8a88e7fe386925fdc18411d09675428633438",
+      "teacher_prefix_tokens": [
+        48753,
+        3793,
+        1150,
+        5414,
+        514,
+        5102,
+        22120,
+        15839
+      ],
+      "teacher_prefix_sha256": "9902fee6b706aef0e2e3b422087bb01fde3d87f1adb061a1c921d7284e6e09be",
+      "prefill_rows": [
+        28,
+        57
+      ],
+      "decode_steps_1based": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "calibration:en-my:623",
+      "line": 623,
+      "direction": "en-my",
+      "prompt_tokens": 63,
+      "prompt_ids_sha256": "21024a307a801549bcf3eff299ab0c0637d9115f0933bae315ef16f662baa34c",
+      "teacher_prefix_tokens": [
+        6668,
+        225,
+        78988,
+        238,
+        78988,
+        115,
+        6668,
+        238
+      ],
+      "teacher_prefix_sha256": "357a25d36d291c28e5997a52ab709442122a7d8752f8c6607b7ad546fca01fa6",
+      "prefill_rows": [
+        30,
+        62
+      ],
+      "decode_steps_1based": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "calibration:en-my:746",
+      "line": 746,
+      "direction": "en-my",
+      "prompt_tokens": 71,
+      "prompt_ids_sha256": "f07ac62a0314782d6cc669a7d15a02135b92c02b45b2971d2b47aa8ae6b3bec4",
+      "teacher_prefix_tokens": [
+        6668,
+        225,
+        78988,
+        115,
+        6668,
+        208,
+        95411,
+        57697
+      ],
+      "teacher_prefix_sha256": "83cf9780851e232695899c11b159cef571c3e2550434019073c20ce41e34f31c",
+      "prefill_rows": [
+        34,
+        70
+      ],
+      "decode_steps_1based": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "calibration:my-en:811",
+      "line": 811,
+      "direction": "my-en",
+      "prompt_tokens": 221,
+      "prompt_ids_sha256": "f54bf776330b78952cc165db8533ea3fe8c6fa88471f521987dfc5699f753274",
+      "teacher_prefix_tokens": [
+        4394,
+        61797,
+        53600,
+        11,
+        61797,
+        316,
+        275,
+        28764
+      ],
+      "teacher_prefix_sha256": "8976289fd9daae8e66b21406bfb734f3ae58de2f59056ee1ebaa625145e1af93",
+      "prefill_rows": [
+        109,
+        220
+      ],
+      "decode_steps_1based": [
+        1,
+        8
+      ]
+    },
+    {
+      "id": "calibration:my-en:541",
+      "line": 541,
+      "direction": "my-en",
+      "prompt_tokens": 139,
+      "prompt_ids_sha256": "008c454ae16036c4feadfb43133f07107245c7e7755d7626a5c0eca6cf46bf77",
+      "teacher_prefix_tokens": [
+        937,
+        3525,
+        8498,
+        5354,
+        11,
+        963,
+        666,
+        665
+      ],
+      "teacher_prefix_sha256": "1d087c169c7e91a351d7b05a081dba66056535b0d83757edff5175df9fa50cd8",
+      "prefill_rows": [
+        68,
+        138
+      ],
+      "decode_steps_1based": [
+        1,
+        8
+      ]
+    }
+  ],
+  "generation_job": "job_01M8E5NX8800QR8VF0YZEND917"
+}
