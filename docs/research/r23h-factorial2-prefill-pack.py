@@ -62,7 +62,7 @@ def add(files, prefix, entries):
 
 
 def main():
-    assert (RUN / "preflight-v3.exit-code").read_text().strip() == "0"
+    assert (RUN / "preflight-v3-exit-code").read_text().strip() == "0"
     assert (RUN / "preflight-v3.stderr").read_bytes() == b""
     assert (RUN / "exit-code").read_text().strip() == "1"
     capture_log = (RUN / "execute.log").read_bytes()
@@ -129,7 +129,7 @@ def main():
     add(files, "run/", [(x, RUN / x) for x in (
         "factorial2.py", "factorial2-recovery.py", "finalize-v1.py",
         "primary-replay.json", "layer-summary.json",
-        "preflight-v3.log", "preflight-v3.stderr", "preflight-v3.exit-code",
+        "preflight-v3.log", "preflight-v3.stderr", "preflight-v3-exit-code",
         "execute.log", "exit-code",
         "execute-v1.log", "execute-v1.stderr", "execute-v1.exit-code",
         "finalize-v1.log", "finalize-v1.stderr", "finalize-v1.exit-code",
