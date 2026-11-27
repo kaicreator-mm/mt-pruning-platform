@@ -77,8 +77,8 @@ def main():
   mh=sha(canon(mask))
   receipt=dict(status="R23H_ALL8_FACTORIAL_LAYER_REVERSION_EXPLORATORY_NOT_ADMITTED",method=name,base_mask_sha256=ALL8,original96_mask_sha256=sha(canon(base)),restored_layers=list(restore),changed_layers=changed,mask_sha256=mh,mask=mask,limits="Exactly 96 experts in each of 47 MoE layers; derived from frozen all8 by restoring only listed layers to original96. Exploratory fit prefill screen only; not admission.")
   raw=canon(receipt)+b"\n"
-  bh=publish(OUT/(name+".json"),raw)
-  candidates[name]=dict(mask_sha256=mh,blob_sha=bh,restored_layers=list(restore),changed_layers=changed)
+  rh=publish(OUT/(name+".json"),raw)
+  candidates[name]=dict(mask_sha256=mh,receipt_sha256=rh,git_blob_sha=blob(raw),restored_layers=list(restore),changed_layers=changed)
  controls=dict(original96=sha(canon(base)),r23g=R23G,all8=ALL8,all10=ALL10)
  plan=dict(status="R23H_ALL8_FACTORIAL_PREFILL_SCREEN_ONLY",teacher="0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94",recovery_sha256=REC,source_screen_plan_sha256=OLD_PLAN,source_screen_report_sha256=OLD_REPORT,source_primary_batch_report_sha256=PRIMARY_REPORT,source_primary_independent_replay_sha256=PRIMARY_REPLAY,controls=controls,candidates=candidates,ids=[r["id"] for r in rows],holdout="FORBIDDEN",scope="Eight frozen zh-my calibration Fit prompts; prefill only. Same original96/R23G/all8/all10 controls. No decode, my-zh, Fresh, holdout, free-running translation, or product admission.",gate="Candidate must have KL, NMSE and argmax mismatch no worse than original96 on aggregate, and KL lower than R23G. Only passing candidates may enter the 10-row primary fit propagation.")
  raw=canon(plan)+b"\n";ph=publish(OUT/"plan.json",raw)
