@@ -3,7 +3,7 @@ import hashlib,importlib.util,json,math,os,pathlib,sys,time,fcntl
 P=pathlib.Path
 R=P.home()/".cache/mt-pruning";RR=R/"r23-results"
 D=R/"r23h-pareto-screen-v1";USB=R/"r23g-recovery-ssd-38ed4798"
-SD=RR/"r23h-pareto-prefill-v1";PREP=RR/"r23h-all8-factorial-prefill-v1"
+SD=RR/"r23h-pareto-prefill-v1";PREP=RR/"r23h-all8-factorial-prefill-v2"
 RUN=R/"r23h-all8-factorial-prefill-run-v2"
 PLAN="7b627cedeb7e3732af8e740aec213791e888324cb6c8db3dbe67cd747ca180ac"
 PLAN_BLOB="415f2526c82356e216d74105301771b3060f3461"
@@ -104,9 +104,9 @@ def main():
   need(c.torch.__version__=="2.10.0+cpu","pinned CPU engine required")
   ident=drv.checkpoint_identity(drv.SOURCE,cache_dir=None,fresh=True,exact_inventory=True)
   need(ident["teacher"]==TEACHER and ident["num_experts"]==128,"teacher identity")
-  c.torch.set_num_threads(6);c.torch.set_num_interop_threads(1)
-  e=c.engine_module.Engine(c.engine_module.Checkpoint(drv.SOURCE),threads=6)
-  event("R23H_ALL8_FACTORIAL_TEACHER_READY",teacher=TEACHER,threads=6)
+  c.torch.set_num_threads(8);c.torch.set_num_interop_threads(1)
+  e=c.engine_module.Engine(c.engine_module.Checkpoint(drv.SOURCE),threads=8)
+  event("R23H_ALL8_FACTORIAL_TEACHER_READY",teacher=TEACHER,threads=8)
   def prefill(prompt,mask):
    try:
     e.set_mask(None if mask is None else {int(l):v for l,v in mask.items()})
