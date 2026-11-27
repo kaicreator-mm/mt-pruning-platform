@@ -1,0 +1,109 @@
+{
+  "job": "job_01M8DXH66D00YFBH9RQ3TYA3NS",
+  "exit_code": 0,
+  "authorization": "Owner allowed deleting unused build artifacts if disk insufficient",
+  "status": "RETIRED_REBUILDABLE_HF_INTERMEDIATE_ONLY",
+  "original_path": "/home/cc/.cache/mt-pruning/pruned-r20/k64",
+  "retained_metadata_path": "/home/cc/.cache/mt-pruning/retired-build-artifacts/r20-k64-hf/metadata",
+  "teacher_digest": "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94",
+  "teacher_path": "/home/cc/.cache/mt-pruning/hf_home/hub/models--tencent--Hy-MT3-30B-A3B/snapshots/08ae9acea91abe265c6236e757e49d8851e1ce06",
+  "rebuild_source_head": "3212303e1e02994a5124db8c85195b91325c7a7c",
+  "selection_blob": "d8bcafe0fe1d8c6bacd0a425dfde57890b18f1ed",
+  "original_prune_manifest_sha256": "6c30b51d9a64853f273e4216486ecb895d80bb737079210f96f7a329549725c8",
+  "prior_verified_shards": [
+    {
+      "bytes": 4998275056,
+      "name": "model-00001-of-00007.safetensors",
+      "sha256": "c85a8b89cbd19942de0755c69c41857125c3b536e767206654a64a74befb9b2a"
+    },
+    {
+      "bytes": 4997778192,
+      "name": "model-00002-of-00007.safetensors",
+      "sha256": "ef128f77835578fcfbc8f7c8f017942dce3077b0093e047c2c5f4b0dfb5d46b4"
+    },
+    {
+      "bytes": 4997778664,
+      "name": "model-00003-of-00007.safetensors",
+      "sha256": "cabfecaf2b8bd38234a6e991b9e8e750afe42de0019ef54162079fac175003d0"
+    },
+    {
+      "bytes": 4997507904,
+      "name": "model-00004-of-00007.safetensors",
+      "sha256": "9ef0a6df620de0c9ddab4a7cd071e8aabdebeb6435a5e38af9c9f32d303de7ef"
+    },
+    {
+      "bytes": 4997778656,
+      "name": "model-00005-of-00007.safetensors",
+      "sha256": "397de417fe5c86079e28381c088503960c25244ce6a9f89798729a97270c2623"
+    },
+    {
+      "bytes": 4997778656,
+      "name": "model-00006-of-00007.safetensors",
+      "sha256": "7311edf7c4d9112e66406884731e46060f618e6652873412ddf693cd36a4e126"
+    },
+    {
+      "bytes": 1744371768,
+      "name": "model-00007-of-00007.safetensors",
+      "sha256": "55505591834333971cb4c337c4cc11296739c9c4c9b70ef2b81325e302a357c6"
+    }
+  ],
+  "metadata_sha256": {
+    "chat_template.jinja": "53e11a67caa40e918de4930d836829024973da39b357cec4f4bf5aa2da96717f",
+    "config.json": "29bb45757000f87160c3c6e6f72ab5b13c4c015c43b04708129b650164b8af18",
+    "model.safetensors.index.json": "3ee98f44a396970a4c2616eb6b61f1f883a77ba1b6e5e5e395146f2ab9a01850",
+    "prune_manifest.json": "6c30b51d9a64853f273e4216486ecb895d80bb737079210f96f7a329549725c8",
+    "special_tokens_map.json": "687791a9ade35069d6ffdd61eb1863839baf1e5ce235d5d48ff61b40dcb72f1a",
+    "tokenizer.json": "ad96ef9f641b79bb63807bea87cecf1dd0534325b463dad44cccbb3d0c571db7",
+    "tokenizer_config.json": "3b5adc69f617f4999e636a53f0024aaded19d0b1830d2c8b4ac43b7af044fd7f"
+  },
+  "retained_gguf": "/home/cc/.cache/mt-pruning/gguf-r20-r1/k64-f16.gguf",
+  "prior_verified_gguf_sha256": "c77b03276ecc1e4cb70d32f249996ed6c3f49a9e78f087bd734e7d187c20b444",
+  "retained_gguf_bytes": 31747952288,
+  "rebuild_command": "Command being timed: \"/home/cc/miniconda3/envs/mt-pruning/bin/python -m mtpruning prune --model /home/cc/.cache/mt-pruning/hf_home/hub/models--tencent--Hy-MT3-30B-A3B/snapshots/08ae9acea91abe265c6236e757e49d8851e1ce06 --selection /home/cc/.cache/mt-pruning/run-d01b-r19/selection.json --keep 64 --out /home/cc/.cache/mt-pruning/pruned-r20/k64 --out-manifest /home/cc/.cache/mt-pruning/run-d01b-r20/k64/prune.json --cache-dir /home/cc/.cache/mt-pruning/content-hashes\"",
+  "prior_prune_verified": true,
+  "current_full_weight_rehash": false,
+  "free_before": 53463064576,
+  "no_active_same_user_references": true,
+  "deleted_shards": [
+    {
+      "name": "model-00001-of-00007.safetensors",
+      "bytes": 4998275056,
+      "prior_sha256": "c85a8b89cbd19942de0755c69c41857125c3b536e767206654a64a74befb9b2a"
+    },
+    {
+      "name": "model-00002-of-00007.safetensors",
+      "bytes": 4997778192,
+      "prior_sha256": "ef128f77835578fcfbc8f7c8f017942dce3077b0093e047c2c5f4b0dfb5d46b4"
+    },
+    {
+      "name": "model-00003-of-00007.safetensors",
+      "bytes": 4997778664,
+      "prior_sha256": "cabfecaf2b8bd38234a6e991b9e8e750afe42de0019ef54162079fac175003d0"
+    },
+    {
+      "name": "model-00004-of-00007.safetensors",
+      "bytes": 4997507904,
+      "prior_sha256": "9ef0a6df620de0c9ddab4a7cd071e8aabdebeb6435a5e38af9c9f32d303de7ef"
+    },
+    {
+      "name": "model-00005-of-00007.safetensors",
+      "bytes": 4997778656,
+      "prior_sha256": "397de417fe5c86079e28381c088503960c25244ce6a9f89798729a97270c2623"
+    },
+    {
+      "name": "model-00006-of-00007.safetensors",
+      "bytes": 4997778656,
+      "prior_sha256": "7311edf7c4d9112e66406884731e46060f618e6652873412ddf693cd36a4e126"
+    },
+    {
+      "name": "model-00007-of-00007.safetensors",
+      "bytes": 1744371768,
+      "prior_sha256": "55505591834333971cb4c337c4cc11296739c9c4c9b70ef2b81325e302a357c6"
+    }
+  ],
+  "deleted_bytes": 31731268896,
+  "free_after": 85194358784,
+  "free_increase": 31731294208,
+  "remaining_guarded96_reserve_bytes": 28503136608,
+  "metadata_verified_after": true
+}
