@@ -27,7 +27,7 @@ fields = ("mask_sha256", "original96_swaps", "folds_passed")
 old_by_name = {x["name"]: x for x in old["candidates"]}
 new_by_name = {x["name"]: x for x in new["candidates"]}
 
-assert sha(script_path) == "7e2cfeb9699ae042493ff25a0151d1b529439cb920e1d0620e3c323e0c0dd385"
+assert sha(script_path) == "41891494333fa677329b5f9f731788fee5d68286328fe05e8f2395b59e3793f4"
 assert sha(archive_path) == "fbaab5f95fe80232aaba5128205fabb97b1c9c17951c854dd0adf086113d84d8"
 assert sha(old_path) == "df87768617f17ed7c2c6756400a3ebb36c51269867659c3481a49445dec2bc98"
 assert len(old_by_name) == len(new_by_name) == 10
