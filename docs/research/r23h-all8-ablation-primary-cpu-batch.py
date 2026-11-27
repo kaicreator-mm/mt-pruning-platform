@@ -131,10 +131,11 @@ def main():
     c=load(d/"collector.py","02daf65bb7fe0526b2a700d17013054f7b0eea46","collector")
     prop=load(d/"prop.py","88468e8c2a5905628365da52e1575d5251516512","prop")
     c.verify_code()
+    need(c.torch.__version__=="2.10.0+cpu","pinned CPU PyTorch runtime required")
     need(not drv.preflight()["blockers"],"resources")
     ident=drv.checkpoint_identity(drv.SOURCE,cache_dir=None,fresh=True,exact_inventory=True)
     need(ident["teacher"]==TEACHER and ident["num_experts"]==128,"teacher")
-    dst=RR/"r23h-all8-ablation-primary-v2";dst.mkdir(mode=0o700)
+    dst=RR/"r23h-all8-ablation-primary-v3";dst.mkdir(mode=0o700)
     g=json.loads(pin(USB/"recovery-receipt.json",REC));need(g["status"]=="R23G_RECOVERED_DISK_REPLAY_REJECT_STOP_FRESH","previous recovery")
     plan=json.loads(pinblob(USB/"expanded.json","a1047d1a7c5624ed0e3a868bd5d76eef4c754915"));pp=json.loads(pinblob(USB/"prop-plan.json","cc1bbf0bb6cf19be7c7c9c95d0b5d867dd54dcde"))
     rows=pp["rows"]+[r for r in plan["fit"] if r["direction"]=="zh-my" and r["id"] not in {z["id"] for z in pp["rows"]}]
