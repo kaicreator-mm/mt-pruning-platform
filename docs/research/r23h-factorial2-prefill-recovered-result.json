@@ -1,0 +1,64 @@
+{
+  "capture_execution": {
+    "all_receipts_published": true,
+    "capture_events": 8,
+    "capture_runner_git_blob": "2789f50086ee5f343cc12bed2c99e153e2ec1e98",
+    "exit_code": 1,
+    "failure": "NameError: candidates undefined after all eight immutable receipts and capture events were written",
+    "log_sha256": "5fc1770999224debf5dc7af63328804b925d0895f6caee30c98f0bb076a164e0",
+    "recovery_runner_git_blob": "6822174c42ce1c159d807fbd31d68b017cc7cc3f"
+  },
+  "duplicate_retry": {
+    "evidence": "execute-v1.stderr",
+    "exit_code": 1,
+    "failure": "FileExistsError while refusing to overwrite the existing receipt set"
+  },
+  "eligible_for_primary_fit_only": [],
+  "finalization": {
+    "method": "stdlib receipt reconciliation; no model rerun",
+    "status": "R23H_FACTORIAL2_RECEIPTS_VALIDATED_AND_AGGREGATED"
+  },
+  "limits": "Eight frozen zh-my calibration Fit Prefill receipts only. The original capture process exited nonzero after all receipts because of an aggregation NameError. This recovery finalizes those immutable receipts; it is not a clean execution PASS, Decode/primary propagation, Fresh, Holdout, free-running translation, product admission, or physical model build.",
+  "metrics": {
+    "all10": {
+      "argmax_mismatch": 0,
+      "kl": 0.06661245652640199,
+      "nmse": 0.040966354912662636
+    },
+    "all8": {
+      "argmax_mismatch": 0,
+      "kl": 0.0607164133369635,
+      "nmse": 0.04598051877840448
+    },
+    "original96": {
+      "argmax_mismatch": 0,
+      "kl": 0.07984518069504659,
+      "nmse": 0.04725533805377669
+    },
+    "r23g": {
+      "argmax_mismatch": 0,
+      "kl": 0.1552965070122628,
+      "nmse": 0.04474827075496432
+    },
+    "r23h_l40_l42_only": {
+      "argmax_mismatch": 0,
+      "kl": 0.07806163803805598,
+      "nmse": 0.047427973871649924
+    },
+    "r23h_l40_only": {
+      "argmax_mismatch": 0,
+      "kl": 0.07818374953769891,
+      "nmse": 0.04733694977282369
+    },
+    "r23h_l42_only": {
+      "argmax_mismatch": 0,
+      "kl": 0.07832358879210781,
+      "nmse": 0.04758357999889985
+    }
+  },
+  "plan_sha256": "6b04e24ef14bcd2c01a7843569b896e6d3c664446d3098eedf6f0d9fbfb18dfe",
+  "samples": 8,
+  "selected": null,
+  "status": "R23H_FACTORIAL2_PREFILL_CAPTURE_COMPLETE_AGGREGATION_RECOVERED_NOT_ADMISSION",
+  "teacher_sha256": "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94"
+}
