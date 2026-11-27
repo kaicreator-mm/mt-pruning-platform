@@ -3,7 +3,7 @@ R=pathlib.Path.home()/".cache/mt-pruning";Q=R/"r23-results";D=R/"r23h-layer-hybr
 assert (D/"exit-code").read_text().strip()=="0" and (D/"run.stderr").read_bytes()==b""
 assert (O/"report.json").is_file()
 files={"screen/"+x:O/x for x in ["plan.json","report.json"]+[f"{i:02d}.json" for i in range(8)]}
-files.update({x:D/x for x in ["run.log","run.stderr","exit-code"]})
+files.update({"screen/"+x:D/x for x in ["run.log","run.stderr","exit-code"]})
 files["masks/minimax.json"]=D/"minimax.json";files["masks/balanced.json"]=D/"balanced.json"
 assert all(p.is_file() and not p.is_symlink() and p.stat().st_size<=2*1024*1024 for p in files.values())
 dest=pathlib.Path("/tmp/r23h-layer-hybrid-prefill-v2.tgz")
