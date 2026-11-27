@@ -1,7 +1,7 @@
 """Independent receipt replay for R23H all8-ablation primary fit batch."""
 import hashlib,io,json,math,pathlib,sys,tarfile
 P=pathlib.Path
-ARCHIVE_SHA="5154ce5979b93ec849c25a688bf4a99180643f40a95f78f3dfe4fdd7f729a752"
+ARCHIVE_SHA="b46d32925cd7ba61e7ed5ae0a9faf19c90d5768bdc018e82eddd2a9ad1401ac4"
 TEACHER="0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94"
 PLAN="29e553c04e2cc61cbe999aac0604e9440f248480cadb6c8631f4758d87712acc"
 SCREEN_REPORT="f35caa64d979ff6c781239a6cab25061af04235df77a282d5c6585a1704de521"
