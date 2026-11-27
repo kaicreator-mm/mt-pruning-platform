@@ -126,6 +126,9 @@ def main():
     while not (SCREEN_RUN/"exit-code").exists():
         need(time.monotonic()<deadline,"screen wait expired");time.sleep(15)
     p,sc,q,sh,cs=screen()
+    need(not drv.preflight()["blockers"],"resources")
+    ident=drv.checkpoint_identity(drv.SOURCE,cache_dir=None,fresh=True,exact_inventory=True)
+    need(ident["teacher"]==TEACHER and ident["num_experts"]==128,"teacher")
     dst=RR/"r23h-all8-ablation-primary-v1";dst.mkdir(mode=0o700)
     g=json.loads(pin(USB/"recovery-receipt.json",REC));need(g["status"]=="R23G_RECOVERED_DISK_REPLAY_REJECT_STOP_FRESH","previous recovery")
     plan=json.loads(pinblob(USB/"expanded.json","a1047d1a7c5624ed0e3a868bd5d76eef4c754915"));pp=json.loads(pinblob(USB/"prop-plan.json","cc1bbf0bb6cf19be7c7c9c95d0b5d867dd54dcde"))
@@ -149,9 +152,7 @@ def main():
     ids={r["id"] for r in rows};ctx={x["id"]:x for x in map(json.loads,corpus.splitlines()) if x["split"]=="calibration" and x["id"] in ids};prev={x["id"]:x for x in map(json.loads,hist.splitlines()[1:]) if x["split"]=="calibration" and x["id"] in ids};need(set(ctx)==set(prev)==ids,"input scope")
     for r in rows:
         x=ctx[r["id"]];z=prev[r["id"]];need(x["line"]==z["line"]==r["line"] and x["direction"]==z["direction"]==r["direction"] and len(x["prompt_ids"])==z["prompt_tokens"]==r["prompt_tokens"] and sha(canon(x["prompt_ids"]))==r["prompt_ids_sha256"] and z["finish"]=="eos" and z["tokens"][:8]==r["teacher_prefix_tokens"],"input identity")
-    fcntl.flock(lk.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB);need(not drv.preflight()["blockers"],"resources")
     c.torch.set_num_threads(8);c.torch.set_num_interop_threads(1)
-    ident=drv.checkpoint_identity(drv.SOURCE,cache_dir=None,fresh=True,exact_inventory=True);need(ident["teacher"]==TEACHER and ident["num_experts"]==128,"teacher")
     e=c.engine_module.Engine(c.engine_module.Checkpoint(drv.SOURCE),threads=8);event("R23H_PROPAGATION_TEACHER_READY",teacher=TEACHER)
     masks={c0["name"]:{int(l):v for l,v in c0["kept"].items()} for c0 in cs};bm={int(l):v for l,v in base.items()};caps={c0["name"]:[] for c0 in cs}
     for i,r in selected_rows:
