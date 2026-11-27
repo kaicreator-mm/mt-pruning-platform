@@ -94,9 +94,9 @@ def run(d):
             except BlockingIOError:
                 need(time.monotonic()<deadline,"lock wait expired");time.sleep(10)
         event("R23H_LOCK_ACQUIRED");pre=drv.preflight();need(not pre["blockers"],str(pre))
-        c.torch.set_num_threads(8);c.torch.set_num_interop_threads(1)
+        c.torch.set_num_threads(6);c.torch.set_num_interop_threads(1)
         ident=drv.checkpoint_identity(drv.SOURCE,cache_dir=None,fresh=True,exact_inventory=True);need(ident["teacher"]==TEACHER and ident["num_experts"]==128,"teacher")
-        e=c.engine_module.Engine(c.engine_module.Checkpoint(drv.SOURCE),threads=8);event("R23H_TEACHER_READY",teacher=TEACHER)
+        e=c.engine_module.Engine(c.engine_module.Checkpoint(drv.SOURCE),threads=6);event("R23H_TEACHER_READY",teacher=TEACHER)
         def prefill(prompt,mask):
             try:
                 e.set_mask(None if mask is None else {int(l):v for l,v in mask.items()})
