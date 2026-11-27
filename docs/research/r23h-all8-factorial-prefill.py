@@ -49,7 +49,7 @@ def metric(t,z):
  need(math.isfinite(kl) and kl>=-1e-12 and math.isfinite(nmse),"finite metrics")
  return dict(kl=max(0.,kl),nmse=nmse,argmax_mismatch=int(a[-1].argmax()!=b[-1].argmax()))
 def main():
- need(not RUN.exists(),"run directory already exists; preserve and use a new version")
+ need(RUN.is_dir() and not (RUN/"run.log").exists() and not (RUN/"exit-code").exists(),"fresh run directory")
  need(all(not (PREP/f"{i:02d}.json").exists() for i in range(8)) and not (PREP/"report.json").exists(),"factorial output already exists")
  plan=json.loads(pin(PREP/"plan.json",PLAN))
  need(blob((PREP/"plan.json").read_bytes())==PLAN_BLOB and plan["status"]=="R23H_ALL8_FACTORIAL_PREFILL_SCREEN_ONLY" and plan["holdout"]=="FORBIDDEN","factorial plan")
