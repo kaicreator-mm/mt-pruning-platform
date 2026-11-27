@@ -1,5 +1,5 @@
-"""R23H: conditional full fit propagation of the one predeclared screen winner.
-No fresh, mask refit, or materialization. Require exact screen replay."""
+"""R23H: conditional primary fit propagation for two predeclared all8 ablations.
+Fixed fit trajectories only; no Fresh, mask refit, or materialization."""
 import hashlib,json,math,os,pathlib,sys,fcntl,time,importlib.util
 P=pathlib.Path;R=P.home()/".cache/mt-pruning";RR=R/"r23-results"
 SCREEN=R/"r23h-pareto-screen-v1";SCREEN_RUN=R/"r23h-all8-ablation-screen-run-v2";D_ABLATION=SCREEN_RUN
@@ -31,8 +31,8 @@ def mean(v):return math.fsum(v)/len(v)
 def load(p,h,n,git=True):
     (pinblob if git else pin)(p,h)
     s=importlib.util.spec_from_file_location(n,p);m=importlib.util.module_from_spec(s);sys.modules[n]=m;s.loader.exec_module(m);return m
-def checked(x,r,layers,admission_sha,mask_sha):
-    need(x["status"]=="PROPAGATED_FIXED_TRAJECTORY_DIAGNOSTIC_NOT_QUALITY" and x["teacher_restored"] is True and x["index"]>=0 and x["id"]==r["id"] and x["direction"]==r["direction"] and x["line"]==r["line"] and x["consumed_prefix"]==r["teacher_prefix_tokens"] and x["teacher"]==TEACHER and x["mask_sha256"]==mask_sha and x["admission_sha256"]==admission_sha,"capture provenance")
+def checked(x,r,index,layers,admission_sha,mask_sha):
+    need(x["status"]=="PROPAGATED_FIXED_TRAJECTORY_DIAGNOSTIC_NOT_QUALITY" and x["teacher_restored"] is True and x["index"]==index and x["id"]==r["id"] and x["direction"]==r["direction"] and x["line"]==r["line"] and x["consumed_prefix"]==r["teacher_prefix_tokens"] and x["teacher"]==TEACHER and x["mask_sha256"]==mask_sha and x["admission_sha256"]==admission_sha,"capture provenance")
     want={(l,"prefill" if j==0 else "decode",j) for l in layers for j in range(9)}
     for n in ("original96","candidate96"):
         a=x[n];ls=a["layer"]
@@ -48,8 +48,9 @@ def screen():
     p=json.loads(pin(SD/"plan.json",PLAN));need(p["status"]=="R23H_ALL8_ABLATION_PREFILL_SCREEN_ONLY" and p["recovery_sha256"]==REC and p["teacher"]==TEACHER and p["holdout"]=="FORBIDDEN","ablation plan")
     names=["original96","r23g","all8","all10",*HYBRID_BLOBS]
     need(len(p["ids"])==8 and len(set(p["ids"]))==8 and set(p["masks"])==set(names),"ablation inventory")
+    need((SCREEN/"exit-code").read_text().strip()=="0" and (SCREEN/"run.stderr").read_bytes()==b"","old control terminal")
     oldplan=json.loads(pin(SD_OLD/"plan.json",OLD_PLAN));oldreport=json.loads(pin(SD_OLD/"report.json",OLD_REPORT))
-    need(oldplan["ids"]==p["ids"],"old screen ids")
+    need(oldplan["ids"]==p["ids"] and oldreport["selected"]=="all8" and oldreport["samples"]==8,"old screen ids/report")
     oldevents=[json.loads(l) for l in (SCREEN/"run.log").read_bytes().splitlines() if l.startswith(b"{")]
     oldcaps=[x for x in oldevents if x["status"]=="R23H_PREFILL_CAPTURED"];need(len(oldcaps)==8,"old control screen events")
     oldscreen={}
@@ -112,7 +113,7 @@ def prior_failed():
                 groups[k][n]=dict(kl=mean([v["teacher_to_masked_kl"] for v in z]),nmse=mean([v["nmse"] for v in z]),argmax_mismatch=sum(v["teacher_argmax"]!=v["masked_argmax"] for v in z),positions=len(z))
     viol=[g+"/"+k for g in groups if g.startswith(("zh-my/","my-zh/")) for k in ("kl","nmse","argmax_mismatch") if groups[g]["candidate96"][k]>groups[g]["original96"][k]+1e-12]
     need(groups==q["groups"] and viol==q["primary_violations"] and q["primary_diagnostic_pass"]==(not viol),"prior replay")
-    event("R23H_REMAINING4_CONDITIONAL_DECISION",prior_report_sha256=end[0]["report_sha256"],violations=viol,execute=bool(viol))
+    event("R23H_ALL8_ABLATION_CONDITIONAL_DECISION",prior_report_sha256=end[0]["report_sha256"],violations=viol,execute=bool(viol))
     return bool(viol),end[0]["report_sha256"]
 def main():
     failed,prior_hash=prior_failed()
@@ -163,7 +164,7 @@ def main():
             z=prop.observe(c,e,prompt,prefix);need(prop.loghash(t)==prop.loghash(z),"teacher restoration");del t,z
             hashes={}
             for c0 in cs:
-                n=c0["name"];x=batch[n];checked(x,r,list(range(1,48)),ah,c0["mask_sha256"])
+                n=c0["name"];x=batch[n];checked(x,r,i,list(range(1,48)),ah,c0["mask_sha256"])
                 if r["id"] in sc:
                     z=sc[r["id"]]["metrics"][n];v=x["candidate96"]["logits"][0]
                     need(x["candidate96"]["masked_hashes"][0]["sha256"]==z["logits_sha256"] and abs(v["teacher_to_masked_kl"]-z["kl"])<1e-12 and abs(v["nmse"]-z["nmse"])<1e-12 and int(v["teacher_argmax"]!=v["masked_argmax"])==z["argmax_mismatch"],"screen exact replay")
