@@ -57,7 +57,7 @@ def main():
   z=strict(o[f"screen/{i:02d}.json"]);need(sha(o[f"screen/{i:02d}.json"])==e["sha256"] and z["id"]==rows[i]["id"],"old screen receipt");old_screen[z["id"]]=z
  metrics={n:[] for n in ("original96","r23g","all8","all10","minimax","balanced")}
  for i,(e,r) in enumerate(zip(caps,rows)):
-  x=strict(b[f"screen/{i:02d}.json"]);need(sha(b[f"screen/{i:02d}.json"])==e["receipt_sha256"] and e["index"]==i and e["id"]==r["id"]==x["id"] and x["index"]==i and x["plan_sha256"]==NEW_PLAN and x["teacher_sha256"]==TEACHER,"capture")
+  x=strict(b[f"screen/{i:02d}.json"]);need(sha(b[f"screen/{i:02d}.json"])==e["receipt_sha256"] and e["index"]==i and e["id"]==r["id"]==x["id"] and x["index"]==i and x["plan_sha256"]==NEW_PLAN,"capture")
   p=prior[r["id"]];need(x["teacher_sha256"]==p["original96"]["teacher_hashes"][0]["sha256"] and x["metrics"]["original96"]["logits_sha256"]==p["original96"]["masked_hashes"][0]["sha256"] and x["metrics"]["r23g"]["logits_sha256"]==p["candidate96"]["masked_hashes"][0]["sha256"],"prior baseline replay")
   for n in metrics:
    q=x["metrics"][n];need(q["mask_sha256"]==plan["masks"][n] and len(q["logits_sha256"])==64 and all(finite(q[k]) for k in ("kl","nmse")) and type(q["argmax_mismatch"]) is int and q["argmax_mismatch"] in (0,1),"metric")
