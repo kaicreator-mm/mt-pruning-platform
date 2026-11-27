@@ -31,6 +31,18 @@ def mean(v):return math.fsum(v)/len(v)
 def load(p,h,n,git=True):
     (pinblob if git else pin)(p,h)
     s=importlib.util.spec_from_file_location(n,p);m=importlib.util.module_from_spec(s);sys.modules[n]=m;s.loader.exec_module(m);return m
+def checked(x,r,layers,admission_sha,mask_sha):
+    need(x["status"]=="PROPAGATED_FIXED_TRAJECTORY_DIAGNOSTIC_NOT_QUALITY" and x["teacher_restored"] is True and x["index"]>=0 and x["id"]==r["id"] and x["direction"]==r["direction"] and x["line"]==r["line"] and x["consumed_prefix"]==r["teacher_prefix_tokens"] and x["teacher"]==TEACHER and x["mask_sha256"]==mask_sha and x["admission_sha256"]==admission_sha,"capture provenance")
+    want={(l,"prefill" if j==0 else "decode",j) for l in layers for j in range(9)}
+    for n in ("original96","candidate96"):
+        a=x[n];ls=a["layer"]
+        need(len(ls)==len(want) and {(q["layer"],q["phase"],q["step"]) for q in ls}==want,"layer coverage")
+        for q in ls:
+            need(all(math.isfinite(q[k]) and q[k]>=0 for k in ("hidden_input_nmse","moe_output_nmse","mean_overlap")) and q["mean_overlap"]<=8 and q["tokens"]==(2 if q["step"]==0 else 1) and type(q["exact_sets"]) is int and 0<=q["exact_sets"]<=q["tokens"],"layer values")
+        for key in ("teacher_hashes","masked_hashes"):
+            z=a[key];need(len(z)==9 and all(q["step"]==j and len(q["sha256"])==64 and type(q["next"]) is int and q["next"]>=0 for j,q in enumerate(z)),"token hash")
+        need(len(a["logits"])==9 and all(q["step"]==j and math.isfinite(q["nmse"]) and math.isfinite(q["teacher_to_masked_kl"]) and q["teacher_argmax"]==a["teacher_hashes"][j]["next"] and q["masked_argmax"]==a["masked_hashes"][j]["next"] for j,q in enumerate(a["logits"])),"logits")
+    need(x["original96"]["teacher_hashes"]==x["candidate96"]["teacher_hashes"],"teacher identity")
 def screen():
     need((SCREEN_RUN/"exit-code").read_text().strip()=="0" and (SCREEN_RUN/"run.stderr").read_bytes()==b"","terminal ablation screen success")
     p=json.loads(pin(SD/"plan.json",PLAN));need(p["status"]=="R23H_ALL8_ABLATION_PREFILL_SCREEN_ONLY" and p["recovery_sha256"]==REC and p["teacher"]==TEACHER and p["holdout"]=="FORBIDDEN","ablation plan")
@@ -126,7 +138,6 @@ def main():
     drv=load(d/"driver.py","0735238e15f13fd75e3f6939fc31aa834d8b5854","driver")
     c=load(d/"collector.py","02daf65bb7fe0526b2a700d17013054f7b0eea46","collector")
     prop=load(d/"prop.py","88468e8c2a5905628365da52e1575d5251516512","prop")
-    checker=load(P(sys.argv[1])/"checked.py","87b12c30ebf801d2e4571b6f0f8348edbb61ba13","checked")
     c.verify_code()
     corpus=pin(R/"run-d01b-r19/corpus/corpus.jsonl","9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4")
     hist=pin(R/"run-d01b-r19/baseline/records.jsonl","37d13f9a7f9d9f56e9e810b5c869d216d2c6baa6a32cccb489818bd8ae7656e8")
@@ -152,7 +163,7 @@ def main():
             z=prop.observe(c,e,prompt,prefix);need(prop.loghash(t)==prop.loghash(z),"teacher restoration");del t,z
             hashes={}
             for c0 in cs:
-                n=c0["name"];x=batch[n];checker.checked(x,r,list(range(1,48)))
+                n=c0["name"];x=batch[n];checked(x,r,list(range(1,48)),ah,c0["mask_sha256"])
                 if r["id"] in sc:
                     z=sc[r["id"]]["metrics"][n];v=x["candidate96"]["logits"][0]
                     need(x["candidate96"]["masked_hashes"][0]["sha256"]==z["logits_sha256"] and abs(v["teacher_to_masked_kl"]-z["kl"])<1e-12 and abs(v["nmse"]-z["nmse"])<1e-12 and int(v["teacher_argmax"]!=v["masked_argmax"])==z["argmax_mismatch"],"screen exact replay")
