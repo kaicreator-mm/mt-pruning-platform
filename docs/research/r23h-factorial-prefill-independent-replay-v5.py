@@ -300,7 +300,7 @@ def main():
             "all seven 47x96 candidate masks reconstructed from original96/stable96",
             "16 frozen zh-my/my-zh Fit rows and Holdout exclusion",
             "corpus prompt identity and 18 R23G recovery receipt hashes",
-            "eight historical zh-my teacher/original96/R23G logits exact replays",
+            "all available historical R23G teacher/original96/R23G logits exact replays",
             "all 16 receipt hashes, candidate mask bindings, finite metrics and capture event order",
             "independent overall/direction aggregates and eligibility gate recomputation",
             "clean process exit, empty stderr, exact teacher identity and terminal report binding",
