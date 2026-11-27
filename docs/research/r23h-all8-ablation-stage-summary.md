@@ -64,6 +64,8 @@ No Fresh, holdout, native free-running translation, or physical model materializ
 
 The primary batch runner, setup script, evidence packer and independent replay script are committed on parallel-r19-offline-analysis. The runner acquires the exclusive experiment lock before creating output, verifies the old all10 failure and exact screen receipts, and checks resource and teacher identity before writing its admission record.
 
-The first v1 launch was aborted after one fit row because the launcher accidentally hid CUDA (CUDA_VISIBLE_DEVICES was empty). The process ran on CPU with GPU utilization at 0%; it was terminated with exit code 143. Its admission and two candidate receipts are preserved in r23h-all8-ablation-primary-cpu-abort.json and are explicitly inadmissible as GPU primary-fit evidence.
+The pinned execution engine is intentionally CPU-only: mtpruning/engine.py is the lean CPU mmap engine for the approximately 60 GB HF-layout checkpoint, and requirements.txt pins torch==2.10.0+cpu. CUDA_VISIBLE_DEVICES empty and zero V100 utilization are expected for this stage; the 16 GB V100 is not used by this engine. Host RAM preflight is mandatory.
 
-The corrected v2 runner uses a separate output directory, sets CUDA_VISIBLE_DEVICES=0, verifies the exact Tesla V100-SXM2-16GB, and fails closed unless PyTorch reports a CUDA device. The v2 run is the only run eligible for the primary-fit evidence pack and independent replay.
+The first v1 run produced one of ten fit rows for both candidates and was then manually interrupted after a mistaken GPU requirement. Its admission, run log and two candidate receipts are preserved in r23h-all8-ablation-primary-cpu-abort.json as a valid partial CPU diagnostic, not a completed batch. The isolated v2 run recomputes all ten rows under the same pinned CPU environment so the final aggregate comes from one coherent run.
+
+The v2 runner is pinned to the CPU engine and writes to a separate output directory. It retains the same strict receipt validation, fit-only scope, and no-Fresh/no-holdout limits.
