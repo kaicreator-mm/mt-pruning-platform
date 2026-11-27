@@ -35,10 +35,10 @@ def load_runner():
 
 def main():
     capture_blob = __import__("hashlib").sha1(
-        b"blob " + str(CAPTURE_RUNNER.stat().st_size).encode() + b"\\0" + CAPTURE_RUNNER.read_bytes()
+        b"blob " + str(CAPTURE_RUNNER.stat().st_size).encode() + bytes([0]) + CAPTURE_RUNNER.read_bytes()
     ).hexdigest()
     recovery_blob = __import__("hashlib").sha1(
-        b"blob " + str(RUNNER.stat().st_size).encode() + b"\\0" + RUNNER.read_bytes()
+        b"blob " + str(RUNNER.stat().st_size).encode() + bytes([0]) + RUNNER.read_bytes()
     ).hexdigest()
     need(capture_blob == CAPTURE_RUNNER_BLOB, "original capture runner blob")
     need(recovery_blob == RECOVERY_RUNNER_BLOB, "recovery runner blob")
