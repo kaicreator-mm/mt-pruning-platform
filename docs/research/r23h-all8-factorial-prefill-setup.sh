@@ -34,8 +34,8 @@ for i in $(seq -w 0 17); do test -f "$RR/r23g-l38-propagation-v1/$i.json"; done
 for i in 00 01 02 03 04 05 06 07; do test -f "$SD/$i.json"; done
 mkdir -m 700 "$RUN"
 cd "$RUN"
-curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/__NEW_COMMIT__/docs/research/r23h-all8-factorial-prefill.py -o factorial.py
-test "$(git hash-object factorial.py)" = 21d549e0ba107aab291e436365b21d95ef532006
+curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/0557ff23ca670c34cf9ebce0b129e0a32a768306/docs/research/r23h-all8-factorial-prefill.py -o factorial.py
+test "$(git hash-object factorial.py)" = 7c641f251717ac2ed23eddb89c948d38336e1f2c
 curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/parallel-r19-offline-analysis/docs/research/r23h-all8-ablation-primary-replay.json -o primary-replay.json
 test "$(git hash-object primary-replay.json)" = 1ae914e4e1e0c9729c43b237100b6fc20a5fbefb
 python3 -m py_compile factorial.py
