@@ -15,7 +15,7 @@ test ! -e "$RUN"
 test -f "$PREFILL_RUN/exit-code"
 test "$(cat "$PREFILL_RUN/exit-code")" = 0
 test ! -s "$PREFILL_RUN/run.stderr"
-test -f "$PREFILL/run.log"
+test -f "$PREFILL_RUN/run.log"
 test -f "$PREFILL/report.json"
 test "$(sha256sum "$PREFILL/plan.json" | cut -d' ' -f1)" = 7b627cedeb7e3732af8e740aec213791e888324cb6c8db3dbe67cd747ca180ac
 test "$(sha256sum "$PREFILL/report.json" | cut -d' ' -f1)" = 3953ed75fb4275019b51df5d6e8e43b91a4e77c37747330be365c3cd67f8da05
