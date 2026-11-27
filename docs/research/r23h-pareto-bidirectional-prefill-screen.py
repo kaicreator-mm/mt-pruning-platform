@@ -53,7 +53,9 @@ def prepare(d):
     f=json.loads(pin(RR/"expanded-stable96-proxy-v1/fit/decision.json","7821abc55b356520bdd02e4b60f32057a95d204b8cc723b894e2fdce3d9d100d"));need(f==proxy.decision(rows,caps,masks,list(range(1,48)),"fit"),"fit replay")
     # Diagnostic ranking: positive downstream MoE error delta on 8 exact samples.
     changed=[l for l in range(1,48) if g[str(l)]!=base[str(l)]]
-    drift_rows=[r for r in chosen if r["direction"]=="zh-my" and r["id"] in old]\n    need(len(drift_rows)==8,"zh-my drift anchor")\n    drift={l:mean([next(q["moe_output_nmse"] for q in old[r["id"]]["candidate96"]["layer"] if q["layer"]==l and q["step"]==0)-next(q["moe_output_nmse"] for q in old[r["id"]]["original96"]["layer"] if q["layer"]==l and q["step"]==0) for r in drift_rows]) for l in changed}
+    drift_rows=[r for r in chosen if r["direction"]=="zh-my" and r["id"] in old]
+    need(len(drift_rows)==8,"zh-my drift anchor")
+    drift={l:mean([next(q["moe_output_nmse"] for q in old[r["id"]]["candidate96"]["layer"] if q["layer"]==l and q["step"]==0)-next(q["moe_output_nmse"] for q in old[r["id"]]["original96"]["layer"] if q["layer"]==l and q["step"]==0) for r in drift_rows]) for l in changed}
     rank=sorted(changed,key=lambda l:(-drift[l],l))
     pareto_path=d/"pareto.json"
     raw=pin(pareto_path,"cbdc65097cce87cfc6ddb8934604c690e744b9f3d8f7f52b3708bf035c20fa2f")
@@ -77,8 +79,8 @@ def prepare(d):
         evaluated.append({k:v for k,v in item.items() if k!="kept"})
         need(c0["mask_sha256"] not in seen,"duplicate candidate")
         seen.add(c0["mask_sha256"]);candidates[name]=item
-    select=[x["name"] for x in pr["candidates"]]
-    need(len(select)==6 and all(n in candidates for n in select),"six candidate inventory")
+    select=["all8","primary4_10","all12","all10"]
+    need(len(select)==4 and all(n in candidates for n in select),"four Pareto frontier candidates")
     return chosen,old,base,g,dict(status="R23H_PARETO_BIDIRECTIONAL_FIT_PREFILL_SCREEN_ONLY",teacher=TEACHER,prior_recovery_sha256=REC,pareto_report_sha256=pr["source_report_sha256"],pareto_input_sha256=sha(raw),ids=[r["id"] for r in chosen],evaluated_local_options=evaluated,screen=[candidates[n] for n in select],holdout="FORBIDDEN")
 def metric(t,z):
     a=t.double();b=z.double();p=a.log_softmax(-1);q=b.log_softmax(-1)
@@ -111,17 +113,19 @@ def run(d):
         captures=[]
         for i,r in enumerate(rows):
             need(not drv.run(["nvidia-smi","--query-compute-apps=pid","--format=csv,noheader,nounits"]),"GPU busy")
-            prompt=ctx[r["id"]]["prompt_ids"];prior=old.get(r["id"]);th,t=prefill(prompt,None)\n            if prior is not None:need(th==prior["original96"]["teacher_hashes"][0]["sha256"],"teacher logits")
+            prompt=ctx[r["id"]]["prompt_ids"];prior=old.get(r["id"]);th,t=prefill(prompt,None)
+            if prior is not None:need(th==prior["original96"]["teacher_hashes"][0]["sha256"],"teacher logits")
             rec=dict(id=r["id"],direction=r["direction"],index=i,plan_sha256=ph,teacher_sha256=th,metrics={})
             for n,m,oldn in [("original96",base,"original96"),("r23g",g,"candidate96")]+[(x["name"],x["kept"],None) for x in plan["screen"]]:
                 h,z=prefill(prompt,m);q=metric(t,z)
-                if oldn:
+                if oldn and prior is not None:
                     o=prior[oldn]["logits"][0];need(h==prior[oldn]["masked_hashes"][0]["sha256"] and abs(q["kl"]-o["teacher_to_masked_kl"])<1e-12 and abs(q["nmse"]-o["nmse"])<1e-12 and q["argmax_mismatch"]==int(o["teacher_argmax"]!=o["masked_argmax"]),"prior actual prefill replay")
                 rec["metrics"][n]=dict(q,logits_sha256=h,mask_sha256=sha(canon(m)))
             h,_=prefill(prompt,None);need(h==th,"teacher restoration");h=publish(dst/f"{i:02d}.json",rec);captures.append(rec);event("R23H_PARETO_BIDIRECTIONAL_PREFILL_CAPTURED",index=i,id=r["id"],sha256=h,kl={n:q["kl"] for n,q in rec["metrics"].items()})
         names=list(captures[0]["metrics"]);a={n:{k:(sum if k=="argmax_mismatch" else mean)([x["metrics"][n][k] for x in captures]) for k in ("kl","nmse","argmax_mismatch")} for n in names}
-        good=[n for n in names[2:] if all(a[n][k]<=a["original96"][k]+1e-12 for k in a[n]) and a[n]["kl"]<a["r23g"]["kl"]]
+        by_direction={d:{n:{k:(sum if k=="argmax_mismatch" else mean)([x["metrics"][n][k] for x in captures if x["direction"]==d]) for k in ("kl","nmse","argmax_mismatch")} for n in names} for d in ("zh-my","my-zh")}
+        good=[n for n in names[2:] if all(by_direction[d][n][k]<=by_direction[d]["original96"][k]+1e-12 for d in by_direction for k in ("kl","nmse","argmax_mismatch")) and all(by_direction[d][n]["kl"]<by_direction[d]["r23g"]["kl"] for d in by_direction)]
         good.sort(key=lambda n:(a[n]["kl"],a[n]["nmse"],n))
-        out=dict(status="R23H_FIT_PREFILL_SCREEN_COMPLETE_NOT_FRESH_ADMISSION",plan_sha256=ph,samples=8,metrics=a,eligible_for_full_fit_propagation_only=good,selected=good[0] if good else None,limits="Fixed fit prompt only, no decode or other direction real test, no quality or fresh admission.")
+        out=dict(status="R23H_PARETO_BIDIRECTIONAL_PREFILL_SCREEN_COMPLETE_NOT_FRESH_ADMISSION",plan_sha256=ph,samples=16,metrics=a,by_direction=by_direction,eligible_for_full_fit_propagation_only=good,selected=good[0] if good else None,limits="Fixed Fit prefill only for zh-my and my-zh; no decode, no Fresh, no quality or admission.")
         h=publish(dst/"report.json",out);event(out["status"],report_sha256=h,**{k:v for k,v in out.items() if k!="status"})
 if __name__=="__main__":run(P(sys.argv[1]))
