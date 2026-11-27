@@ -142,7 +142,7 @@ def main():
     base=json.loads(pinblob(SCREEN/"original.json","d8bcafe0fe1d8c6bacd0a425dfde57890b18f1ed"))["candidates"]["96"]["kept"];need(sha(canon(base))=="23d615b5f6e33af73c008729a34b3a0dbe9713508a5fd299b72ee9559180e8e7","base")
     old={}
     for i,r in enumerate(rows):
-        x=json.loads(pin(RRR/"r23g-l38-propagation-v1"/f"{i:02d}.json",g["receipt_sha256"][i]));need(x["id"]==r["id"],"previous row");old[r["id"]]=x
+        x=json.loads(pin(RR/"r23g-l38-propagation-v1"/f"{i:02d}.json",g["receipt_sha256"][i]));need(x["id"]==r["id"],"previous row");old[r["id"]]=x
     selected_rows=[(i,r) for i,r in enumerate(rows) if r["direction"] in ("zh-my","my-zh")]
     need(len(selected_rows)==10,"primary inventory")
     ad=dict(status="R23H_ALL8_ABLATION_PRIMARY_BATCH_FIT_ONLY",screen_plan_sha256=PLAN,screen_report_sha256=sh,previous_recovery_sha256=REC,prior_all10_report_sha256=prior_hash,candidates={c["name"]:c["mask_sha256"] for c in cs},ids=[r["id"] for i,r in selected_rows],indices=[i for i,r in selected_rows],teacher=TEACHER,holdout="FORBIDDEN")
