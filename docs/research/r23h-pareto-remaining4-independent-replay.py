@@ -54,7 +54,6 @@ def summarize(rows,caps):
                 z=[q for r in rows if r["direction"]==d for q in caps[r["id"]][n]["logits"] if (q["step"]==0)==(phase=="prefill")]
                 need(len(z)==(8 if d=="zh-my" else 2)*(1 if phase=="prefill" else 8),"position coverage")
                 out[g][n]=dict(kl=avg([q["teacher_to_masked_kl"] for q in z]),nmse=avg([q["nmse"] for q in z]),argmax_mismatch=sum(q["teacher_argmax"]!=q["masked_argmax"] for q in z),positions=len(z))
-    viol={n:[g+"/"+k for g in out for k in ("kl","nmse","argmax_mismatch") if out[g]["candidate96"][k]>out[g]["original96"][k]+1e-12] for n in []}
     return out
 def main():
     root=P(sys.argv[1]);raw=(root/"remaining4-primary.tgz").read_bytes();need(sha(raw)==ARCHIVE_SHA,"archive SHA")
@@ -115,7 +114,15 @@ def main():
     captures=[x for x in ev if x["status"]=="R23H_REMAINING4_PRIMARY_CAPTURED"]
     done=[x for x in ev if x["status"]=="R23H_REMAINING4_PRIMARY_BATCH_COMPLETE_NOT_FRESH_ADMISSION"]
     need(len(ready)==1 and ready[0]["teacher"]==TEACHER and len(captures)==10 and len(done)==1 and done[0]["report_sha256"]==BATCH_REPORT,"batch events")
-    screen_caps={plan["ids"][i]:exact("screen/"+f"{i:02d}.json",None) for i in range(8)}
+    need(b["screen/exit-code"].strip()==b"0" and b["screen/run.stderr"]==b"","screen terminal")
+    sev=[parse(x) for x in b["screen/run.log"].splitlines() if x.startswith(b"{")]
+    se=[x for x in sev if x["status"]=="R23H_PREFILL_CAPTURED"]
+    need(len(se)==8,"screen events")
+    screen_caps={}
+    for i,e in enumerate(se):
+        z=exact("screen/"+f"{i:02d}.json",e["sha256"])
+        need(e["index"]==i and z["index"]==i and z["id"]==plan["ids"][i] and e["id"]==z["id"] and z["plan_sha256"]==PLAN,"screen receipt")
+        screen_caps[z["id"]]=z
     caps={n:{} for n in NAMES};layer_rows={n:[] for n in NAMES}
     for j,(idx,r) in enumerate(selected):
         e=captures[j];need(e["index"]==idx and e["id"]==r["id"],"batch order")
