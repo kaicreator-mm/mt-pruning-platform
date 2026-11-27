@@ -59,13 +59,14 @@ def screen():
         z=json.loads(pin(SD_OLD/f"{i:02d}.json",e["sha256"]))
         need(z["index"]==i and z["id"]==p["ids"][i] and z["plan_sha256"]==OLD_PLAN,"old control receipt")
         oldscreen[z["id"]]=z
-    cs=[]
+    all_cs=[]
     for n in HYBRID_BLOBS:
         raw=pinblob(D_ABLATION/(n+".json"),HYBRID_BLOBS[n]);x=json.loads(raw)
         need(x["status"]=="R23H_ALL8_SINGLE_LAYER_ABLATION_EXPLORATORY_NOT_ADMITTED" and x["method"]==n and x["mask_sha256"]==HYBRID_MASKS[n] and sha(canon(x["mask"]))==HYBRID_MASKS[n],"hybrid mask identity")
         need(p["hybrid_sources"][n]["blob_sha"]==HYBRID_BLOBS[n] and p["hybrid_sources"][n]["mask_sha256"]==HYBRID_MASKS[n] and p["masks"][n]==HYBRID_MASKS[n],"hybrid plan binding")
         need(set(x["mask"])==set(map(str,range(1,48))) and all(len(v)==96 and v==sorted(set(v)) and all(type(i) is int and 0<=i<128 for i in v) for v in x["mask"].values()),"hybrid mask structure")
-        cs.append(dict(name=n,mask_sha256=HYBRID_MASKS[n],kept=x["mask"]))
+        all_cs.append(dict(name=n,mask_sha256=HYBRID_MASKS[n],kept=x["mask"]))
+    cs=[x for x in all_cs if x["name"] in PRIMARY_CANDIDATES]
     events=[json.loads(l) for l in (SCREEN_RUN/"run.log").read_bytes().splitlines() if l.startswith(b"{")]
     ev=[x for x in events if x["status"]=="R23H_LAYER_HYBRID_PREFILL_CAPTURED"]
     done=[x for x in events if x["status"]=="R23H_ALL8_ABLATION_PREFILL_SCREEN_COMPLETE_NOT_FRESH_ADMISSION"]
@@ -84,7 +85,7 @@ def screen():
     good.sort(key=lambda n:(a[n]["kl"],a[n]["nmse"],n))
     q=json.loads(pin(SD/"report.json",done[0]["report_sha256"]))
     need(q["status"]=="R23H_ALL8_ABLATION_PREFILL_SCREEN_COMPLETE_NOT_FRESH_ADMISSION" and q["plan_sha256"]==PLAN and q["samples"]==8 and q["metrics"]==a and q["eligible_for_primary_fit_only"]==good and q["selected"]==(good[0] if good else None),"ablation screen decision")
-    need(done[0]["report_sha256"]=="f35caa64d979ff6c781239a6cab25061af04235df77a282d5c6585a1704de521" and good==["all8_revert42","all8_revert40_42"],"pinned ablation result")
+    need(done[0]["report_sha256"]=="f35caa64d979ff6c781239a6cab25061af04235df77a282d5c6585a1704de521" and good==list(PRIMARY_CANDIDATES),"pinned ablation result")
     return p,caps,q,done[0]["report_sha256"],cs
 def prior_failed():
     prev=R/"r23h-pareto-all10-run-v2"
