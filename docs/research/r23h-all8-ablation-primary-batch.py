@@ -120,6 +120,8 @@ def prior_failed():
 def main():
     failed,prior_hash=prior_failed()
     if not failed:return
+    lk=(R/"r23-admissions/batch.lock").open("a+")
+    fcntl.flock(lk.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
     deadline=time.monotonic()+14400
     while not (SCREEN_RUN/"exit-code").exists():
         need(time.monotonic()<deadline,"screen wait expired");time.sleep(15)
@@ -147,43 +149,42 @@ def main():
     ids={r["id"] for r in rows};ctx={x["id"]:x for x in map(json.loads,corpus.splitlines()) if x["split"]=="calibration" and x["id"] in ids};prev={x["id"]:x for x in map(json.loads,hist.splitlines()[1:]) if x["split"]=="calibration" and x["id"] in ids};need(set(ctx)==set(prev)==ids,"input scope")
     for r in rows:
         x=ctx[r["id"]];z=prev[r["id"]];need(x["line"]==z["line"]==r["line"] and x["direction"]==z["direction"]==r["direction"] and len(x["prompt_ids"])==z["prompt_tokens"]==r["prompt_tokens"] and sha(canon(x["prompt_ids"]))==r["prompt_ids_sha256"] and z["finish"]=="eos" and z["tokens"][:8]==r["teacher_prefix_tokens"],"input identity")
-    with (R/"r23-admissions/batch.lock").open("a+") as lk:
-        fcntl.flock(lk.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB);need(not drv.preflight()["blockers"],"resources")
-        c.torch.set_num_threads(8);c.torch.set_num_interop_threads(1)
-        ident=drv.checkpoint_identity(drv.SOURCE,cache_dir=None,fresh=True,exact_inventory=True);need(ident["teacher"]==TEACHER and ident["num_experts"]==128,"teacher")
-        e=c.engine_module.Engine(c.engine_module.Checkpoint(drv.SOURCE),threads=8);event("R23H_PROPAGATION_TEACHER_READY",teacher=TEACHER)
-        masks={c0["name"]:{int(l):v for l,v in c0["kept"].items()} for c0 in cs};bm={int(l):v for l,v in base.items()};caps={c0["name"]:[] for c0 in cs}
-        for i,r in selected_rows:
-            need(not drv.run(["nvidia-smi","--query-compute-apps=pid","--format=csv,noheader,nounits"]),"GPU busy")
-            prompt=ctx[r["id"]]["prompt_ids"];prefix=r["teacher_prefix_tokens"]
-            t=prop.observe(c,e,prompt,prefix)
-            a=prop.observe(c,e,prompt,prefix,bm);bc=prop.compare(t,a);del a
-            need(bc==old[r["id"]]["original96"],"exact prior baseline")
-            batch={}
-            for c0 in cs:
-                n=c0["name"];b=prop.observe(c,e,prompt,prefix,masks[n]);v=prop.compare(t,b);del b
-                batch[n]=dict(status="PROPAGATED_FIXED_TRAJECTORY_DIAGNOSTIC_NOT_QUALITY",teacher_restored=True,original96=bc,candidate96=v,scope="common fixed input sequence; actual propagated states, not free-running translation; selected prefill rows plus every decode step",id=r["id"],line=r["line"],direction=r["direction"],consumed_prefix=prefix,index=i,teacher=TEACHER,mask_sha256=c0["mask_sha256"],admission_sha256=ah)
-            z=prop.observe(c,e,prompt,prefix);need(prop.loghash(t)==prop.loghash(z),"teacher restoration");del t,z
-            hashes={}
-            for c0 in cs:
-                n=c0["name"];x=batch[n];checked(x,r,i,list(range(1,48)),ah,c0["mask_sha256"])
-                if r["id"] in sc:
-                    z=sc[r["id"]]["metrics"][n];v=x["candidate96"]["logits"][0]
-                    need(x["candidate96"]["masked_hashes"][0]["sha256"]==z["logits_sha256"] and abs(v["teacher_to_masked_kl"]-z["kl"])<1e-12 and abs(v["nmse"]-z["nmse"])<1e-12 and int(v["teacher_argmax"]!=v["masked_argmax"])==z["argmax_mismatch"],"screen exact replay")
-                hashes[n]=publish(dst/f"{n}-{i:02d}.json",x);caps[n].append(x)
-            event("R23H_ALL8_ABLATION_PRIMARY_CAPTURED",index=i,id=r["id"],receipt_sha256=hashes)
-        groups={};viol={}
-        for name,rs in caps.items():
-            groups[name]={}
-            for direction in ("zh-my","my-zh"):
-                for phase in ("prefill","decode"):
-                    k=direction+"/"+phase;groups[name][k]={}
-                    for n in ("original96","candidate96"):
-                        z=[v for x in rs if x["direction"]==direction for v in x[n]["logits"] if (v["step"]==0)==(phase=="prefill")]
-                        need(len(z)==(8 if direction=="zh-my" else 2)*(1 if phase=="prefill" else 8),"coverage")
-                        groups[name][k][n]=dict(kl=mean([v["teacher_to_masked_kl"] for v in z]),nmse=mean([v["nmse"] for v in z]),argmax_mismatch=sum(v["teacher_argmax"]!=v["masked_argmax"] for v in z),positions=len(z))
-            viol[name]=[g+"/"+k for g in groups[name] for k in ("kl","nmse","argmax_mismatch") if groups[name][g]["candidate96"][k]>groups[name][g]["original96"][k]+1e-12]
-        eligible=sorted((n for n in groups if not viol[n]),key=lambda n:(mean([groups[n][g]["candidate96"][k]/max(groups[n][g]["original96"][k],1e-12) for g in groups[n] for k in ("kl","nmse")]),n))
-        out=dict(status="R23H_ALL8_ABLATION_PRIMARY_BATCH_COMPLETE_NOT_FRESH_ADMISSION",admission_sha256=ah,samples_per_candidate=10,candidates=ad["candidates"],groups=groups,violations=viol,eligible_for_secondary_fit_only=eligible,selected=eligible[0] if eligible else None,limits="Two candidates; 10 primary fit trajectories (8 zh-my, 2 my-zh), fixed teacher-forced prefixes and actual propagated decode states. Complete 8 secondary fit rows for any primary winner before full fit replay. No Fresh, holdout, free-running translation, or physical build.")
-        h=publish(dst/"report.json",out);event(out["status"],report_sha256=h,**{k:v for k,v in out.items() if k!="status"})
+    fcntl.flock(lk.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB);need(not drv.preflight()["blockers"],"resources")
+    c.torch.set_num_threads(8);c.torch.set_num_interop_threads(1)
+    ident=drv.checkpoint_identity(drv.SOURCE,cache_dir=None,fresh=True,exact_inventory=True);need(ident["teacher"]==TEACHER and ident["num_experts"]==128,"teacher")
+    e=c.engine_module.Engine(c.engine_module.Checkpoint(drv.SOURCE),threads=8);event("R23H_PROPAGATION_TEACHER_READY",teacher=TEACHER)
+    masks={c0["name"]:{int(l):v for l,v in c0["kept"].items()} for c0 in cs};bm={int(l):v for l,v in base.items()};caps={c0["name"]:[] for c0 in cs}
+    for i,r in selected_rows:
+        need(not drv.run(["nvidia-smi","--query-compute-apps=pid","--format=csv,noheader,nounits"]),"GPU busy")
+        prompt=ctx[r["id"]]["prompt_ids"];prefix=r["teacher_prefix_tokens"]
+        t=prop.observe(c,e,prompt,prefix)
+        a=prop.observe(c,e,prompt,prefix,bm);bc=prop.compare(t,a);del a
+        need(bc==old[r["id"]]["original96"],"exact prior baseline")
+        batch={}
+        for c0 in cs:
+            n=c0["name"];b=prop.observe(c,e,prompt,prefix,masks[n]);v=prop.compare(t,b);del b
+            batch[n]=dict(status="PROPAGATED_FIXED_TRAJECTORY_DIAGNOSTIC_NOT_QUALITY",teacher_restored=True,original96=bc,candidate96=v,scope="common fixed input sequence; actual propagated states, not free-running translation; selected prefill rows plus every decode step",id=r["id"],line=r["line"],direction=r["direction"],consumed_prefix=prefix,index=i,teacher=TEACHER,mask_sha256=c0["mask_sha256"],admission_sha256=ah)
+        z=prop.observe(c,e,prompt,prefix);need(prop.loghash(t)==prop.loghash(z),"teacher restoration");del t,z
+        hashes={}
+        for c0 in cs:
+            n=c0["name"];x=batch[n];checked(x,r,i,list(range(1,48)),ah,c0["mask_sha256"])
+            if r["id"] in sc:
+                z=sc[r["id"]]["metrics"][n];v=x["candidate96"]["logits"][0]
+                need(x["candidate96"]["masked_hashes"][0]["sha256"]==z["logits_sha256"] and abs(v["teacher_to_masked_kl"]-z["kl"])<1e-12 and abs(v["nmse"]-z["nmse"])<1e-12 and int(v["teacher_argmax"]!=v["masked_argmax"])==z["argmax_mismatch"],"screen exact replay")
+            hashes[n]=publish(dst/f"{n}-{i:02d}.json",x);caps[n].append(x)
+        event("R23H_ALL8_ABLATION_PRIMARY_CAPTURED",index=i,id=r["id"],receipt_sha256=hashes)
+    groups={};viol={}
+    for name,rs in caps.items():
+        groups[name]={}
+        for direction in ("zh-my","my-zh"):
+            for phase in ("prefill","decode"):
+                k=direction+"/"+phase;groups[name][k]={}
+                for n in ("original96","candidate96"):
+                    z=[v for x in rs if x["direction"]==direction for v in x[n]["logits"] if (v["step"]==0)==(phase=="prefill")]
+                    need(len(z)==(8 if direction=="zh-my" else 2)*(1 if phase=="prefill" else 8),"coverage")
+                    groups[name][k][n]=dict(kl=mean([v["teacher_to_masked_kl"] for v in z]),nmse=mean([v["nmse"] for v in z]),argmax_mismatch=sum(v["teacher_argmax"]!=v["masked_argmax"] for v in z),positions=len(z))
+        viol[name]=[g+"/"+k for g in groups[name] for k in ("kl","nmse","argmax_mismatch") if groups[name][g]["candidate96"][k]>groups[name][g]["original96"][k]+1e-12]
+    eligible=sorted((n for n in groups if not viol[n]),key=lambda n:(mean([groups[n][g]["candidate96"][k]/max(groups[n][g]["original96"][k],1e-12) for g in groups[n] for k in ("kl","nmse")]),n))
+    out=dict(status="R23H_ALL8_ABLATION_PRIMARY_BATCH_COMPLETE_NOT_FRESH_ADMISSION",admission_sha256=ah,samples_per_candidate=10,candidates=ad["candidates"],groups=groups,violations=viol,eligible_for_secondary_fit_only=eligible,selected=eligible[0] if eligible else None,limits="Two candidates; 10 primary fit trajectories (8 zh-my, 2 my-zh), fixed teacher-forced prefixes and actual propagated decode states. Complete 8 secondary fit rows for any primary winner before full fit replay. No Fresh, holdout, free-running translation, or physical build.")
+    h=publish(dst/"report.json",out);event(out["status"],report_sha256=h,**{k:v for k,v in out.items() if k!="status"})
 if __name__=="__main__":main()
