@@ -1,0 +1,87 @@
+{
+  "status": "R23H_ALL8_FACTORIAL_PREFILL_INDEPENDENT_RECEIPT_REPLAY_PASS",
+  "repo": "kaicreator-mm/mt-pruning-platform",
+  "branch": "parallel-r19-offline-analysis",
+  "source_plan_sha256": "7b627cedeb7e3732af8e740aec213791e888324cb6c8db3dbe67cd747ca180ac",
+  "source_report_sha256": "3953ed75fb4275019b51df5d6e8e43b91a4e77c37747330be365c3cd67f8da05",
+  "evidence_archive_sha256": "94d253fca88a3be7697dea05243cc5889ef4ae2739b8e9acb4be50802c824a8e",
+  "validator": {
+    "path": "docs/research/r23h-all8-factorial-prefill-independent-replay.py",
+    "sha256": "65023ba757c71bde2829aa3bae8d6a6f09976f4b8bbe6a848fb78ad797a36f90",
+    "execution": "Independent receipt replay on a separate Windows machine; no model weights or inference loaded",
+    "os": "Microsoft Windows 11 Pro",
+    "cpu": "AMD Ryzen 7 8845HS w/ Radeon 780M Graphics",
+    "python": "3.14.6"
+  },
+  "samples": 8,
+  "directions": [
+    "zh-my"
+  ],
+  "scope": {
+    "dataset": "Fit",
+    "stage": "Prefill only",
+    "decode": false,
+    "holdout": "FORBIDDEN",
+    "fresh": "FORBIDDEN",
+    "free_running_translation": false,
+    "admission": "NOT_GRANTED"
+  },
+  "metrics": {
+    "original96": {
+      "kl": 0.07984518069504659,
+      "nmse": 0.04725533805377669,
+      "argmax_mismatch": 0
+    },
+    "r23g": {
+      "kl": 0.1552965070122628,
+      "nmse": 0.04474827075496432,
+      "argmax_mismatch": 0
+    },
+    "all8": {
+      "kl": 0.0607164133369635,
+      "nmse": 0.04598051877840448,
+      "argmax_mismatch": 0
+    },
+    "all10": {
+      "kl": 0.06661245652640199,
+      "nmse": 0.040966354912662636,
+      "argmax_mismatch": 0
+    },
+    "all8_revert10": {
+      "kl": 0.08551034163096013,
+      "nmse": 0.0477718151725672,
+      "argmax_mismatch": 0
+    },
+    "all8_revert15": {
+      "kl": 0.06619172779151389,
+      "nmse": 0.04669447280009283,
+      "argmax_mismatch": 0
+    },
+    "all8_revert10_40_42": {
+      "kl": 0.0869132079957917,
+      "nmse": 0.04773817507894579,
+      "argmax_mismatch": 0
+    },
+    "all8_revert15_40_42": {
+      "kl": 0.06475772627753942,
+      "nmse": 0.04628985256923466,
+      "argmax_mismatch": 0
+    }
+  },
+  "eligible_for_primary_fit_only": [
+    "all8_revert15_40_42",
+    "all8_revert15"
+  ],
+  "selected": "all8_revert15_40_42",
+  "checks": [
+    "Exact plan, report, and four candidate mask pins",
+    "47 layers with 96 unique experts per layer for every candidate",
+    "Eight frozen zh-my Fit rows; Holdout excluded",
+    "All eight current capture receipts and clean terminal run",
+    "original96, all8, and all10 historical prefill replay",
+    "R23G historical candidate96 replay",
+    "Independent aggregate metric recomputation and eligibility ordering",
+    "Eight-thread CPU execution contract"
+  ],
+  "conclusion": "Two candidates qualify for the next 10-row primary Fit propagation stage only. This is not final translation-quality acceptance or model admission."
+}
