@@ -9,8 +9,7 @@ import pathlib
 import tarfile
 
 PLAN_SHA = "580abfa0bbd3cf4fa9d88f9381e61db7615c8a739d90f840bc0e7de9fd8423a2"
-TEACHER = "0d1fb958cefa104dfc2f187cbb74da2edecf0f9"  # replaced below by the full pinned identity
-TEACHER = "0d1fb958cefa104dfc2f187cbb74da2edecf0f9"
+TEACHER = "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94"
 RUNNER_BLOB = "6d44161629838aa22a06fcbad4b6ed0e53a1234b"
 PINS = {
     "run/proxy.py": "248737901db40b50efb0a26a9d5ef76d1928538b",
@@ -113,7 +112,7 @@ def main():
     plan = parse(plan_raw, "plan")
     need(plan["status"] == "R23H_FACTORIAL_FIT_PREFILL_SCREEN_ONLY", "plan scope")
     need(plan["holdout"] == "FORBIDDEN" and len(plan["ids"]) == 16 and len(set(plan["ids"])) == 16, "Fit-only ID inventory")
-    need(plan["teacher"] == "0d1fb958cefa104dfc2f187cbb74da2edecf0f9", "teacher placeholder guard")
+    need(plan["teacher"] == TEACHER, "teacher identity")
     need([x["name"] for x in plan["screen"]] == CANDIDATES, "candidate order")
 
     for path, expected in PINS.items():
