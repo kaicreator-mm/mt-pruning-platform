@@ -7,7 +7,7 @@ RUN=$R/r23h-all8-ablation-primary-run-v1
 mkdir -m700 "$RUN"
 cd "$RUN"
 curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/parallel-r19-offline-analysis/docs/research/r23h-all8-ablation-primary-batch.py -o primary.py
-test "$(git hash-object primary.py)" = 142d56dab2c4664fa73c768543f41e016e1bfca5
+test "$(git hash-object primary.py)" = 1d5be2dbe3d9fb97089526c26011cf6d7b7f7106
 test -f "$SCREEN/driver.py"
 test -f "$SCREEN/collector.py"
 test -f "$SCREEN/prop.py"
