@@ -1,0 +1,221 @@
+{
+  "status": "CHATGPT_AUTHORED_FIT_ONLY_HYPOTHESES",
+  "corpus_sha256": "9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4",
+  "plan_blob": "3c92bd0a944637ee7eb8d36d271417396b313026",
+  "source_receipt_job": "job_01M8E5K9NA004Q5R7GRQGVVFAF",
+  "scope": "12 existing fit samples only; no holdout or validation labels; labels are hypotheses not expert identity or evaluation scores",
+  "author": "ChatGPT",
+  "external_llm_calls": 0,
+  "records": [
+    {
+      "id": "calibration:zh-my:348",
+      "source_sha256": "3ae2b949842377ad70935c4a54d7a68bb79cb4da2448c76508eff06c57cea870",
+      "reference_sha256": "3b9b977119089955eb579367608f80e5a0c83caa2ca5fbfa5f39c3998adffdb1",
+      "tags": [
+        "technical_term",
+        "causality",
+        "comparison",
+        "parenthetical_alternative"
+      ],
+      "checks": [
+        "星体发光发热的因果关系",
+        "氢原子聚变形成更重元素",
+        "不能把聚变译成化学燃烧"
+      ],
+      "reference_risk": "reference paraphrases fusion; source meaning governs"
+    },
+    {
+      "id": "calibration:zh-my:747",
+      "source_sha256": "50748a1f055d979b0261c54cba31e94a8af0d53e9c9ac3f3d87f6c7a3af282af",
+      "reference_sha256": "2efe52c60f8bbe6baac8e1eb4579e617a414ef1ffab2449f78db209a8931d97b",
+      "tags": [
+        "modality",
+        "alternative",
+        "local_culture",
+        "attribution"
+      ],
+      "checks": [
+        "可能而非必然",
+        "当地时令食品或主人提供的特色菜"
+      ],
+      "reference_risk": "reference appears to omit possibility and host attribution"
+    },
+    {
+      "id": "calibration:my-zh:390",
+      "source_sha256": "7487c7d3488debebf90764e478b052e806cec8b5d4923e3a890a0a942be04f17",
+      "reference_sha256": "e2b06c092ebfd8a9263a9e7df36446af8836ab552e76b1ff30d7f126589fb22d",
+      "tags": [
+        "named_entity",
+        "historical_term",
+        "superlative",
+        "temporal_order",
+        "causality"
+      ],
+      "checks": [
+        "保留巴利语（ပါဠိ）及奥义书的实体",
+        "保留先后关系及等级制度原因"
+      ],
+      "reference_risk": "source names Pali whereas Chinese reference names Sanskrit; do not treat reference as source-faithful on language identity"
+    },
+    {
+      "id": "calibration:my-zh:156",
+      "source_sha256": "498a4c5cb500347138d175ea26ec96bd58b23e03844f5fc39892a7726dd0027b",
+      "reference_sha256": "db06fed4ef78f88b98e86e162e21fd4afa67b0e92c77db2cabb2f59526f8fde7",
+      "tags": [
+        "numeric_range",
+        "currency",
+        "unit",
+        "comparison",
+        "rarity"
+      ],
+      "checks": [
+        "11000至22500美元每盎司",
+        "约十倍于黄金价格",
+        "缅甸数字与阿拉伯数字等值"
+      ],
+      "reference_risk": null
+    },
+    {
+      "id": "calibration:zh-en:104",
+      "source_sha256": "3ae2018651ef1ad65efca12b03493be428c57db61f60d60241238b145df2cb9c",
+      "reference_sha256": "5ed950acbc5a35a827b26452b666f187e0e94161612acc87413e28a454e96a58",
+      "tags": [
+        "named_entity",
+        "percentage",
+        "prohibition",
+        "relative_clause",
+        "economic_term"
+      ],
+      "checks": [
+        "欧盟原油出口禁令",
+        "伊朗80%国外收入来自原油出口",
+        "限制与禁令并列"
+      ],
+      "reference_risk": null
+    },
+    {
+      "id": "calibration:zh-en:159",
+      "source_sha256": "71ce4eb39c0daa7301b26c914758749bdda364e09bd409b9ecb2fe8ba65d695a",
+      "reference_sha256": "0060db0bec5e4b119cb788b124843a79098ff3f0efba4fd4f4343f877e244b16",
+      "tags": [
+        "named_entity",
+        "transliteration",
+        "ordinal",
+        "numeric_quantity",
+        "comparison",
+        "alignment"
+      ],
+      "checks": [
+        "哈姆林第三、落后20分、领先鲍耶5分",
+        "Kahne第五2220分；Truex Jr.第六2207分"
+      ],
+      "reference_risk": null
+    },
+    {
+      "id": "calibration:en-zh:570",
+      "source_sha256": "8e893c6db4581aabc02f8615caf873c2928be0dd5be07c9a707aa70a1f57a497",
+      "reference_sha256": "c46669bfcd7026f665e889e55c240f0314247a618a3a240a6095cb7ee19a9209",
+      "tags": [
+        "technical_term",
+        "universal_quantifier",
+        "conditional",
+        "definition"
+      ],
+      "checks": [
+        "所有个体在特定表型性状上相同",
+        "monomorphic 单型",
+        "条件和定义不可颠倒"
+      ],
+      "reference_risk": null
+    },
+    {
+      "id": "calibration:en-zh:650",
+      "source_sha256": "b46d1d6a0b572e30b825f154064bfe9b174c9f603d63b470d16f23b618adc77d",
+      "reference_sha256": "a818a6153dd1d03b80d6767c0ac3b4c407dbb20ce4e487c47d2917962d83a7dc",
+      "tags": [
+        "modality",
+        "conditional",
+        "universal_quantifier",
+        "alternative",
+        "technical_term"
+      ],
+      "checks": [
+        "likely 表示可能",
+        "民宿/私宅条件",
+        "所有聚居地有网吧或公共Wi-Fi地点"
+      ],
+      "reference_risk": "settlements may be more naturally rendered as 聚居地 than 安置点"
+    },
+    {
+      "id": "calibration:en-my:546",
+      "source_sha256": "f350cbbe5267bccfaa5476730a42779092852571d0f6c1ce9c0b2c79e32da6cc",
+      "reference_sha256": "82a5fe83c657c9b44da16a6d0d33a0184da217dc3d5c775742139f3d4e4619e1",
+      "tags": [
+        "named_entity",
+        "transliteration",
+        "numeric_quantity",
+        "purpose",
+        "negation",
+        "sequence"
+      ],
+      "checks": [
+        "700民兵、人物和地名",
+        "过河、占桥、阻止逃离的关系"
+      ],
+      "reference_risk": null
+    },
+    {
+      "id": "calibration:en-my:786",
+      "source_sha256": "afde234118abbd1069b002f52005f5f2bbf9b1c2c41eb5a547ac6ef26d43357c",
+      "reference_sha256": "72fee16a808637ea09db5443bda18256c10a5be1fa36e348340ac5c8834c1fe3",
+      "tags": [
+        "numeric_quantity",
+        "threshold",
+        "quantifier_scope",
+        "comparison"
+      ],
+      "checks": [
+        "超过5000种语言",
+        "超过20种语言各有5000万或更多使用者",
+        "两个超过与一个至少不可混淆"
+      ],
+      "reference_risk": null
+    },
+    {
+      "id": "calibration:my-en:163",
+      "source_sha256": "a8c45ae731d361f185e0db5a1f259862eb45bd2f320006de3a94daada4ec9b6c",
+      "reference_sha256": "34549dd768ce677102fb91004924b4eaa6fa73073e78beb967d3ed31e69be2e3",
+      "tags": [
+        "named_entity",
+        "transliteration",
+        "technical_term",
+        "tense",
+        "attachment"
+      ],
+      "checks": [
+        "Avenger级别而非船只动作",
+        "mine countermeasures ship",
+        "驶往Palawan的Puerto Princesa"
+      ],
+      "reference_risk": "Burmese syntax is awkward; mark class attachment uncertain; do not infer expert function from reference alone"
+    },
+    {
+      "id": "calibration:my-en:65",
+      "source_sha256": "da208c30e771d3d7781bca899bf7c9dd8562cc3a12113e71035515c0c50c8980",
+      "reference_sha256": "dd764db2c072936eea1fe5f784351b5fba04a93994379b485fa048e29b1cc5d0",
+      "tags": [
+        "numeric_quantity",
+        "date",
+        "named_entity",
+        "modality",
+        "purpose"
+      ],
+      "checks": [
+        "希望收集120万签名",
+        "十一月向国民议会提交请愿书",
+        "不能把计划译成已完成"
+      ],
+      "reference_risk": null
+    }
+  ]
+}
