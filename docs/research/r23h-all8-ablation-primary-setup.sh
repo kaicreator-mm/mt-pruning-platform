@@ -27,7 +27,7 @@ test "$(cat "$R/r23h-pareto-all10-run-v2/exit-code")" = 0
 test -f "$R/r23g-recovery-ssd-38ed4798/recovery-receipt.json"
 test -f "$R/r23g-recovery-ssd-38ed4798/expanded.json"
 test -f "$R/r23g-recovery-ssd-38ed4798/prop-plan.json"
-test -f "$R/r23g-l38-propagation-v1/17.json"
+test -f "$R/r23-results/r23g-l38-propagation-v1/17.json"
 python3 -m py_compile primary.py
 flock -n "$R/r23-admissions/batch.lock" -c true
 cat > run.sh <<'RUN'
