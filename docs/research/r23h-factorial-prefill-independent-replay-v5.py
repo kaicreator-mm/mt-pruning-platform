@@ -199,7 +199,8 @@ def main():
     ready = [x for x in events if x.get("status") == "R23H_TEACHER_READY"]
     need(len(ready) == 1 and ready[0]["teacher"] == plan["teacher"], "teacher ready event")
     checks = [x for x in events if x.get("status") == "R23H_TEACHER_LOGIT_HASH_CHECK"]
-    need(len(checks) == 8 and all(x["match"] and x["actual"] == x["expected"] for x in checks), "teacher hash replay checks")
+    expected_checks = sum(row["id"] in prior for row in rows)
+    need(len(checks) == expected_checks and all(x["match"] and x["actual"] == x["expected"] for x in checks), "historical teacher hash replay checks")
     captures = [x for x in events if x.get("status") == "R23H_FACTORIAL_PREFILL_CAPTURED"]
     need(len(captures) == 16 and [x["index"] for x in captures] == list(range(16)), "capture event inventory")
     need([x["id"] for x in captures] == plan["ids"], "capture event order")
@@ -241,7 +242,7 @@ def main():
         need(receipt["metrics"]["r23g"]["mask_sha256"] == R23G_MASK_SHA, "R23G metric mask")
         for name, mask in masks.items():
             need(receipt["metrics"][name]["mask_sha256"] == sha(canon(mask)), "candidate metric mask " + name)
-        if row["direction"] == "zh-my":
+        if row["id"] in prior:
             old = prior[row["id"]]
             need(receipt["teacher_sha256"] == old["original96"]["teacher_hashes"][0]["sha256"], "historical teacher logits " + row["id"])
             for name, old_name in (("original96", "original96"), ("r23g", "candidate96")):
