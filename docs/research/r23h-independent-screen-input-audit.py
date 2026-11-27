@@ -13,7 +13,7 @@ def sha_file(path):
     return sha_bytes(path.read_bytes())
 def git_blob(path):
     raw = path.read_bytes()
-    return hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\\0" + raw).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
 def load_json(path):
     raw = path.read_bytes()
     if raw.endswith(bytes((92, 110))):
