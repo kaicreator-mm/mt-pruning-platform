@@ -37,7 +37,7 @@ cd "$RUN"
 curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/d08b0c80e77c69fee36189ebcce57596a3be033d/docs/research/r23h-all8-factorial-prefill.py -o factorial.py
 test "$(git hash-object factorial.py)" = fcc7557dc0e5b156bda9e76baf801c3e337c8729
 curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/parallel-r19-offline-analysis/docs/research/r23h-all8-ablation-primary-replay.json -o primary-replay.json
-test "$(sha256sum primary-replay.json | awk '{print $1}')" = 89ab4d14f73563ee6e1a05cdeeb2143cf67c277a43c78629c2468b310514c552
+test "$(git hash-object primary-replay.json)" = 1ae914e4e1e0c9729c43b237100b6fc20a5fbefb
 python3 -m py_compile factorial.py
 "$PY" - <<'PY'
 import torch,transformers
