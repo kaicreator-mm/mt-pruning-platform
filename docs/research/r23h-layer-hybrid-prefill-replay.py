@@ -1,7 +1,7 @@
 """Independent replay of R23H layerwise-hybrid prefill screen receipts."""
 import hashlib,io,json,math,pathlib,sys,tarfile
 P=pathlib.Path
-ARCH="PENDING"
+ARCH="007949e087e1c097473eb845cb13bff1ee9a2cef50eb4cab84413dd09fde766b"
 OLD_ARCH="eef19f39837236b569aeaf6f789ff6cfe25674b2acd60dd38a1f507b128dce57"
 REC="ae81e98342add7ea9d366f0d1f1c7fa2d5e6f84c432331a6870ecc25ff72d5ad"
 TEACHER="0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94"
