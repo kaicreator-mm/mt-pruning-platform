@@ -158,7 +158,8 @@ def main():
     ready = [x for x in events if x.get("status") == "R23H_TEACHER_READY"]
     need(len(ready) == 1 and ready[0]["teacher"] == TEACHER, "teacher ready event")
     checks = [x for x in events if x.get("status") == "R23H_TEACHER_LOGIT_HASH_CHECK"]
-    need(len(checks) == 8 and all(x["match"] and x["actual"] == x["expected"] for x in checks), "eight exact teacher-logit checks")
+    expected_checks = sum(row["id"] in prior for row in rows)
+    need(len(checks) == expected_checks and all(x["match"] and x["actual"] == x["expected"] for x in checks), "exact historical teacher-logit checks")
     captures = [x for x in events if x.get("status") == "R23H_FACTORIAL_PREFILL_CAPTURED"]
     need(len(captures) == 16, "capture event count")
     need([x["index"] for x in captures] == list(range(16)) and [x["id"] for x in captures] == plan["ids"], "capture order")
@@ -240,6 +241,7 @@ def main():
     need(report["by_direction"] == by_direction, "independent direction metrics")
     need(report["eligible_for_full_fit_propagation_only"] == eligible, "independent candidate gate")
     need(report["selected"] == (eligible[0] if eligible else None), "independent selection")
+    need(eligible == [] and report["selected"] is None, "no candidate may advance to full Fit propagation")
 
     archive = pathlib.Path("/tmp/r23h-factorial-prefill-v5.tgz")
     files = {}
