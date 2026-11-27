@@ -6,8 +6,8 @@ S=R/"r23h-pareto-screen-v1";SD=Q/"r23h-pareto-prefill-v1"
 S2=R/"r23h-all8-ablation-screen-run-v2";SD2=Q/"r23h-all8-ablation-prefill-v2"
 U=R/"r23g-recovery-ssd-38ed4798";P=Q/"r23g-l38-propagation-v1"
 ad=json.loads((B/"admission.json").read_text())
-names=list(ad["candidates"]);indices=ad["indices"]
-assert names==["all8_revert42","all8_revert40_42"] and len(indices)==10
+names=sorted(ad["candidates"]);indices=ad["indices"]
+assert set(names)=={"all8_revert42","all8_revert40_42"} and len(indices)==10
 assert (BR/"exit-code").read_text().strip()=="0" and (BR/"run.stderr").read_bytes()==b""
 assert (AR/"exit-code").read_text().strip()=="0" and (AR/"run.stderr").read_bytes()==b""
 assert (S2/"exit-code").read_text().strip()=="0" and (S2/"run.stderr").read_bytes()==b""
