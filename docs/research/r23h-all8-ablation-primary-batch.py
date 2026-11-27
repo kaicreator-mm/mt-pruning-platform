@@ -126,6 +126,11 @@ def main():
     while not (SCREEN_RUN/"exit-code").exists():
         need(time.monotonic()<deadline,"screen wait expired");time.sleep(15)
     p,sc,q,sh,cs=screen()
+    d=SCREEN
+    drv=load(d/"driver.py","0735238e15f13fd75e3f6939fc31aa834d8b5854","driver")
+    c=load(d/"collector.py","02daf65bb7fe0526b2a700d17013054f7b0eea46","collector")
+    prop=load(d/"prop.py","88468e8c2a5905628365da52e1575d5251516512","prop")
+    c.verify_code()
     need(not drv.preflight()["blockers"],"resources")
     ident=drv.checkpoint_identity(drv.SOURCE,cache_dir=None,fresh=True,exact_inventory=True)
     need(ident["teacher"]==TEACHER and ident["num_experts"]==128,"teacher")
@@ -142,11 +147,6 @@ def main():
     need(len(selected_rows)==10,"primary inventory")
     ad=dict(status="R23H_ALL8_ABLATION_PRIMARY_BATCH_FIT_ONLY",screen_plan_sha256=PLAN,screen_report_sha256=sh,previous_recovery_sha256=REC,prior_all10_report_sha256=prior_hash,candidates={c["name"]:c["mask_sha256"] for c in cs},ids=[r["id"] for i,r in selected_rows],indices=[i for i,r in selected_rows],teacher=TEACHER,holdout="FORBIDDEN")
     ah=publish(dst/"admission.json",ad);event(ad["status"],admission_sha256=ah)
-    d=SCREEN
-    drv=load(d/"driver.py","0735238e15f13fd75e3f6939fc31aa834d8b5854","driver")
-    c=load(d/"collector.py","02daf65bb7fe0526b2a700d17013054f7b0eea46","collector")
-    prop=load(d/"prop.py","88468e8c2a5905628365da52e1575d5251516512","prop")
-    c.verify_code()
     corpus=pin(R/"run-d01b-r19/corpus/corpus.jsonl","9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4")
     hist=pin(R/"run-d01b-r19/baseline/records.jsonl","37d13f9a7f9d9f56e9e810b5c869d216d2c6baa6a32cccb489818bd8ae7656e8")
     ids={r["id"] for r in rows};ctx={x["id"]:x for x in map(json.loads,corpus.splitlines()) if x["split"]=="calibration" and x["id"] in ids};prev={x["id"]:x for x in map(json.loads,hist.splitlines()[1:]) if x["split"]=="calibration" and x["id"] in ids};need(set(ctx)==set(prev)==ids,"input scope")
