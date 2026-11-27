@@ -1,6 +1,6 @@
 import pathlib,tarfile,hashlib,json
 R=pathlib.Path.home()/".cache/mt-pruning";Q=R/"r23-results"
-B=Q/"r23h-all8-ablation-primary-v2";BR=R/"r23h-all8-ablation-primary-run-v2"
+B=Q/"r23h-all8-ablation-primary-v3";BR=R/"r23h-all8-ablation-primary-run-v3"
 A=Q/"r23h-pareto-all10-propagation-v2";AR=R/"r23h-pareto-all10-run-v2"
 S=R/"r23h-pareto-screen-v1";SD=Q/"r23h-pareto-prefill-v1"
 S2=R/"r23h-all8-ablation-screen-run-v2";SD2=Q/"r23h-all8-ablation-prefill-v2"
