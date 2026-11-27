@@ -241,6 +241,8 @@ def validate_sources():
             "mask receipt " + name,
         )
         check_mask(mask, name)
+        changed = [layer for layer in range(1, 48) if set(mask[str(layer)]) != set(original[str(layer)])]
+        need(changed == EXPECTED_CHANGED[name], "actual changed-layer binding " + name)
         binding = plan["candidates"][name]
         need(
             binding["receipt_sha256"] == receipt_sha
@@ -345,7 +347,7 @@ def main():
             try:
                 engine.set_mask(None if mask is None else {int(layer): experts for layer, experts in mask.items()})
                 with collector.torch.inference_mode():
-                    logits = engine.forward(prompt, engine.new_cache(len(prompt) + 1), "prefill")
+                    logits = engine.forward(prompt, engine.new_cache(len(prompt) + 9), "prefill")
                 return collector.logits_sha(logits), logits[[len(prompt) // 2 - 1, len(prompt) - 1]].clone()
             finally:
                 engine.set_mask(None)
