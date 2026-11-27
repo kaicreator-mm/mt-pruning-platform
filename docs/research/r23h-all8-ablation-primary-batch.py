@@ -132,9 +132,12 @@ def main():
     prop=load(d/"prop.py","88468e8c2a5905628365da52e1575d5251516512","prop")
     c.verify_code()
     need(not drv.preflight()["blockers"],"resources")
+    need(c.torch.cuda.is_available() and c.torch.cuda.device_count()>=1,"CUDA device required; CPU fallback forbidden")
+    gpu=c.torch.cuda.get_device_properties(0)
+    need(gpu.total_memory>=8*1024**3,"insufficient accelerator memory")
     ident=drv.checkpoint_identity(drv.SOURCE,cache_dir=None,fresh=True,exact_inventory=True)
     need(ident["teacher"]==TEACHER and ident["num_experts"]==128,"teacher")
-    dst=RR/"r23h-all8-ablation-primary-v1";dst.mkdir(mode=0o700)
+    dst=RR/"r23h-all8-ablation-primary-v2";dst.mkdir(mode=0o700)
     g=json.loads(pin(USB/"recovery-receipt.json",REC));need(g["status"]=="R23G_RECOVERED_DISK_REPLAY_REJECT_STOP_FRESH","previous recovery")
     plan=json.loads(pinblob(USB/"expanded.json","a1047d1a7c5624ed0e3a868bd5d76eef4c754915"));pp=json.loads(pinblob(USB/"prop-plan.json","cc1bbf0bb6cf19be7c7c9c95d0b5d867dd54dcde"))
     rows=pp["rows"]+[r for r in plan["fit"] if r["direction"]=="zh-my" and r["id"] not in {z["id"] for z in pp["rows"]}]
@@ -145,7 +148,7 @@ def main():
         x=json.loads(pin(RR/"r23g-l38-propagation-v1"/f"{i:02d}.json",g["receipt_sha256"][i]));need(x["id"]==r["id"],"previous row");old[r["id"]]=x
     selected_rows=[(i,r) for i,r in enumerate(rows) if r["direction"] in ("zh-my","my-zh")]
     need(len(selected_rows)==10,"primary inventory")
-    ad=dict(status="R23H_ALL8_ABLATION_PRIMARY_BATCH_FIT_ONLY",screen_plan_sha256=PLAN,screen_report_sha256=sh,previous_recovery_sha256=REC,prior_all10_report_sha256=prior_hash,candidates={c["name"]:c["mask_sha256"] for c in cs},ids=[r["id"] for i,r in selected_rows],indices=[i for i,r in selected_rows],teacher=TEACHER,holdout="FORBIDDEN")
+    ad=dict(status="R23H_ALL8_ABLATION_PRIMARY_BATCH_FIT_ONLY",screen_plan_sha256=PLAN,screen_report_sha256=sh,previous_recovery_sha256=REC,prior_all10_report_sha256=prior_hash,candidates={c["name"]:c["mask_sha256"] for c in cs},ids=[r["id"] for i,r in selected_rows],indices=[i for i,r in selected_rows],teacher=TEACHER,accelerator=c.torch.cuda.get_device_name(0),accelerator_memory_bytes=gpu.total_memory,cuda_visible_devices=os.environ.get("CUDA_VISIBLE_DEVICES"),holdout="FORBIDDEN")
     ah=publish(dst/"admission.json",ad);event(ad["status"],admission_sha256=ah)
     corpus=pin(R/"run-d01b-r19/corpus/corpus.jsonl","9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4")
     hist=pin(R/"run-d01b-r19/baseline/records.jsonl","37d13f9a7f9d9f56e9e810b5c869d216d2c6baa6a32cccb489818bd8ae7656e8")
