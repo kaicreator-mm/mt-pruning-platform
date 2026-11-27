@@ -1,0 +1,41 @@
+{
+  "archive_sha256": "892424ab3682ebff4aa167cf9c99f7da2e4a9966f18b7e46abd9b9be14b51d69",
+  "eligible_for_primary_fit_only": [],
+  "limits": "Eight zh-my fit prompts, prefill only. Independent receipt/aggregation replay; no decode or other direction, no Fresh, no product admission.",
+  "metrics": {
+    "all10": {
+      "argmax_mismatch": 0,
+      "kl": 0.06661245652640199,
+      "nmse": 0.040966354912662636
+    },
+    "all8": {
+      "argmax_mismatch": 0,
+      "kl": 0.0607164133369635,
+      "nmse": 0.04598051877840448
+    },
+    "balanced": {
+      "argmax_mismatch": 0,
+      "kl": 0.08863641651777494,
+      "nmse": 0.04972394885495161
+    },
+    "minimax": {
+      "argmax_mismatch": 0,
+      "kl": 0.08498894778020473,
+      "nmse": 0.04901866392506938
+    },
+    "original96": {
+      "argmax_mismatch": 0,
+      "kl": 0.07984518069504659,
+      "nmse": 0.04725533805377669
+    },
+    "r23g": {
+      "argmax_mismatch": 0,
+      "kl": 0.1552965070122628,
+      "nmse": 0.04474827075496432
+    }
+  },
+  "plan_sha256": "95b438dc7bec604c5d48feb5aa446b94aedc98c4d1a367a345c3157c7bf211f2",
+  "samples": 8,
+  "selected": null,
+  "status": "R23H_LAYER_HYBRID_PREFILL_INDEPENDENT_RECEIPT_REPLAY_PASS"
+}
