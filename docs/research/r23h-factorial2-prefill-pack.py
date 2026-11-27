@@ -37,6 +37,10 @@ MASKS = {
     "r23h_l40_only": ("819b635fc56ae2d539987a5288bd2c16683242e06b75f8759e4c5296fed61e0a", "d51357b9f2c9e05e93876aebf03efd8ace44fb30"),
     "r23h_l42_only": ("6f89cf26d2de7a3f0ceba026c08ce160490ccfd15167ce194c66704436fb0e47", "47fb3ec41345a48d219dabd40a5fd0a63dfb53f4"),
 }
+PINS = {
+    "driver": "0735238e15f13fd75e3f6939fc31aa834d8b5854",
+    "collector": "02daf65bb7fe0526b2a700d17013054f7b0eea46",
+}
 
 
 def sha(raw):
@@ -77,6 +81,25 @@ def main():
     assert len([x for x in RUN.joinpath("execute-v1.log").read_text().splitlines() if '"status": "R23H_FACTORIAL2_PREFILL_CAPTURED"' in x]) == 8
     assert any('"status": "R23H_FACTORIAL2_TEACHER_READY"' in x for x in RUN.joinpath("execute-v1.log").read_text().splitlines())
 
+    assert sha((PRIMARY / "report.json").read_bytes()) == PRIMARY_REPORT_SHA
+    assert sha((RUN / "primary-replay.json").read_bytes()) == PRIMARY_REPLAY_SHA
+    assert sha((RUN / "layer-summary.json").read_bytes()) == LAYER_SUMMARY_SHA
+    assert blob((RUN / "factorial2.py").read_bytes()) == FACTORIAL2_BLOB
+    assert sha((USB / "recovery-receipt.json").read_bytes()) == RECOVERY_SHA
+    assert sha((USB / "expanded.json").read_bytes()) == EXPANDED_SHA
+    assert sha((USB / "candidate.json").read_bytes()) == CANDIDATE_SHA
+    assert sha(CORPUS.read_bytes()) == CORPUS_SHA
+    assert blob((D / "original.json").read_bytes()) == ORIGINAL_BLOB
+    assert sha((SD / "plan.json").read_bytes()) == PARETO_PLAN_SHA
+    assert sha((SD / "report.json").read_bytes()) == PARETO_REPORT_SHA
+    assert sha((OLD_FACTORIAL / "plan.json").read_bytes()) == FACTORIAL_PLAN_SHA
+    assert sha((OLD_FACTORIAL / "report.json").read_bytes()) == FACTORIAL_REPORT_SHA
+    assert blob((D / "driver.py").read_bytes()) == PINS["driver"]
+    assert blob((D / "collector.py").read_bytes()) == PINS["collector"]
+    recovery = json.loads((USB / "recovery-receipt.json").read_bytes())
+    assert len(recovery["receipt_sha256"]) == 18
+    for i, expected in enumerate(recovery["receipt_sha256"]):
+        assert sha((PRIOR_R23G / f"{i:02d}.json").read_bytes()) == expected
     for name, (receipt_sha, git_blob) in MASKS.items():
         raw = (PREP / (name + ".json")).read_bytes()
         assert sha(raw) == receipt_sha and blob(raw) == git_blob
