@@ -4,7 +4,7 @@ P=pathlib.Path
 R=P.home()/".cache/mt-pruning";RR=R/"r23-results"
 D=R/"r23h-pareto-screen-v1";USB=R/"r23g-recovery-ssd-38ed4798"
 SD=RR/"r23h-pareto-prefill-v1";PREP=RR/"r23h-all8-factorial-prefill-v1"
-RUN=R/"r23h-all8-factorial-prefill-run-v1"
+RUN=R/"r23h-all8-factorial-prefill-run-v2"
 PLAN="7b627cedeb7e3732af8e740aec213791e888324cb6c8db3dbe67cd747ca180ac"
 PLAN_BLOB="415f2526c82356e216d74105301771b3060f3461"
 OLD_PLAN="b6777f68cad735a5d59b2b4de07220fdc3fa007bbda7ee594a8d5bf65497577e"
@@ -50,7 +50,7 @@ def metric(t,z):
  need(math.isfinite(kl) and kl>=-1e-12 and math.isfinite(nmse),"finite metrics")
  return dict(kl=max(0.,kl),nmse=nmse,argmax_mismatch=int(a[-1].argmax()!=b[-1].argmax()))
 def main():
- need(RUN.is_dir() and not (RUN/"run.log").exists() and not (RUN/"exit-code").exists(),"fresh run directory")
+ need(RUN.is_dir() and (RUN/"factorial.py").is_file() and (RUN/"primary-replay.json").is_file(),"staged run directory")
  need(all(not (PREP/f"{i:02d}.json").exists() for i in range(8)) and not (PREP/"report.json").exists(),"factorial output already exists")
  plan=json.loads(pin(PREP/"plan.json",PLAN))
  need(blob((PREP/"plan.json").read_bytes())==PLAN_BLOB and plan["status"]=="R23H_ALL8_FACTORIAL_PREFILL_SCREEN_ONLY" and plan["holdout"]=="FORBIDDEN","factorial plan")
