@@ -124,6 +124,9 @@ def main():
         need(e["index"]==i and x["index"]==i and e["id"]==x["id"]==newplan["ids"][i] and x["plan_sha256"]==PLAN and set(x["metrics"])==set(screen_names),"new screen capture")
         for n,q in x["metrics"].items():
             need(finite(q["kl"]) and finite(q["nmse"]) and q["argmax_mismatch"] in (0,1) and len(q["logits_sha256"])==64 and q["mask_sha256"]==newplan["masks"][n],"screen metric")
+        p0=prior[x["id"]]
+        need(x["metrics"]["original96"]["logits_sha256"]==p0["original96"]["teacher_hashes"][0]["sha256"],"screen original96 baseline")
+        need(x["metrics"]["r23g"]["logits_sha256"]==p0["candidate96"]["masked_hashes"][0]["sha256"],"screen r23g baseline")
         for n in ("all8","all10"):
             need(x["metrics"][n]==oldscreen[x["id"]]["metrics"][n],"screen control replay")
         scaps[x["id"]]=x
