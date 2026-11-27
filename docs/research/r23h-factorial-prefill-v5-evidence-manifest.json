@@ -1,0 +1,24 @@
+{
+  "status": "R23H_FACTORIAL_BIDIRECTIONAL_PREFILL_SCREEN_INDEPENDENTLY_REPLAYED_NO_CANDIDATE",
+  "plan_sha256": "580abfa0bbd3cf4fa9d88f9381e61db7615c8a739d90f840bc0e7de9fd8423a2",
+  "report_sha256": "e906a1e16b38902ea3282afc44b9afcc190b1673b3ffb9cdfc0d01d456b77fa1",
+  "evidence_archive_sha256": "ae78a5b2eabab90b6ff09258fc87d4ee6d8e542068f9b97e69874f904810a4c9",
+  "evidence_archive_bytes": 632376,
+  "evidence_archive_files": 51,
+  "runner_git_blob": "6d44161629838aa22a06fcbad4b6ed0e53a1234b",
+  "runner_commit": "77e74b355fc16da50713131b54dbd7d708af8f5f",
+  "independent_replay_status": "R23H_FACTORIAL_BIDIRECTIONAL_PREFILL_INDEPENDENT_RECEIPT_REPLAY_PASS",
+  "independent_replay_script_sha256": "451259bf9cc2ae473ac8088c3b3b27e2ea8c061e98e9b94ca3454fd9c9027971",
+  "independent_host": "Windows 11 / Ryzen 7 8845HS",
+  "execution_host": "V100 server, CPU mmap, 8 threads, CUDA disabled",
+  "samples": 16,
+  "directions": {
+    "zh_my": 8,
+    "my_zh": 8
+  },
+  "candidate_count": 7,
+  "eligible": [],
+  "selected": null,
+  "full_fit_propagation_started": false,
+  "decision": "No candidate satisfies both zh-my and my-zh Fit Prefill gates; stop this candidate family and do not advance to Decode or product admission."
+}
