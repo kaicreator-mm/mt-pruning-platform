@@ -111,7 +111,7 @@ def screen():
     caps={}
     for i,e in enumerate(ev):
         z=json.loads(pin(SD/f"{i:02d}.json",e["receipt_sha256"]))
-        need(e["index"]==z["index"]==i and e["id"]==z["id"]==p["ids"][i] and z["plan_sha256"]==FACTORIAL_PLAN and z["teacher_sha256"]==TEACHER,"factorial receipt provenance")
+        need(e["index"]==z["index"]==i and e["id"]==z["id"]==p["ids"][i] and z["plan_sha256"]==FACTORIAL_PLAN and z["teacher_sha256"]==prior[z["id"]]["original96"]["teacher_hashes"][0]["sha256"],"factorial receipt provenance")
         need(set(z["metrics"])==set(names),"factorial metric inventory")
         for n,q in z["metrics"].items():
             need(all(math.isfinite(q[k]) and q[k]>=0 for k in ("kl","nmse")) and type(q["argmax_mismatch"]) is int and q["argmax_mismatch"] in (0,1) and len(q["logits_sha256"])==64,"factorial metric values")
@@ -179,7 +179,7 @@ def main():
     need(not drv.preflight()["blockers"],"resources")
     ident=drv.checkpoint_identity(drv.SOURCE,cache_dir=None,fresh=True,exact_inventory=True)
     need(ident["teacher"]==TEACHER and ident["num_experts"]==128,"teacher")
-    dst=RR/"r23h-all8-factorial-primary-v2";dst.mkdir(mode=0o700)
+    dst=RR/"r23h-all8-factorial-primary-v3";dst.mkdir(mode=0o700)
     g=json.loads(pin(USB/"recovery-receipt.json",REC));need(g["status"]=="R23G_RECOVERED_DISK_REPLAY_REJECT_STOP_FRESH","previous recovery")
     plan=json.loads(pinblob(USB/"expanded.json","a1047d1a7c5624ed0e3a868bd5d76eef4c754915"));pp=json.loads(pinblob(USB/"prop-plan.json","cc1bbf0bb6cf19be7c7c9c95d0b5d867dd54dcde"))
     rows=pp["rows"]+[r for r in plan["fit"] if r["direction"]=="zh-my" and r["id"] not in {z["id"] for z in pp["rows"]}]
