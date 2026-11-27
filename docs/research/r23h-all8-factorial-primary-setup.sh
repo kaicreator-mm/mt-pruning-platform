@@ -7,8 +7,8 @@ SCREEN=$R/r23h-pareto-screen-v1
 PREFILL_RUN=$R/r23h-all8-factorial-prefill-run-v5
 PREFILL=$RR/r23h-all8-factorial-prefill-v2
 MASK_DIR=$R/r23h-all8-factorial-masks-v1
-RUN=$R/r23h-all8-factorial-primary-run-v1
-REV=5ed6d9f30716fd4e3de7eb3c672b474fe3329521
+RUN=$R/r23h-all8-factorial-primary-run-v2
+REV=208550465a3416d8fc9aeae9162f0f82e86e0e8f
 BASE=https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/$REV/docs/research
 
 test ! -e "$RUN"
@@ -44,7 +44,7 @@ mkdir -m700 "$RUN"
 install -d -m700 "$MASK_DIR"
 cd "$RUN"
 curl -fsSL --max-time 45 "$BASE/r23h-all8-factorial-primary-cpu-batch.py" -o primary.py
-test "$(git hash-object primary.py)" = 62054bff85c77e06010a3d9968338676632b69c1
+test "$(git hash-object primary.py)" = fb16203f53103955390eae18eb46e67d74e7a401
 
 for n in all8_revert10 all8_revert15 all8_revert10_40_42 all8_revert15_40_42; do
   curl -fsSL --max-time 45 "$BASE/r23h-all8-factorial-masks/$n.json" -o "$MASK_DIR/$n.json"
