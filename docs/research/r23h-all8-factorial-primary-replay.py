@@ -9,7 +9,7 @@ import sys
 import tarfile
 
 P = pathlib.Path
-ARCHIVE_SHA = "TO_BE_FILLED"
+ARCHIVE_SHA = "80f8dc3d8ba4e598652a286e68e8eecfc32e54046855a9a194c8b7e8869b95cd"
 TEACHER = "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94"
 FACTORIAL_PLAN = "7b627cedeb7e3732af8e740aec213791e888324cb6c8db3dbe67cd747ca180ac"
 FACTORIAL_REPORT = "3953ed75fb4275019b51df5d6e8e43b91a4e77c37747330be365c3cd67f8da05"
@@ -18,10 +18,12 @@ PRIMARY_REPLAY_BLOB = "1ae914e4e1e0c9729c43b237100b6fc20a5fbefb"
 OLD_PLAN = "b6777f68cad735a5d59b2b4de07220fdc3fa007bbda7ee594a8d5bf65497577e"
 OLD_REPORT = "8f2663c26d8d0153fec68f9b22f37fc507ad86a7f064df34d951c7866cc2131"
 REC = "ae81e98342add7ea9d366f0d1f1c7fa2d5e6f84c432331a6870ecc25ff72d5ad"
+CORPUS_SHA = "9caa788d82dea867889bdac6e62c0f1a3ff1b6d4b3ccd7cad19ba74c5a98a0c4"
+RECORDS_SHA = "37d13f9a7f9d9f56e9e810b5c869d216d2c6baa6a32cccb489818bd8ae7656e8"
 ALL10_REPORT = "63a53755c176d7d6514f8a18d4908d9cadec622a9fb3492b2cc91cdbbea814fa"
 ALL10_ADMISSION = "bfd5267613c493558d3e0deece69aa4472cce53ea6aea5ad859b5754117ded2f"
 BATCH_ADMISSION = "7434ba31d589276793eb3790745cf6b0afeb4d25561e66d04b08a3d15db37612"
-BATCH_REPORT = "TO_BE_FILLED"
+BATCH_REPORT = "eba41d87b5d1f418923584e778a303bdab0dbd1f78f54702ceb86fdea08fb4da"
 
 NAMES = ("all8_revert15_40_42", "all8_revert15")
 SCREEN_MASKS = ("all8_revert10", "all8_revert15", "all8_revert10_40_42", "all8_revert15_40_42")
@@ -224,6 +226,28 @@ def main():
     selected = [(index, row) for index, row in enumerate(rows) if row["direction"] in DIRS]
     need([index for index, _ in selected] == list(INDICES) and len(selected) == 10,
          "primary Fit row indices")
+    corpus_raw = files["corpus/corpus.jsonl"]
+    records_raw = files["corpus/records.jsonl"]
+    need(sha(corpus_raw) == CORPUS_SHA and sha(records_raw) == RECORDS_SHA,
+         "calibration corpus/baseline pins")
+    ids = {row["id"] for row in rows}
+    corpus = {item["id"]: item for item in
+              (strict(line) for line in corpus_raw.splitlines() if line)
+              if item.get("split") == "calibration" and item["id"] in ids}
+    baseline = {item["id"]: item for item in
+                (strict(line) for line in records_raw.splitlines()[1:] if line)
+                if item.get("split") == "calibration" and item["id"] in ids}
+    need(set(corpus) == set(baseline) == ids, "calibration input inventory")
+    for row in rows:
+        item = corpus[row["id"]]
+        previous = baseline[row["id"]]
+        need(item["line"] == previous["line"] == row["line"]
+             and item["direction"] == previous["direction"] == row["direction"]
+             and len(item["prompt_ids"]) == previous["prompt_tokens"] == row["prompt_tokens"]
+             and sha(canon(item["prompt_ids"])) == row["prompt_ids_sha256"]
+             and previous["finish"] == "eos"
+             and previous["tokens"][:8] == row["teacher_prefix_tokens"],
+             "calibration input identity " + row["id"])
 
     # Verify the prior all10 failure and its complete 18-row evidence.
     prior_admission_raw = files["prior-all10/admission.json"]
@@ -414,7 +438,8 @@ def main():
     batch_captures = [event for event in batch_events if event["status"] == "R23H_ALL8_FACTORIAL_PRIMARY_CAPTURED"]
     batch_done = [event for event in batch_events if event["status"] == "R23H_ALL8_FACTORIAL_PRIMARY_BATCH_COMPLETE_NOT_FRESH_ADMISSION"]
     need(len(batch_ready) == 1 and batch_ready[0]["teacher"] == TEACHER
-         and len(batch_captures) == 10 and len(batch_done) == 1,
+         and len(batch_captures) == 10 and len(batch_done) == 1
+         and batch_done[0]["report_sha256"] == BATCH_REPORT,
          "factorial primary event inventory")
     captures = {name: {} for name in NAMES}
     for event_index, (index, row) in enumerate(selected):
