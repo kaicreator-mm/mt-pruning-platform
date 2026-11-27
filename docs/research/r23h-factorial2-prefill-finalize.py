@@ -14,7 +14,10 @@ import sys
 R = pathlib.Path.home() / ".cache/mt-pruning"
 PREP = R / "r23-results/r23h-factorial2-prefill-v1"
 RUN = R / "r23h-factorial2-prefill-run-v1"
-RUNNER = RUN / "factorial2.py"
+RUNNER = RUN / "factorial2-recovery.py"
+CAPTURE_RUNNER = RUN / "factorial2.py"
+CAPTURE_RUNNER_BLOB = "2789f50086ee5f343cc12bed2c99e153e2ec1e98"
+RECOVERY_RUNNER_BLOB = "6822174c42ce1c159d807fbd31d68b017cc7cc3f"
 
 
 def need(value, message):
@@ -31,6 +34,14 @@ def load_runner():
 
 
 def main():
+    capture_blob = __import__("hashlib").sha1(
+        b"blob " + str(CAPTURE_RUNNER.stat().st_size).encode() + b"\\0" + CAPTURE_RUNNER.read_bytes()
+    ).hexdigest()
+    recovery_blob = __import__("hashlib").sha1(
+        b"blob " + str(RUNNER.stat().st_size).encode() + b"\\0" + RUNNER.read_bytes()
+    ).hexdigest()
+    need(capture_blob == CAPTURE_RUNNER_BLOB, "original capture runner blob")
+    need(recovery_blob == RECOVERY_RUNNER_BLOB, "recovery runner blob")
     runner = load_runner()
     plan, rows, context, prior, old_screen, masks = runner.validate_sources()
 
@@ -127,6 +138,8 @@ def main():
             "all_receipts_published": True,
             "log_sha256": runner.sha(log_raw),
             "failure": "NameError: candidates undefined after all eight immutable receipts and capture events were written",
+            "capture_runner_git_blob": CAPTURE_RUNNER_BLOB,
+            "recovery_runner_git_blob": RECOVERY_RUNNER_BLOB,
         },
         "duplicate_retry": {
             "exit_code": 1,
