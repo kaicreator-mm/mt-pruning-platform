@@ -20,6 +20,8 @@ CORPUS = R / "run-d01b-r19/corpus/corpus.jsonl"
 PLAN_SHA = "6b04e24ef14bcd2c01a7843569b896e6d3c664446d3098eedf6f0d9fbfb18dfe"
 PLAN_BLOB = "ec2a5095923c20355a6043c1455dedd37d4cca44"
 FACTORIAL2_BLOB = "2789f50086ee5f343cc12bed2c99e153e2ec1e98"
+FACTORIAL2_RECOVERY_BLOB = "6822174c42ce1c159d807fbd31d68b017cc7cc3f"
+FINALIZER_BLOB = "7761846d325ed0b55f1467313451f539cde9a5b5"
 PRIMARY_REPORT_SHA = "eba41d87b5d1f418923584e778a303bdab0dbd1f78f54702ceb86fdea08fb4da"
 PRIMARY_REPLAY_SHA = "7f1b8a0b116192837e016711abca20d020265bafcafd41ed7d8bc861c02e93e3"
 LAYER_SUMMARY_SHA = "9dc475eecf9ee68e2b30c65a38f10a75c5797d86831b8b11412044c30ee7d7a6"
@@ -62,8 +64,13 @@ def add(files, prefix, entries):
 def main():
     assert (RUN / "preflight-v3.exit-code").read_text().strip() == "0"
     assert (RUN / "preflight-v3.stderr").read_bytes() == b""
-    assert (RUN / "execute-v1.exit-code").read_text().strip() == "0"
-    assert (RUN / "execute-v1.stderr").read_bytes() == b""
+    assert (RUN / "exit-code").read_text().strip() == "1"
+    capture_log = (RUN / "execute.log").read_bytes()
+    assert b"NameError: name 'candidates' is not defined" in capture_log
+    assert (RUN / "execute-v1.exit-code").read_text().strip() == "1"
+    assert b"FileExistsError" in (RUN / "execute-v1.stderr").read_bytes()
+    assert (RUN / "finalize-v1.exit-code").read_text().strip() == "0"
+    assert (RUN / "finalize-v1.stderr").read_bytes() == b""
 
     plan_raw = (PREP / "plan.json").read_bytes()
     assert sha(plan_raw) == PLAN_SHA and blob(plan_raw) == PLAN_BLOB
@@ -76,15 +83,21 @@ def main():
 
     report_raw = (PREP / "report.json").read_bytes()
     report = json.loads(report_raw)
-    assert report["status"] == "R23H_FACTORIAL2_PREFILL_COMPLETE_NOT_FRESH_ADMISSION"
+    assert report["status"] == "R23H_FACTORIAL2_PREFILL_CAPTURE_COMPLETE_AGGREGATION_RECOVERED_NOT_ADMISSION"
     assert report["plan_sha256"] == PLAN_SHA and report["samples"] == 8
-    assert len([x for x in RUN.joinpath("execute-v1.log").read_text().splitlines() if '"status": "R23H_FACTORIAL2_PREFILL_CAPTURED"' in x]) == 8
-    assert any('"status": "R23H_FACTORIAL2_TEACHER_READY"' in x for x in RUN.joinpath("execute-v1.log").read_text().splitlines())
+    assert report["capture_execution"]["exit_code"] == 1 and report["capture_execution"]["all_receipts_published"] is True
+    assert report["eligible_for_primary_fit_only"] == [] and report["selected"] is None
+    capture_lines = RUN.joinpath("execute.log").read_text().splitlines()
+    assert len([x for x in capture_lines if '"status": "R23H_FACTORIAL2_PREFILL_CAPTURED"' in x]) == 8
+    assert any('"status": "R23H_FACTORIAL2_TEACHER_READY"' in x for x in capture_lines)
+    assert any('"status": "R23H_FACTORIAL2_PREFILL_RECOVERY_FINALIZED"' in x for x in RUN.joinpath("finalize-v1.log").read_text().splitlines())
 
     assert sha((PRIMARY / "report.json").read_bytes()) == PRIMARY_REPORT_SHA
     assert sha((RUN / "primary-replay.json").read_bytes()) == PRIMARY_REPLAY_SHA
     assert sha((RUN / "layer-summary.json").read_bytes()) == LAYER_SUMMARY_SHA
     assert blob((RUN / "factorial2.py").read_bytes()) == FACTORIAL2_BLOB
+    assert blob((RUN / "factorial2-recovery.py").read_bytes()) == FACTORIAL2_RECOVERY_BLOB
+    assert blob((RUN / "finalize-v1.py").read_bytes()) == FINALIZER_BLOB
     assert sha((USB / "recovery-receipt.json").read_bytes()) == RECOVERY_SHA
     assert sha((USB / "expanded.json").read_bytes()) == EXPANDED_SHA
     assert sha((USB / "candidate.json").read_bytes()) == CANDIDATE_SHA
@@ -114,9 +127,12 @@ def main():
     add(files, "batch/", [(x, PREP / x) for x in ("plan.json", "report.json", *[f"{i:02d}.json" for i in range(8)])])
     add(files, "batch/masks/", [(name + ".json", PREP / (name + ".json")) for name in MASKS])
     add(files, "run/", [(x, RUN / x) for x in (
-        "factorial2.py", "primary-replay.json", "layer-summary.json",
+        "factorial2.py", "factorial2-recovery.py", "finalize-v1.py",
+        "primary-replay.json", "layer-summary.json",
         "preflight-v3.log", "preflight-v3.stderr", "preflight-v3.exit-code",
+        "execute.log", "exit-code",
         "execute-v1.log", "execute-v1.stderr", "execute-v1.exit-code",
+        "finalize-v1.log", "finalize-v1.stderr", "finalize-v1.exit-code",
     )])
     add(files, "primary/", [("report.json", PRIMARY / "report.json")])
     add(files, "prior-factorial/", [(x, OLD_FACTORIAL / x) for x in ("plan.json", "report.json")])
@@ -127,7 +143,7 @@ def main():
         add(files, "prior-r23g/", [(f"{i:02d}.json", PRIOR_R23G / f"{i:02d}.json")])
     add(files, "corpus/", [("corpus.jsonl", CORPUS)])
 
-    dest = pathlib.Path("/tmp/r23h-factorial2-prefill-v1.tgz")
+    dest = pathlib.Path("/tmp/r23h-factorial2-prefill-v1-recovered.tgz")
     with tarfile.open(dest, "w:gz") as archive:
         for name, path in sorted(files.items()):
             archive.add(path, arcname=name, recursive=False)
@@ -136,7 +152,7 @@ def main():
         assert len(members) == len(files)
         assert {item.name for item in members} == set(files)
     raw = dest.read_bytes()
-    print("STATUS=R23H_FACTORIAL2_PREFILL_EVIDENCE_PACKED")
+    print("STATUS=R23H_FACTORIAL2_PREFILL_EVIDENCE_PACKED_RECOVERED")
     print("ARCHIVE_SHA256=" + sha(raw))
     print("REPORT_SHA256=" + sha(report_raw))
     print("PLAN_SHA256=" + sha(plan_raw))
