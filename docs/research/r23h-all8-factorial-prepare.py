@@ -64,7 +64,7 @@ def main():
  all8={x["name"]:x["kept"] for x in oldplan["screen"]}["all8"]
  need(sha(canon(base))=="23d615b5f6e33af73c008729a34b3a0dbe9713508a5fd299b72ee9559180e8e7","original96 mask")
  need(sha(canon(all8))==ALL8,"all8 mask")
- rows=[r for r in json.loads(pin(USB/"expanded.json","a1047d1a7c5624ed0e3e868bd5d76eef4c754915",True))["fit"] if r["direction"]=="zh-my"]
+ rows=[r for r in json.loads(pin(USB/"expanded.json","21b4a54f626c32727284f32f34f3b43b54ff6e68d56ac4499934ee652fb6d166"))["fit"] if r["direction"]=="zh-my"]
  need(len(rows)==8 and [r["id"] for r in rows]==oldplan["ids"],"same frozen zh-my Fit rows")
  OUT.mkdir(mode=0o700)
  candidates={}
