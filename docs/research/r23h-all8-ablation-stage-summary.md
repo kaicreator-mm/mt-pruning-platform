@@ -64,4 +64,6 @@ No Fresh, holdout, native free-running translation, or physical model materializ
 
 The primary batch runner, setup script, evidence packer and independent replay script are committed on parallel-r19-offline-analysis. The runner acquires the exclusive experiment lock before creating output, verifies the old all10 failure and exact screen receipts, and checks resource and teacher identity before writing its admission record.
 
-Remote execution is currently blocked by Gateway's required account-holder acceptance of its 26 November 2026 Privacy Policy update. No primary batch process has been started.
+The first v1 launch was aborted after one fit row because the launcher accidentally hid CUDA (CUDA_VISIBLE_DEVICES was empty). The process ran on CPU with GPU utilization at 0%; it was terminated with exit code 143. Its admission and two candidate receipts are preserved in r23h-all8-ablation-primary-cpu-abort.json and are explicitly inadmissible as GPU primary-fit evidence.
+
+The corrected v2 runner uses a separate output directory, sets CUDA_VISIBLE_DEVICES=0, verifies the exact Tesla V100-SXM2-16GB, and fails closed unless PyTorch reports a CUDA device. The v2 run is the only run eligible for the primary-fit evidence pack and independent replay.
