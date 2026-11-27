@@ -1,0 +1,168 @@
+{
+  "archive_sha256": "ae78a5b2eabab90b6ff09258fc87d4ee6d8e542068f9b97e69874f904810a4c9",
+  "by_direction": {
+    "my-zh": {
+      "original96": {
+        "argmax_mismatch": 1,
+        "kl": 0.5420845595308531,
+        "nmse": 0.10332229656419416
+      },
+      "r23g": {
+        "argmax_mismatch": 0,
+        "kl": 0.4469661722098285,
+        "nmse": 0.07011766078002049
+      },
+      "stable_10": {
+        "argmax_mismatch": 1,
+        "kl": 0.5829377541715829,
+        "nmse": 0.0874221113458
+      },
+      "stable_10_15": {
+        "argmax_mismatch": 1,
+        "kl": 0.5392777900498678,
+        "nmse": 0.0875800674297255
+      },
+      "stable_10_15_34": {
+        "argmax_mismatch": 1,
+        "kl": 0.5158931241080724,
+        "nmse": 0.08737851793935816
+      },
+      "stable_10_34": {
+        "argmax_mismatch": 1,
+        "kl": 0.5821520789485343,
+        "nmse": 0.08704103827940553
+      },
+      "stable_15": {
+        "argmax_mismatch": 0,
+        "kl": 0.5228555113061287,
+        "nmse": 0.08029707048173824
+      },
+      "stable_15_34": {
+        "argmax_mismatch": 0,
+        "kl": 0.5354787237528432,
+        "nmse": 0.08034057032127587
+      },
+      "stable_34": {
+        "argmax_mismatch": 1,
+        "kl": 0.5413963125951163,
+        "nmse": 0.10364921041674056
+      }
+    },
+    "zh-my": {
+      "original96": {
+        "argmax_mismatch": 0,
+        "kl": 0.07984518069504659,
+        "nmse": 0.04725533805377669
+      },
+      "r23g": {
+        "argmax_mismatch": 0,
+        "kl": 0.1552965070122628,
+        "nmse": 0.04474827075496432
+      },
+      "stable_10": {
+        "argmax_mismatch": 0,
+        "kl": 0.06475772627753942,
+        "nmse": 0.04628985256923466
+      },
+      "stable_10_15": {
+        "argmax_mismatch": 0,
+        "kl": 0.0615093729505618,
+        "nmse": 0.04631084739142172
+      },
+      "stable_10_15_34": {
+        "argmax_mismatch": 0,
+        "kl": 0.0717483503963261,
+        "nmse": 0.048050968561585285
+      },
+      "stable_10_34": {
+        "argmax_mismatch": 0,
+        "kl": 0.06335564785521072,
+        "nmse": 0.04602811116292445
+      },
+      "stable_15": {
+        "argmax_mismatch": 0,
+        "kl": 0.0869132079957917,
+        "nmse": 0.04773817507894579
+      },
+      "stable_15_34": {
+        "argmax_mismatch": 0,
+        "kl": 0.07658711005906733,
+        "nmse": 0.04874330881338947
+      },
+      "stable_34": {
+        "argmax_mismatch": 0,
+        "kl": 0.07763767700724507,
+        "nmse": 0.04737984667687754
+      }
+    }
+  },
+  "checks": [
+    "exact runner/dependency Git blob pins",
+    "minimum-swap solver 6-swap and 31-fold provenance",
+    "all seven 47x96 candidate masks reconstructed from original96/stable96",
+    "16 frozen zh-my/my-zh Fit rows and Holdout exclusion",
+    "corpus prompt identity and 18 R23G recovery receipt hashes",
+    "all available historical R23G teacher/original96/R23G logits exact replays",
+    "all 16 receipt hashes, candidate mask bindings, finite metrics and capture event order",
+    "independent overall/direction aggregates and eligibility gate recomputation",
+    "clean process exit, empty stderr, exact teacher identity and terminal report binding"
+  ],
+  "decision": "prefill-only screen; only a candidate passing both directions may enter the bounded primary Fit propagation",
+  "directions": {
+    "my-zh": 8,
+    "zh-my": 8
+  },
+  "eligible_for_full_fit_propagation_only": [],
+  "metrics": {
+    "original96": {
+      "argmax_mismatch": 1,
+      "kl": 0.3109648701129498,
+      "nmse": 0.07528881730898543
+    },
+    "r23g": {
+      "argmax_mismatch": 0,
+      "kl": 0.30113133961104566,
+      "nmse": 0.057432965767492405
+    },
+    "stable_10": {
+      "argmax_mismatch": 1,
+      "kl": 0.32384774022456114,
+      "nmse": 0.06685598195751732
+    },
+    "stable_10_15": {
+      "argmax_mismatch": 1,
+      "kl": 0.3003935815002148,
+      "nmse": 0.0669454574105736
+    },
+    "stable_10_15_34": {
+      "argmax_mismatch": 1,
+      "kl": 0.29382073725219926,
+      "nmse": 0.06771474325047172
+    },
+    "stable_10_34": {
+      "argmax_mismatch": 1,
+      "kl": 0.32275386340187245,
+      "nmse": 0.06653457472116499
+    },
+    "stable_15": {
+      "argmax_mismatch": 0,
+      "kl": 0.30488435965096017,
+      "nmse": 0.06401762278034201
+    },
+    "stable_15_34": {
+      "argmax_mismatch": 0,
+      "kl": 0.30603291690595524,
+      "nmse": 0.06454193956733267
+    },
+    "stable_34": {
+      "argmax_mismatch": 1,
+      "kl": 0.3095169948011807,
+      "nmse": 0.07551452854680905
+    }
+  },
+  "plan_sha256": "580abfa0bbd3cf4fa9d88f9381e61db7615c8a739d90f840bc0e7de9fd8423a2",
+  "report_sha256": "e906a1e16b38902ea3282afc44b9afcc190b1673b3ffb9cdfc0d01d456b77fa1",
+  "samples": 16,
+  "selected": null,
+  "status": "R23H_FACTORIAL_BIDIRECTIONAL_PREFILL_INDEPENDENT_RECEIPT_REPLAY_PASS"
+}
