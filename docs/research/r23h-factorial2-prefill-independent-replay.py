@@ -11,6 +11,8 @@ import tarfile
 PLAN_SHA = "6b04e24ef14bcd2c01a7843569b896e6d3c664446d3098eedf6f0d9fbfb18dfe"
 PLAN_BLOB = "ec2a5095923c20355a6043c1455dedd37d4cca44"
 FACTORIAL2_BLOB = "2789f50086ee5f343cc12bed2c99e153e2ec1e98"
+FACTORIAL2_RECOVERY_BLOB = "6822174c42ce1c159d807fbd31d68b017cc7cc3f"
+FINALIZER_BLOB = "7761846d325ed0b55f1467313451f539cde9a5b5"
 PRIMARY_REPORT_SHA = "eba41d87b5d1f418923584e778a303bdab0dbd1f78f54702ceb86fdea08fb4da"
 PRIMARY_REPLAY_SHA = "7f1b8a0b116192837e016711abca20d020265bafcafd41ed7d8bc861c02e93e3"
 LAYER_SUMMARY_SHA = "9dc475eecf9ee68e2b30c65a38f10a75c5797d86831b8b11412044c30ee7d7a6"
@@ -143,7 +145,11 @@ def main():
     need(plan["recovery_sha256"] == RECOVERY_SHA, "recovery binding")
 
     runner = get(F, "run/factorial2.py")
-    need(blob(runner) == FACTORIAL2_BLOB, "factorial2 runner source blob")
+    need(blob(runner) == FACTORIAL2_BLOB, "factorial2 capture runner source blob")
+    recovery_runner = get(F, "run/factorial2-recovery.py")
+    need(blob(recovery_runner) == FACTORIAL2_RECOVERY_BLOB, "factorial2 recovery runner source blob")
+    finalizer = get(F, "run/finalize-v1.py")
+    need(blob(finalizer) == FINALIZER_BLOB, "factorial2 finalizer source blob")
     need(b'CUDA_VISIBLE_DEVICES"] = ""' in runner and b'OMP_NUM_THREADS"] = "8"' in runner and b'MKL_NUM_THREADS"] = "8"' in runner, "CPU-only thread/device contract")
     primary_replay_raw = get(F, "run/primary-replay.json")
     need(sha(primary_replay_raw) == PRIMARY_REPLAY_SHA, "primary replay file pin")
@@ -284,15 +290,24 @@ def main():
          and preflight_events[0]["runtime"]["gpu_pids"] == []
          and preflight_events[0]["runtime"]["model_processes"] == [],
          "resource preflight must be clean and GPU idle")
-    run_exit = get(F, "run/execute-v1.exit-code").decode().strip()
-    need(run_exit == "0" and get(F, "run/execute-v1.stderr") == b"", "execution exit/stderr")
-    run_log = get(F, "run/execute-v1.log")
-    run_events = [parse(line, "factorial2 run event") for line in run_log.splitlines() if line.startswith(b"{")]
-    captures = [item for item in run_events if item.get("status") == "R23H_FACTORIAL2_PREFILL_CAPTURED"]
+    capture_exit = get(F, "run/exit-code").decode().strip()
+    capture_log = get(F, "run/execute.log")
+    need(capture_exit == "1" and b"NameError: name 'candidates' is not defined" in capture_log, "preserved post-capture aggregation failure")
+    capture_events = [parse(line, "factorial2 capture event") for line in capture_log.splitlines() if line.startswith(b"{")]
+    captures = [item for item in capture_events if item.get("status") == "R23H_FACTORIAL2_PREFILL_CAPTURED"]
     need(len(captures) == 8, "factorial2 capture count")
-    need(any(item.get("status") == "R23H_FACTORIAL2_TEACHER_READY" for item in run_events), "teacher ready event")
-    terminal = [item for item in run_events if item.get("status") == "R23H_FACTORIAL2_PREFILL_COMPLETE_NOT_FRESH_ADMISSION"]
-    need(len(terminal) == 1, "factorial2 terminal event")
+    need(any(item.get("status") == "R23H_FACTORIAL2_TEACHER_READY" for item in capture_events), "teacher ready event")
+    need(not any(item.get("status") == "R23H_FACTORIAL2_PREFILL_COMPLETE_NOT_FRESH_ADMISSION" for item in capture_events), "capture process did not emit a false terminal PASS")
+    retry_exit = get(F, "run/execute-v1.exit-code").decode().strip()
+    retry_stderr = get(F, "run/execute-v1.stderr")
+    need(retry_exit == "1" and b"FileExistsError" in retry_stderr, "no-overwrite retry collision evidence")
+    need(not any(b"R23H_FACTORIAL2_PREFILL_CAPTURED" in line for line in get(F, "run/execute-v1.log").splitlines()), "retry did not write duplicate captures")
+    finalize_exit = get(F, "run/finalize-v1.exit-code").decode().strip()
+    need(finalize_exit == "0" and get(F, "run/finalize-v1.stderr") == b"", "recovery finalizer exit/stderr")
+    finalize_log = get(F, "run/finalize-v1.log")
+    finalize_events = [parse(line, "factorial2 finalizer event") for line in finalize_log.splitlines() if line.startswith(b"{")]
+    terminal = [item for item in finalize_events if item.get("status") == "R23H_FACTORIAL2_PREFILL_RECOVERY_FINALIZED"]
+    need(len(terminal) == 1, "recovery finalizer terminal event")
 
     receipt_values = []
     for index, row in enumerate(rows):
@@ -353,11 +368,26 @@ def main():
     report_sha = sha(report_raw)
     report = parse(report_raw, "factorial2 report")
     need(
-        report["status"] == "R23H_FACTORIAL2_PREFILL_COMPLETE_NOT_FRESH_ADMISSION"
+        report["status"] == "R23H_FACTORIAL2_PREFILL_CAPTURE_COMPLETE_AGGREGATION_RECOVERED_NOT_ADMISSION"
         and report["plan_sha256"] == PLAN_SHA
         and report["teacher_sha256"] == TEACHER
         and report["samples"] == 8,
-        "factorial2 report scope",
+        "factorial2 recovered report scope",
+    )
+    need(
+        report["capture_execution"]["exit_code"] == 1
+        and report["capture_execution"]["capture_events"] == 8
+        and report["capture_execution"]["all_receipts_published"] is True
+        and report["capture_execution"]["log_sha256"] == sha(capture_log)
+        and report["capture_execution"]["capture_runner_git_blob"] == FACTORIAL2_BLOB
+        and report["capture_execution"]["recovery_runner_git_blob"] == FACTORIAL2_RECOVERY_BLOB,
+        "recovered capture execution record",
+    )
+    need(
+        report["duplicate_retry"]["exit_code"] == 1
+        and "FileExistsError" in report["duplicate_retry"]["failure"]
+        and report["finalization"]["status"] == "R23H_FACTORIAL2_RECEIPTS_VALIDATED_AND_AGGREGATED",
+        "recovery and retry record",
     )
     need(report["metrics"] == aggregates, "independent aggregate replay")
     need(report["eligible_for_primary_fit_only"] == eligible and report["selected"] == (eligible[0] if eligible else None), "independent gate replay")
@@ -366,7 +396,7 @@ def main():
     need(terminal_report == report, "terminal report content binding")
 
     print(json.dumps({
-        "status": "R23H_FACTORIAL2_PREFILL_INDEPENDENT_RECEIPT_REPLAY_PASS",
+        "status": "R23H_FACTORIAL2_PREFILL_RECOVERED_INDEPENDENT_RECEIPT_REPLAY_PASS",
         "archive_sha256": args.archive_sha256,
         "plan_sha256": PLAN_SHA,
         "report_sha256": report_sha,
@@ -374,7 +404,7 @@ def main():
         "metrics": aggregates,
         "eligible_for_primary_fit_only": eligible,
         "selected": report["selected"],
-        "decision": "prefill-only screen; any passing candidate may enter the bounded primary Fit propagation only",
+        "decision": "no candidate passes the prefill gate; do not advance any of these masks to primary Fit propagation",
         "checks": [
             "exact plan and source pins",
             "three candidate mask receipt, Git blob, and 47x96 shape",
@@ -384,7 +414,7 @@ def main():
             "original96/all8/all10 historical replay",
             "R23G historical replay",
             "independent aggregate metric and candidate-gate recomputation",
-            "CPU-only preflight, clean exit, and terminal report binding",
+            "CPU-only preflight, all eight capture receipts, preserved aggregation failure, no-overwrite retry, and independently finalized report binding",
         ],
     }, ensure_ascii=False, sort_keys=True, indent=2))
 
