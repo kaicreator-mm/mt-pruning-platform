@@ -66,6 +66,6 @@ The primary batch runner, setup script, evidence packer and independent replay s
 
 The pinned execution engine is intentionally CPU-only: mtpruning/engine.py is the lean CPU mmap engine for the approximately 60 GB HF-layout checkpoint, and requirements.txt pins torch==2.10.0+cpu. CUDA_VISIBLE_DEVICES empty and zero V100 utilization are expected for this stage; the 16 GB V100 is not used by this engine. Host RAM preflight is mandatory.
 
-The first v1 run produced one of ten fit rows for both candidates and was then manually interrupted after a mistaken GPU requirement. Its admission, run log and two candidate receipts are preserved in r23h-all8-ablation-primary-cpu-abort.json as a valid partial CPU diagnostic, not a completed batch. The isolated v2 run recomputes all ten rows under the same pinned CPU environment so the final aggregate comes from one coherent run.
+The first v1 run produced one of ten fit rows for both candidates and was then manually interrupted after a mistaken GPU requirement. Its admission, run log and two candidate receipts are preserved in r23h-all8-ablation-primary-cpu-abort.json as a valid partial CPU diagnostic, not a completed batch. The isolated v3 run recomputes all ten rows under the same pinned CPU environment so the final aggregate comes from one coherent run.
 
-The v2 runner is pinned to the CPU engine and writes to a separate output directory. It retains the same strict receipt validation, fit-only scope, and no-Fresh/no-holdout limits.
+The v3 runner is pinned to the CPU engine and writes to a separate output directory. It retains the same strict receipt validation, fit-only scope, and no-Fresh/no-holdout limits.
