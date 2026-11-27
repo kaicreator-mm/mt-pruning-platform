@@ -176,7 +176,6 @@ def check_mask(mask, name):
 def validate_sources():
     need(PREP.is_dir() and RUN.is_dir(), "factorial2 staging directories")
     need((RUN / "factorial2.py").is_file(), "staged runner copy")
-    need(not any((PREP / f"{i:02d}.json").exists() for i in range(8)), "output receipt already exists")
     need(not (PREP / "report.json").exists(), "output report already exists")
 
     plan_raw = pin(PREP / "plan.json", PLAN_SHA)
@@ -419,7 +418,7 @@ def main():
         }
         eligible = [
             name
-            for name in candidates
+            for name in MASKS
             if all(metrics[name][key] <= metrics["original96"][key] + 1e-12 for key in metrics[name])
             and metrics[name]["kl"] < metrics["r23g"]["kl"]
         ]
