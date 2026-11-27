@@ -19,6 +19,7 @@ test -f "$D/exit-code"
 test "$(cat "$D/exit-code")" = 0
 test -s "$D/run.log"
 test ! -s "$D/run.stderr"
+test -f "$D/all8_revert40.json"
 test -f "$D/all8_revert42.json"
 test -f "$D/all8_revert40_42.json"
 test -f "$R/r23h-pareto-all10-run-v2/exit-code"
