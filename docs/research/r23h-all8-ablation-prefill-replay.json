@@ -1,0 +1,49 @@
+{
+  "archive_sha256": "ec3164d575309de811c75759539ae661e1d58c85daf00189a7a26bf3e1557b1b",
+  "eligible_for_primary_fit_only": [
+    "all8_revert42",
+    "all8_revert40_42"
+  ],
+  "limits": "Eight zh-my fit prompts, prefill only. Independent receipt and aggregation replay; no decode, my-zh, Fresh, or product admission.",
+  "metrics": {
+    "all10": {
+      "argmax_mismatch": 0,
+      "kl": 0.06661245652640199,
+      "nmse": 0.040966354912662636
+    },
+    "all8": {
+      "argmax_mismatch": 0,
+      "kl": 0.0607164133369635,
+      "nmse": 0.04598051877840448
+    },
+    "all8_revert40": {
+      "argmax_mismatch": 0,
+      "kl": 0.06210507834830413,
+      "nmse": 0.04736911034603292
+    },
+    "all8_revert40_42": {
+      "argmax_mismatch": 0,
+      "kl": 0.0615093729505618,
+      "nmse": 0.04631084739142172
+    },
+    "all8_revert42": {
+      "argmax_mismatch": 0,
+      "kl": 0.06001185874724581,
+      "nmse": 0.04617677212261395
+    },
+    "original96": {
+      "argmax_mismatch": 0,
+      "kl": 0.07984518069504659,
+      "nmse": 0.04725533805377669
+    },
+    "r23g": {
+      "argmax_mismatch": 0,
+      "kl": 0.1552965070122628,
+      "nmse": 0.04474827075496432
+    }
+  },
+  "plan_sha256": "29e553c04e2cc61cbe999aac0604e9440f248480cadb6c8631f4758d87712acc",
+  "samples": 8,
+  "selected": "all8_revert42",
+  "status": "R23H_ALL8_ABLATION_PREFILL_INDEPENDENT_RECEIPT_REPLAY_PASS"
+}
