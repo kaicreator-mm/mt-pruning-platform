@@ -193,7 +193,7 @@ def main():
         for name, mask in masks.items():
             need(receipt["metrics"][name]["mask_sha256"] == sha(canon(mask)), "candidate binding " + name + "/" + row["id"])
 
-        if row["direction"] == "zh-my":
+        if row["id"] in prior:
             old = prior[row["id"]]
             need(receipt["teacher_sha256"] == old["original96"]["teacher_hashes"][0]["sha256"], "teacher baseline " + row["id"])
             for name, old_name in (("original96", "original96"), ("r23g", "candidate96")):
