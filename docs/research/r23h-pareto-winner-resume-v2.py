@@ -6,7 +6,7 @@ SCREEN=R/"r23h-pareto-screen-v1";SD=RR/"r23h-pareto-prefill-v1"
 PLAN="b6777f68cad735a5d59b2b4de07220fdc3fa007bbda7ee594a8d5bf65497577e"
 REC="ae81e98342add7ea9d366f0d1f1c7fa2d5e6f84c432331a6870ecc25ff72d5ad"
 TEACHER="0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94"
-USB=P("/mnt/mt-storage/mt-pruning/evidence/r23g-recovery-38ed4798")
+USB=R/"r23g-recovery-ssd-38ed4798"
 DIRS=("zh-my","my-zh","zh-en","en-zh","en-my","my-en")
 def need(x,m):
     if not x:raise ValueError(m)
