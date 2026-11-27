@@ -22,7 +22,7 @@ ORIGINAL_BLOB = "d8bcafe0fe1d8c6bacd0a425dfde57890b18f1ed"
 PARETO_PLAN_SHA = "b6777f68cad735a5d59b2b4de07220fdc3fa007bbda7ee594a8d5bf65497577e"
 PARETO_REPORT_SHA = "8f2663c26d8d0153fec68f9b22f37fc507ad86a7f064df34d951c7866cc2131b"
 FACTORIAL_PLAN_SHA = "7b627cedeb7e3732af8e740aec213791e888324cb6c8db3dbe67cd747ca180ac"
-FACTORIAL_REPORT_SHA = "3953ed75fb4275019b51df5d6e8e43b91a4e77c37730be365c3cd67f8da05"
+FACTORIAL_REPORT_SHA = "3953ed75fb4275019b51df5d6e8e43b91a4e77c37747330be365c3cd67f8da05"
 TEACHER = "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94"
 PINS = {
     "driver": "0735238e15f13fd75e3f6939fc31aa834d8b5854",
@@ -169,9 +169,12 @@ def main():
     prior_factorial_plan = get(F, "prior-factorial/plan.json")
     prior_factorial_report = get(F, "prior-factorial/report.json")
     need(sha(prior_factorial_plan) == FACTORIAL_PLAN_SHA and sha(prior_factorial_report) == FACTORIAL_REPORT_SHA, "prior factorial pins")
+    prior_factorial_plan = parse(prior_factorial_plan, "prior factorial plan")
     prior_factorial = parse(prior_factorial_report, "prior factorial report")
     need(
-        prior_factorial["status"] == "R23H_ALL8_FACTORIAL_PREFILL_COMPLETE_NOT_FRESH_ADMISSION"
+        prior_factorial_plan["status"] == "R23H_ALL8_FACTORIAL_PREFILL_SCREEN_ONLY"
+        and prior_factorial_plan["holdout"] == "FORBIDDEN"
+        and prior_factorial["status"] == "R23H_ALL8_FACTORIAL_PREFILL_COMPLETE_NOT_FRESH_ADMISSION"
         and prior_factorial["samples"] == 8
         and set(prior_factorial["eligible_for_primary_fit_only"]) == {"all8_revert15_40_42", "all8_revert15"},
         "prior factorial prefill decision",
@@ -259,6 +262,7 @@ def main():
         prior[item["id"]] = item
     need(ids <= set(prior), "R23G prior receipt coverage")
 
+    need(get(F, "pareto-run/exit-code").decode().strip() == "0" and get(F, "pareto-run/run.stderr") == b"", "prior Pareto execution exit/stderr")
     pareto_run = get(F, "pareto-run/run.log")
     old_events = [parse(line, "Pareto run event") for line in pareto_run.splitlines() if line.startswith(b"{")]
     captures = [item for item in old_events if item.get("status") == "R23H_PREFILL_CAPTURED"]
@@ -275,6 +279,11 @@ def main():
     need(preflight_exit == "0" and get(F, "run/preflight-v3.stderr") == b"", "preflight exit/stderr")
     preflight_log = get(F, "run/preflight-v3.log")
     need(b"R23H_FACTORIAL2_PREFLIGHT_PASS" in preflight_log and b'"torch": "2.10.0+cpu"' in preflight_log, "preflight evidence")
+    preflight_events = [parse(line, "preflight event") for line in preflight_log.splitlines() if line.startswith(b"{")]
+    need(len(preflight_events) == 1 and preflight_events[0]["runtime"]["blockers"] == []
+         and preflight_events[0]["runtime"]["gpu_pids"] == []
+         and preflight_events[0]["runtime"]["model_processes"] == [],
+         "resource preflight must be clean and GPU idle")
     run_exit = get(F, "run/execute-v1.exit-code").decode().strip()
     need(run_exit == "0" and get(F, "run/execute-v1.stderr") == b"", "execution exit/stderr")
     run_log = get(F, "run/execute-v1.log")
