@@ -104,15 +104,6 @@ The next hypothesis is that the remaining layer-10 and layer-15 mask changes are
 
 First run a prefill-only fit screen against the same eight zh-my rows and original96/R23G controls. Only masks passing that bounded screen may enter a fresh ten-row primary fit batch. Keep all decisions fit-only; no Fresh or holdout consumption.
 
-## Next bounded work
-
-1. Run both eligible masks over the 10 primary fit trajectories: 8 zh-my and 2 my-zh. Capture prefill plus eight actual propagated decode steps under the same fixed teacher-forced prefixes.
-2. Pack the complete evidence, including the three-mask screen and prior all10 receipts; independently replay every receipt and aggregate before proceeding.
-3. If either candidate qualifies, evaluate every eligible candidate over the remaining 8 secondary fit rows (zh-en, en-zh, en-my and my-en; two each). This avoids choosing between two masks from only one side of the primary gate.
-4. Independently replay the complete 18-row fixed-fit evidence. Only then consider a separately gated free-running translation-quality evaluation.
-
-No Fresh, holdout, native free-running translation, or physical model materialization is authorized by the current prefill result.
-
 ## Execution state
 
 The primary batch runner, setup script, evidence packer and independent replay script are committed on parallel-r19-offline-analysis. The runner acquires the exclusive experiment lock before creating output, verifies the old all10 failure and exact screen receipts, and checks resource and teacher identity before writing its admission record.
