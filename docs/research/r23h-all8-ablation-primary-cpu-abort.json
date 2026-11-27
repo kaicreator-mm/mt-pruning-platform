@@ -21,5 +21,11 @@
   },
   "process_rss_kib_observed": 47839584,
   "reason": "The pinned mt-pruning engine is intentionally CPU-only: mtpruning/engine.py is the lean CPU mmap engine for the approximately 60 GB checkpoint, and requirements.txt pins torch==2.10.0+cpu. CUDA_VISIBLE_DEVICES empty and zero V100 utilization are expected. The first run produced one fit row for both candidates, then was manually terminated after a mistaken assumption that this stage should use the V100. The receipts are preserved as a valid partial CPU diagnostic, but the clean v2 run recomputes all ten rows for a coherent complete batch.",
-  "remediation": "The v2 runner uses the same pinned mt-pruning CPU environment and CPU mmap engine, with a separate output directory. It does not require CUDA or use the V100. Host RAM preflight remains mandatory."
+  "remediation": "The v3 runner restores the reviewed CPU-only runtime, verifies torch==2.10.0+cpu and transformers==5.24.1, uses the existing 60 GB checkpoint mmap engine, and writes to a separate output directory. It recomputes the complete ten-row batch; v1 partial receipts remain preserved but are not reused.",
+  "v2_cuda_guard_attempt": {
+    "status": "PREFLIGHT_FAILED_BEFORE_MODEL_LOAD",
+    "run_dir": "~/.cache/mt-pruning/r23h-all8-ablation-primary-run-v2",
+    "exit_code": 1,
+    "reason": "A mistaken CUDA-only guard was applied to an intentionally CPU-only engine. The guard failed before checkpoint loading, admission creation, or any inference. This attempt produced no candidate receipts and is not part of the experiment."
+  }
 }
