@@ -7,7 +7,7 @@ USB=$R/r23g-recovery-ssd-38ed4798
 SD=$RR/r23h-pareto-prefill-v1
 PREP=$RR/r23h-all8-factorial-prefill-v1
 PREV=$RR/r23h-all8-ablation-primary-v3
-RUN=$R/r23h-all8-factorial-prefill-run-v1
+RUN=$R/r23h-all8-factorial-prefill-run-v2
 PY=$HOME/miniconda3/envs/mt-pruning/bin/python
 
 test ! -e "$RUN"
@@ -34,7 +34,7 @@ for i in $(seq -w 0 17); do test -f "$RR/r23g-l38-propagation-v1/$i.json"; done
 for i in 00 01 02 03 04 05 06 07; do test -f "$SD/$i.json"; done
 mkdir -m 700 "$RUN"
 cd "$RUN"
-curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/e5e2e697d2f5ff0e5e169eb6e25d36545644b327/docs/research/r23h-all8-factorial-prefill.py -o factorial.py
+curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/__NEW_COMMIT__/docs/research/r23h-all8-factorial-prefill.py -o factorial.py
 test "$(git hash-object factorial.py)" = 21d549e0ba107aab291e436365b21d95ef532006
 curl -fsSL --max-time 30 https://raw.githubusercontent.com/kaicreator-mm/mt-pruning-platform/parallel-r19-offline-analysis/docs/research/r23h-all8-ablation-primary-replay.json -o primary-replay.json
 test "$(git hash-object primary-replay.json)" = 1ae914e4e1e0c9729c43b237100b6fc20a5fbefb
