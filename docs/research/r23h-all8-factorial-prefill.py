@@ -4,7 +4,7 @@ P=pathlib.Path
 R=P.home()/".cache/mt-pruning";RR=R/"r23-results"
 D=R/"r23h-pareto-screen-v1";USB=R/"r23g-recovery-ssd-38ed4798"
 SD=RR/"r23h-pareto-prefill-v1";PREP=RR/"r23h-all8-factorial-prefill-v2"
-RUN=R/"r23h-all8-factorial-prefill-run-v2"
+RUN=R/"r23h-all8-factorial-prefill-run-v3"
 PLAN="7b627cedeb7e3732af8e740aec213791e888324cb6c8db3dbe67cd747ca180ac"
 PLAN_BLOB="415f2526c82356e216d74105301771b3060f3461"
 OLD_PLAN="b6777f68cad735a5d59b2b4de07220fdc3fa007bbda7ee594a8d5bf65497577e"
