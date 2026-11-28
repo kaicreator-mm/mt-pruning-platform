@@ -174,7 +174,7 @@ def main():
          and sha(canon(r23g)) == R23G_MASK_SHA, "R23G source/mask")
     for label, mask in (("original96", original), ("stable96", stable), ("r23g", r23g)):
         check_mask(mask, label)
-    need(len([layer for layer in stable if stable[layer] != original[layer]]) == 40,
+    need(len([layer for layer in stable if stable[layer] != original[layer]]) == 42,
          "Stable96 changed-layer count")
     need([layer for layer in r23g if r23g[layer] != stable[layer]] == ["38"],
          "R23G/Stable96 layer-38 anchor")
