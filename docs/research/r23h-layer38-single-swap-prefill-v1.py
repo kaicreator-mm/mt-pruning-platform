@@ -2,6 +2,7 @@
 Fit-only actual Prefill KL/NMSE; all three baselines are remeasured in the same run."""
 import hashlib,importlib.util,json,math,os,pathlib,sys,time,fcntl,traceback
 P=pathlib.Path
+sys.path.insert(0,str(P.home()/"mt-pruning-platform"))
 R=P.home()/".cache/mt-pruning"
 RR=R/"r23-results"
 USB_PRIMARY=P("/mnt/mt-storage/mt-pruning/evidence/r23g-recovery-38ed4798")
@@ -111,7 +112,7 @@ def prepare(d):
     return rows,ctx,previous,original,stable,r23g,plan
 def run(d):
     rows,ctx,previous,original,stable,r23g,plan=prepare(d)
-    dst=RR/"r23h-layer38-single-swap-prefill-v1";dst.mkdir(mode=0o700)
+    dst=RR/"r23h-layer38-single-swap-prefill-v2";dst.mkdir(mode=0o700)
     ph=publish(dst/"plan.json",plan)
     event("R23H_LAYER38_SINGLE_SWAP_PLAN_FROZEN",sha256=ph,candidates=[{"name":x["name"],"removed":x["removed_expert"],"added":x["added_expert"]} for x in plan["candidates"]])
     drv=load(d,"driver");c=load(d,"collector");c.verify_code()
