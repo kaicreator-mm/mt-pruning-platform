@@ -43,6 +43,20 @@ A candidate is eligible for a separately gated primary Fit propagation only if, 
 
 No Decode, Fresh, Holdout, free-running translation, chrF++ claim, product/production admission, training, physical pruning, model publication, or deletion of existing evidence. An eligible Prefill candidate is only a candidate for the next fixed-Fit propagation gate.
 
+## Implementation and static preparation
+
+- Candidate inventory: `r23h-all8-one-swap-candidate-inventory-v1.json`
+- Runner: `r23h-all8-one-swap-prefill-v1.py`
+- Isolated setup: `r23h-all8-one-swap-setup-v1.sh`
+- One-shot launcher: `r23h-all8-one-swap-run-v1.sh`
+- Evidence packer: `r23h-all8-one-swap-pack-v1.py`
+- Independent replay: `r23h-all8-one-swap-independent-replay-v1.py`
+- Windows replay launcher: `r23h-all8-one-swap-independent-replay-v1.ps1`
+
+Static checks completed: both independent implementations reconstruct the same 47×96 all8 mask and all 16 candidate hashes; runner, packer and replay Python sources compile; setup and run shell scripts pass `bash -n`. No model inference has started for this candidate family.
+
+Execution remains gated on access to the V100 host and the 8845HS independent replay host. Do not substitute Nilar or silently weaken the independent replay requirement.
+
 ## Evidence path
 
 - Runner: `r23h-all8-one-swap-prefill-v1.py`
