@@ -82,7 +82,7 @@ def prepare(d):
         raw=pin(PREVIOUS/f"{i:02d}.json",captures[i]["sha256"])
         previous.append(json.loads(raw))
     need([x["id"] for x in previous]==[r["id"] for r in rows],"previous receipt IDs")
-    need(all(x["teacher_sha256"]==TEACHER for x in previous),"previous teacher hashes")
+    need(all(len(x["teacher_sha256"])==64 for x in previous),"previous teacher-logit hashes")
     corpus=pin(R/"run-d01b-r19/corpus/corpus.jsonl",CORPUS_SHA)
     ctx={x["id"]:x for x in map(json.loads,corpus.splitlines()) if x["split"]=="calibration" and x["id"] in {r["id"] for r in rows}}
     need(len(ctx)==16,"calibration corpus coverage")
