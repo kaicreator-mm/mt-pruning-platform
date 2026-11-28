@@ -1,0 +1,119 @@
+{
+  "archive_sha256": "0a7a80a240dc865b270de92b7dafc93e6bd9ebe8e6363f924d44a67fbc80b805",
+  "eligible_for_secondary_fit_only": [],
+  "groups": {
+    "my-zh/decode": {
+      "candidate96": {
+        "argmax_mismatch": 1,
+        "kl": 0.039207245000814,
+        "nmse": 0.038066240850698006,
+        "positions": 16
+      },
+      "original96": {
+        "argmax_mismatch": 1,
+        "kl": 0.03944772133299593,
+        "nmse": 0.03924345835067985,
+        "positions": 16
+      }
+    },
+    "my-zh/prefill": {
+      "candidate96": {
+        "argmax_mismatch": 0,
+        "kl": 0.3588577115040809,
+        "nmse": 0.07795054875518977,
+        "positions": 2
+      },
+      "original96": {
+        "argmax_mismatch": 0,
+        "kl": 0.38094617203217856,
+        "nmse": 0.14405266903652658,
+        "positions": 2
+      }
+    },
+    "zh-my/decode": {
+      "candidate96": {
+        "argmax_mismatch": 1,
+        "kl": 0.010816755020461402,
+        "nmse": 0.044914296151648735,
+        "positions": 64
+      },
+      "original96": {
+        "argmax_mismatch": 1,
+        "kl": 0.011274940267237403,
+        "nmse": 0.04440272289099043,
+        "positions": 64
+      }
+    },
+    "zh-my/prefill": {
+      "candidate96": {
+        "argmax_mismatch": 0,
+        "kl": 0.06001153627143916,
+        "nmse": 0.045971445471350264,
+        "positions": 8
+      },
+      "original96": {
+        "argmax_mismatch": 0,
+        "kl": 0.07984518069504659,
+        "nmse": 0.04725533805377669,
+        "positions": 8
+      }
+    }
+  },
+  "layer_decode_nmse_delta_top": [
+    [
+      25,
+      0.008254284657041908
+    ],
+    [
+      26,
+      0.006099359476493327
+    ],
+    [
+      27,
+      0.004719703425497253
+    ],
+    [
+      28,
+      0.003788665286206861
+    ],
+    [
+      40,
+      0.003746471929536836
+    ],
+    [
+      36,
+      0.0033572787821606015
+    ],
+    [
+      39,
+      0.002811001215907644
+    ],
+    [
+      35,
+      0.0026826142795264105
+    ],
+    [
+      41,
+      0.002626917498544615
+    ],
+    [
+      32,
+      0.002557571079667234
+    ],
+    [
+      44,
+      0.00237580813086157
+    ],
+    [
+      34,
+      0.0019396898653937233
+    ]
+  ],
+  "limits": "Fixed fit; layer association not causal; no Fresh or quality admission.",
+  "report_sha256": "0760d92157809e5e88a25af5188066060764f21470d5f581986bbf26676d2495",
+  "samples": 10,
+  "status": "R23H_ONE_SWAP_PRIMARY_INDEPENDENT_REPLAY_PASS_REJECT_CANDIDATE",
+  "violations": [
+    "zh-my/decode/nmse"
+  ]
+}
