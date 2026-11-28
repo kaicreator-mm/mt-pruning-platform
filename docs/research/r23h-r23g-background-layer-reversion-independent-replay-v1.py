@@ -9,7 +9,7 @@ import pathlib
 import tarfile
 
 PLAN_SHA = "52bd4cfdde4025b327ed949ddc54577dc145f256f2580f4233c75d8b1a98a602"
-TEACHER = "0d1fb958cefa104dfc2f187cbb74da2edecf0f9"
+TEACHER = "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94"
 RUNNER_BLOB = "bfd31208cf0884fbea17d3b1b2b3d9e32f0158c9"
 PINS = {
     "run/driver.py": "0735238e15f13fd75e3f6939fc31aa834d8b5854",
