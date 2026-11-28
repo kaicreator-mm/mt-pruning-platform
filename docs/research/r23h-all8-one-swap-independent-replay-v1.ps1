@@ -24,6 +24,8 @@ if ($manifest.archive_files -ne 51 -or $manifest.samples -ne 16 -or $manifest.ca
 
 $actualArchiveHash = (Get-FileHash -LiteralPath $ArchivePath -Algorithm SHA256).Hash.ToLowerInvariant()
 $expectedArchiveHash = [string]$manifest.archive_sha256
+if ($expectedArchiveHash -notmatch "^[0-9a-f]{64}$") { throw "Invalid manifest archive hash" }
+if ((Get-Item -LiteralPath $ArchivePath).Length -ne [long]$manifest.archive_bytes) { throw "Archive byte-size mismatch" }
 if ($actualArchiveHash -ne $expectedArchiveHash) { throw "Archive SHA-256 mismatch" }
 
 $scriptBytes = [System.IO.File]::ReadAllBytes($ReplayScript)
@@ -68,7 +70,7 @@ $result = $resultText | ConvertFrom-Json
 if ($result.status -ne "R23H_ALL8_ONE_SWAP_INDEPENDENT_RECEIPT_REPLAY_PASS") {
     throw "Independent replay returned an unexpected status"
 }
-$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 [System.IO.File]::WriteAllText($OutputPath, $resultText + [Environment]::NewLine, $utf8NoBom)
 Write-Output $resultText
 Write-Output "Independent replay saved: $OutputPath"
