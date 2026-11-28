@@ -174,6 +174,8 @@ def main():
          and sha(canon(r23g)) == R23G_MASK_SHA, "R23G source/mask")
     for label, mask in (("original96", original), ("stable96", stable), ("r23g", r23g)):
         check_mask(mask, label)
+    stable_changed_layers = [layer for layer in stable if stable[layer] != original[layer]]
+    need(len(stable_changed_layers) == 42, "Stable96 changed-layer count")
     need(len([layer for layer in stable if stable[layer] != original[layer]]) == 42,
          "Stable96 changed-layer count")
     need([layer for layer in r23g if r23g[layer] != stable[layer]] == ["38"],
@@ -307,7 +309,7 @@ def main():
             "archive SHA, member inventory, path safety and exact source pins",
             "exact model identity, no-blocker preflight and no active GPU/model processes",
             "fixed balanced Fit rows, Holdout exclusion and prompt identity",
-            "Stable96 differs from Original96 in 40 layers; R23G differs from Stable96 only at layer 38",
+            "Stable96 differs from Original96 in 42 layers; R23G differs from Stable96 only at layer 38",
             "four candidate masks reconstructed as exact one-expert swaps",
             "16 teacher-logit hashes match previous independently captured receipts",
             "Original96 and R23G baseline logits/metrics replay exactly against prior receipts",
