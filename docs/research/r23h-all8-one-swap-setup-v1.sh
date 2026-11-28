@@ -7,7 +7,7 @@ BRANCH="parallel-r19-offline-analysis"
 R="$HOME/.cache/mt-pruning"
 RR="$R/r23-results"
 SOURCE_RUN="$R/r23h-layer38-single-swap-run-v1"
-WORKTREE="$R/worktrees/r23h-all8-one-swap-\${PINNED_HEAD:0:12}"
+WORKTREE="$R/worktrees/r23h-all8-one-swap-${PINNED_HEAD:0:12}"
 RUN="$R/r23h-all8-one-swap-run-v1"
 
 test -d "$REPO/.git"
