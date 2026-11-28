@@ -1,0 +1,25 @@
+{
+  "status": "R23H_LAYER38_SINGLE_SWAP_INDEPENDENTLY_REPLAYED_NO_CANDIDATE",
+  "archive_sha256": "2fc011e7bea7711777cf7a8e19ae4915681d40b9e16a8f256cdcba861731b792",
+  "archive_bytes": 212383,
+  "archive_files": 49,
+  "plan_sha256": "5fc0b81795bc93e8bf416ee22367c25750149ac191e53b5e5dc40ec4e54bc384",
+  "report_sha256": "8deb598e4cfebb4c5f275fe250e9cb6fb075d9a9f0aa19366e7f773c0b2590a3",
+  "runner_git_blob": "552ac03e1d31df2b1db419fd1ec854346483840e",
+  "packer_git_blob": "026b16659e6352fc5a7226732f1ddd664009fa46",
+  "replay_script_sha256": "7a772c27aa9efe19acf5c99b6637a2e0c9dbf15eb4c675adf424925aa0cb4c26",
+  "teacher": "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94",
+  "samples": 16,
+  "directions": {
+    "zh-my": 8,
+    "my-zh": 8
+  },
+  "baseline_count": 3,
+  "candidate_count": 4,
+  "eligible": [],
+  "selected": null,
+  "execution_host": "V100 server CPU mmap, 8 threads, CUDA disabled",
+  "independent_replay_host": "aliyun-sg (separate from V100 execution host)",
+  "full_fit_propagation_started": false,
+  "decision": "Reject all four one-expert swaps. Each zh-my KL is worse than Original96. my-zh KL improves slightly for some swaps against R23G, but cannot compensate for zh-my regression. Do not propagate."
+}

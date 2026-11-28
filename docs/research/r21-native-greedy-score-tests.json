@@ -1,0 +1,12 @@
+{
+  "job": "job_01M8CVNT3Y00WC91PYVMFGSXT6",
+  "exit_code": 0,
+  "compile": "PASS",
+  "result": {
+    "status": "PASS_SYNTHETIC_REPLAY_AND_PINNED_SCORER",
+    "raw_verification": 1,
+    "negative_checks": 4,
+    "pilot_group_scores": 6,
+    "metric_signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:2|space:no|version:2.6.0"
+  }
+}

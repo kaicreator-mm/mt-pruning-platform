@@ -1,0 +1,30 @@
+{
+  "status": "PREPARATION_ONLY",
+  "r22": {
+    "job": "job_01M8CS92F300VMJPZC12GR7YZW",
+    "exit_code": 0,
+    "compile": "PASS",
+    "first_attempt": "job_01M8CS8C1900BRTHBPKXEMF6TM (extra newline in transport caused source blob mismatch; corrected)",
+    "status": "PASS_SYNTHETIC_ONLY",
+    "success_publication": 1,
+    "negative_cases": 6,
+    "crash_visibility_simulated": true,
+    "source_unchanged": true,
+    "test_reader": "synthetic oracle, not independent production GGUFReader"
+  },
+  "r23": {
+    "job": "job_01M8CSB38S00FVH7P3JSN2QRY5",
+    "exit_code": 0,
+    "compile": "PASS",
+    "status": "PASS_SYNTHETIC_ONLY",
+    "torch": "2.10.0+cpu",
+    "masked_oracle_checks": 15,
+    "negative_checks": 6,
+    "observer_routed_drift": 0,
+    "observer_combined_drift": 0,
+    "toy_mass_error": 0.3582924861013677,
+    "toy_functional_error": 0.009952581619387377,
+    "fit_only_selection": "functional",
+    "real_capture": "NOT_RUN"
+  }
+}

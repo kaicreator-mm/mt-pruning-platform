@@ -1,0 +1,179 @@
+{
+  "status": "R23H_PARETO_FULL_FIT_REPLAY_REJECT_STOP_FRESH",
+  "candidate": "all10",
+  "sha256": "c007eed1e6133e44759432bcb88c77ab34c5109711b74163072bd2020604a34c",
+  "primary_violations": [
+    "zh-my/decode/kl",
+    "zh-my/decode/argmax_mismatch"
+  ],
+  "groups": {
+    "zh-my/prefill": {
+      "original96": {
+        "nmse": 0.04725533805377669,
+        "kl": 0.07984518069504659,
+        "argmax_mismatch": 0,
+        "positions": 8
+      },
+      "candidate96": {
+        "nmse": 0.040966354912662636,
+        "kl": 0.06661245652640199,
+        "argmax_mismatch": 0,
+        "positions": 8
+      }
+    },
+    "zh-my/decode": {
+      "original96": {
+        "nmse": 0.04440272289099043,
+        "kl": 0.011274940267237403,
+        "argmax_mismatch": 1,
+        "positions": 64
+      },
+      "candidate96": {
+        "nmse": 0.04096836292152349,
+        "kl": 0.011357168758745815,
+        "argmax_mismatch": 2,
+        "positions": 64
+      }
+    },
+    "my-zh/prefill": {
+      "original96": {
+        "nmse": 0.14405266903652658,
+        "kl": 0.38094617203217856,
+        "argmax_mismatch": 0,
+        "positions": 2
+      },
+      "candidate96": {
+        "nmse": 0.04930832956011883,
+        "kl": 0.35988670124493405,
+        "argmax_mismatch": 0,
+        "positions": 2
+      }
+    },
+    "my-zh/decode": {
+      "original96": {
+        "nmse": 0.03924345835067985,
+        "kl": 0.03944772133299593,
+        "argmax_mismatch": 1,
+        "positions": 16
+      },
+      "candidate96": {
+        "nmse": 0.03835107783153433,
+        "kl": 0.016960455460063407,
+        "argmax_mismatch": 0,
+        "positions": 16
+      }
+    },
+    "zh-en/prefill": {
+      "original96": {
+        "nmse": 0.037279572169650735,
+        "kl": 0.05792229556938207,
+        "argmax_mismatch": 0,
+        "positions": 2
+      },
+      "candidate96": {
+        "nmse": 0.033098304342197966,
+        "kl": 0.022149670467904104,
+        "argmax_mismatch": 0,
+        "positions": 2
+      }
+    },
+    "zh-en/decode": {
+      "original96": {
+        "nmse": 0.07285991097745838,
+        "kl": 0.01791854528668063,
+        "argmax_mismatch": 0,
+        "positions": 16
+      },
+      "candidate96": {
+        "nmse": 0.07075933163472566,
+        "kl": 0.023458225234235203,
+        "argmax_mismatch": 1,
+        "positions": 16
+      }
+    },
+    "en-zh/prefill": {
+      "original96": {
+        "nmse": 0.017967039726745467,
+        "kl": 0.007138833537040222,
+        "argmax_mismatch": 0,
+        "positions": 2
+      },
+      "candidate96": {
+        "nmse": 0.01933961973239439,
+        "kl": 0.0062646159945699805,
+        "argmax_mismatch": 0,
+        "positions": 2
+      }
+    },
+    "en-zh/decode": {
+      "original96": {
+        "nmse": 0.03184390041269316,
+        "kl": 0.007540191531004682,
+        "argmax_mismatch": 1,
+        "positions": 16
+      },
+      "candidate96": {
+        "nmse": 0.03424091204680454,
+        "kl": 0.00730699110002502,
+        "argmax_mismatch": 1,
+        "positions": 16
+      }
+    },
+    "en-my/prefill": {
+      "original96": {
+        "nmse": 0.02085656698858309,
+        "kl": 0.0074250647373540705,
+        "argmax_mismatch": 0,
+        "positions": 2
+      },
+      "candidate96": {
+        "nmse": 0.023024288799913407,
+        "kl": 0.00786530852066084,
+        "argmax_mismatch": 0,
+        "positions": 2
+      }
+    },
+    "en-my/decode": {
+      "original96": {
+        "nmse": 0.02090864464282195,
+        "kl": 0.000328785965981837,
+        "argmax_mismatch": 0,
+        "positions": 16
+      },
+      "candidate96": {
+        "nmse": 0.022849546847353214,
+        "kl": 0.004072972732849355,
+        "argmax_mismatch": 0,
+        "positions": 16
+      }
+    },
+    "my-en/prefill": {
+      "original96": {
+        "nmse": 0.09834437773655348,
+        "kl": 0.6509409090141667,
+        "argmax_mismatch": 0,
+        "positions": 2
+      },
+      "candidate96": {
+        "nmse": 0.09511079476077314,
+        "kl": 0.760610575690169,
+        "argmax_mismatch": 0,
+        "positions": 2
+      }
+    },
+    "my-en/decode": {
+      "original96": {
+        "nmse": 0.008131912418200602,
+        "kl": 0.02661387982009664,
+        "argmax_mismatch": 0,
+        "positions": 16
+      },
+      "candidate96": {
+        "nmse": 0.007276506111335387,
+        "kl": 0.028183842964733752,
+        "argmax_mismatch": 0,
+        "positions": 16
+      }
+    }
+  }
+}

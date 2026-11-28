@@ -1,0 +1,54 @@
+{
+  "status": "R23H_PARETO_ROBUST_FIT_PROXY_CANDIDATES_NOT_ADMISSION",
+  "source_solver_commit": "5f8b20090e1887e2461f1523e9f9afbc5a32e6b1",
+  "source_solver_sha256": "7e2cfeb9699ae042493ff25a0151d1b529439cb920e1d0620e3c323e0c0dd385",
+  "nilar_job": "job_01M8EP6QZT00JYMG6TSRJ98C8Y",
+  "full_report_sha256": "df87768617f17ed7c2c6756400a3ebb36c51269867659c3481a49445dec2bc98",
+  "screen_input_sha256": "cbdc65097cce87cfc6ddb8934604c690e744b9f3d8f7f52b3708bf035c20fa2f",
+  "constraints": 434,
+  "candidates": [
+    {
+      "name": "all8",
+      "swaps": 8,
+      "mask": "1f7402ae0fb540c86ace21914b45ea0c42a113e5f38072a2d3f86795ee8ad70b",
+      "primary_gain": 0.061285664583315094,
+      "min_fold_gain": 0.050368593562043096
+    },
+    {
+      "name": "all10",
+      "swaps": 10,
+      "mask": "a9274a240cb1e990c77b110b9a6231e0ae1c905849a2b7e9295f795bd3a81fe2",
+      "primary_gain": 0.06317968619164172,
+      "min_fold_gain": 0.05283494532149647
+    },
+    {
+      "name": "all12",
+      "swaps": 12,
+      "mask": "c5e9461e6fd95957681f5db63bd6b4b88004cfe69730acdf573d8d3c82a1dbd5",
+      "primary_gain": 0.0740220652800211,
+      "min_fold_gain": 0.06239834451573098
+    },
+    {
+      "name": "all14",
+      "swaps": 14,
+      "mask": "63992b12070403a7a0baa86a9259a05977b178f8530de94a00ac318f64b66f6b",
+      "primary_gain": 0.07619818833916334,
+      "min_fold_gain": 0.06462603354306341
+    },
+    {
+      "name": "primary4_10",
+      "swaps": 10,
+      "mask": "287819c936115bc0963e475487423ce09718d5ad970f5d4e927fd116d8f6df96",
+      "primary_gain": 0.0948452396178739,
+      "min_fold_gain": 0.08262483843904501
+    },
+    {
+      "name": "primary4_14",
+      "swaps": 14,
+      "mask": "6e7038b2a793bf4a27dd814d73e1efb543ee906c077d6eac27d7ace5c493cc17",
+      "primary_gain": 0.11871435343406929,
+      "min_fold_gain": 0.10088626360217577
+    }
+  ],
+  "limitations": "Fit-only linear proxy. No model output, no holdout, no real translation, no fresh admission. Masks are candidates only."
+}

@@ -1,0 +1,58 @@
+{
+  "archive_sha256": "f0f9eac1495f921e9179a15597d5c5665e3d0f77ae1baf401958f1021c17c436",
+  "checks": [
+    "exact plan and source pins",
+    "three candidate mask receipt, Git blob, and 47x96 shape",
+    "actual changed-layer inventory 40/42",
+    "8 frozen zh-my Fit rows and Holdout exclusion",
+    "teacher logits baseline and per-row receipt hashes",
+    "original96/all8/all10 historical replay",
+    "R23G historical replay",
+    "independent aggregate metric and candidate-gate recomputation",
+    "CPU-only preflight, all eight capture receipts, preserved aggregation failure, no-overwrite retry, and independently finalized report binding"
+  ],
+  "decision": "no candidate passes the prefill gate; do not advance any of these masks to primary Fit propagation",
+  "eligible_for_primary_fit_only": [],
+  "metrics": {
+    "all10": {
+      "argmax_mismatch": 0,
+      "kl": 0.06661245652640199,
+      "nmse": 0.040966354912662636
+    },
+    "all8": {
+      "argmax_mismatch": 0,
+      "kl": 0.0607164133369635,
+      "nmse": 0.04598051877840448
+    },
+    "original96": {
+      "argmax_mismatch": 0,
+      "kl": 0.07984518069504659,
+      "nmse": 0.04725533805377669
+    },
+    "r23g": {
+      "argmax_mismatch": 0,
+      "kl": 0.1552965070122628,
+      "nmse": 0.04474827075496432
+    },
+    "r23h_l40_l42_only": {
+      "argmax_mismatch": 0,
+      "kl": 0.07806163803805598,
+      "nmse": 0.047427973871649924
+    },
+    "r23h_l40_only": {
+      "argmax_mismatch": 0,
+      "kl": 0.07818374953769891,
+      "nmse": 0.04733694977282369
+    },
+    "r23h_l42_only": {
+      "argmax_mismatch": 0,
+      "kl": 0.07832358879210781,
+      "nmse": 0.04758357999889985
+    }
+  },
+  "plan_sha256": "6b04e24ef14bcd2c01a7843569b896e6d3c664446d3098eedf6f0d9fbfb18dfe",
+  "report_sha256": "58f396104cc5956223f8f069b2a4cde6ccfcdfd494b6c848a00a2eba328a027e",
+  "samples": 8,
+  "selected": null,
+  "status": "R23H_FACTORIAL2_PREFILL_RECOVERED_INDEPENDENT_RECEIPT_REPLAY_PASS"
+}

@@ -1,0 +1,177 @@
+{
+  "status": "R23H_LAYER38_SINGLE_SWAP_BIDIRECTIONAL_PREFILL_COMPLETE_NOT_FRESH_ADMISSION",
+  "plan_sha256": "5fc0b81795bc93e8bf416ee22367c25750149ac191e53b5e5dc40ec4e54bc384",
+  "report_sha256": "8deb598e4cfebb4c5f275fe250e9cb6fb075d9a9f0aa19366e7f773c0b2590a3",
+  "samples": 16,
+  "directions": {
+    "zh-my": 8,
+    "my-zh": 8
+  },
+  "teacher": "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94",
+  "baselines": [
+    "original96",
+    "stable96",
+    "r23g"
+  ],
+  "candidate_swaps": [
+    {
+      "name": "l38_swap_41_to_89",
+      "removed_expert": 41,
+      "added_expert": 89
+    },
+    {
+      "name": "l38_swap_41_to_123",
+      "removed_expert": 41,
+      "added_expert": 123
+    },
+    {
+      "name": "l38_swap_43_to_89",
+      "removed_expert": 43,
+      "added_expert": 89
+    },
+    {
+      "name": "l38_swap_43_to_123",
+      "removed_expert": 43,
+      "added_expert": 123
+    }
+  ],
+  "stable96_changed_layers_vs_original96": 42,
+  "r23g_changed_layers_vs_stable96": [
+    38
+  ],
+  "r23g_layer38_removed_experts": [
+    41,
+    43
+  ],
+  "r23g_layer38_added_experts": [
+    89,
+    123
+  ],
+  "metrics": {
+    "original96": {
+      "kl": 0.3109648701129498,
+      "nmse": 0.07528881730898543,
+      "argmax_mismatch": 1
+    },
+    "stable96": {
+      "kl": 0.2915745765114976,
+      "nmse": 0.05731374972175784,
+      "argmax_mismatch": 0
+    },
+    "r23g": {
+      "kl": 0.30113133961104566,
+      "nmse": 0.057432965767492405,
+      "argmax_mismatch": 0
+    },
+    "l38_swap_41_to_89": {
+      "kl": 0.2981936097750047,
+      "nmse": 0.057909186842968655,
+      "argmax_mismatch": 0
+    },
+    "l38_swap_41_to_123": {
+      "kl": 0.29536916392492546,
+      "nmse": 0.057831705825296245,
+      "argmax_mismatch": 0
+    },
+    "l38_swap_43_to_89": {
+      "kl": 0.30053037798683085,
+      "nmse": 0.05737504969854917,
+      "argmax_mismatch": 0
+    },
+    "l38_swap_43_to_123": {
+      "kl": 0.29668647448339663,
+      "nmse": 0.05707593764611602,
+      "argmax_mismatch": 0
+    }
+  },
+  "by_direction": {
+    "zh-my": {
+      "original96": {
+        "kl": 0.07984518069504659,
+        "nmse": 0.04725533805377669,
+        "argmax_mismatch": 0
+      },
+      "stable96": {
+        "kl": 0.14487300408843892,
+        "nmse": 0.045390284209487396,
+        "argmax_mismatch": 0
+      },
+      "r23g": {
+        "kl": 0.1552965070122628,
+        "nmse": 0.04474827075496432,
+        "argmax_mismatch": 0
+      },
+      "l38_swap_41_to_89": {
+        "kl": 0.14797397995956188,
+        "nmse": 0.04580376957926777,
+        "argmax_mismatch": 0
+      },
+      "l38_swap_41_to_123": {
+        "kl": 0.1477034445152224,
+        "nmse": 0.045863309072693335,
+        "argmax_mismatch": 0
+      },
+      "l38_swap_43_to_89": {
+        "kl": 0.1558495293218547,
+        "nmse": 0.04499462659171525,
+        "argmax_mismatch": 0
+      },
+      "l38_swap_43_to_123": {
+        "kl": 0.14900929019804213,
+        "nmse": 0.044831223126272836,
+        "argmax_mismatch": 0
+      }
+    },
+    "my-zh": {
+      "original96": {
+        "kl": 0.5420845595308531,
+        "nmse": 0.10332229656419416,
+        "argmax_mismatch": 1
+      },
+      "stable96": {
+        "kl": 0.4382761489345563,
+        "nmse": 0.06923721523402827,
+        "argmax_mismatch": 0
+      },
+      "r23g": {
+        "kl": 0.4469661722098285,
+        "nmse": 0.07011766078002049,
+        "argmax_mismatch": 0
+      },
+      "l38_swap_41_to_89": {
+        "kl": 0.44841323959044743,
+        "nmse": 0.07001460410666954,
+        "argmax_mismatch": 0
+      },
+      "l38_swap_41_to_123": {
+        "kl": 0.4430348833346285,
+        "nmse": 0.06980010257789915,
+        "argmax_mismatch": 0
+      },
+      "l38_swap_43_to_89": {
+        "kl": 0.44521122665180696,
+        "nmse": 0.06975547280538309,
+        "argmax_mismatch": 0
+      },
+      "l38_swap_43_to_123": {
+        "kl": 0.44436365876875117,
+        "nmse": 0.0693206521659592,
+        "argmax_mismatch": 0
+      }
+    }
+  },
+  "eligible_for_full_fit_propagation_only": [],
+  "selected": null,
+  "execution": {
+    "host": "V100 server",
+    "mode": "CPU mmap",
+    "threads": 8,
+    "cuda_enabled": false,
+    "receipts": 16,
+    "teacher_hash_checks": 16,
+    "exit_code": 0,
+    "stderr_bytes": 0
+  },
+  "limits": "Fixed Fit Prefill only. No Decode, Fresh, Holdout, free-running translation, product admission, physical model build, or model publication.",
+  "decision": "Reject all four one-expert swaps. Each zh-my KL is worse than Original96. my-zh KL improves slightly for some swaps against R23G, but cannot compensate for zh-my regression. Do not propagate."
+}

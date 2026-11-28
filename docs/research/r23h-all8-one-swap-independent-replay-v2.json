@@ -1,0 +1,322 @@
+{
+  "archive_sha256": "da375b47a34a1ccc876c45b3d8de2fa1428ac8d51e14ec0409dcdb0f28cfeb8f",
+  "by_direction": {
+    "my-zh": {
+      "all8": {
+        "argmax_mismatch": 1,
+        "kl": 0.5360754643266832,
+        "nmse": 0.08696882407153465
+      },
+      "l10_remove100_add42": {
+        "argmax_mismatch": 1,
+        "kl": 0.5472801788724028,
+        "nmse": 0.08362711097361165
+      },
+      "l10_remove100_add95": {
+        "argmax_mismatch": 1,
+        "kl": 0.5800794284566712,
+        "nmse": 0.08305836115183167
+      },
+      "l10_remove78_add42": {
+        "argmax_mismatch": 0,
+        "kl": 0.5944576204508699,
+        "nmse": 0.08403040778349216
+      },
+      "l10_remove78_add95": {
+        "argmax_mismatch": 1,
+        "kl": 0.5836738127620908,
+        "nmse": 0.08838793003658325
+      },
+      "l15_remove4_add6": {
+        "argmax_mismatch": 0,
+        "kl": 0.5984507077024911,
+        "nmse": 0.08341690944223393
+      },
+      "l15_remove4_add64": {
+        "argmax_mismatch": 1,
+        "kl": 0.5270539775015618,
+        "nmse": 0.08062764779251519
+      },
+      "l15_remove71_add6": {
+        "argmax_mismatch": 1,
+        "kl": 0.5626927542724155,
+        "nmse": 0.08716638270751635
+      },
+      "l15_remove71_add64": {
+        "argmax_mismatch": 1,
+        "kl": 0.5635409463023975,
+        "nmse": 0.08140591897375607
+      },
+      "l40_remove58_add13": {
+        "argmax_mismatch": 1,
+        "kl": 0.5416871032261741,
+        "nmse": 0.08696898426023075
+      },
+      "l40_remove58_add84": {
+        "argmax_mismatch": 1,
+        "kl": 0.5525234977843498,
+        "nmse": 0.08666264048366204
+      },
+      "l40_remove62_add13": {
+        "argmax_mismatch": 1,
+        "kl": 0.5329861674729328,
+        "nmse": 0.08715127135823167
+      },
+      "l40_remove62_add84": {
+        "argmax_mismatch": 1,
+        "kl": 0.5379906386648577,
+        "nmse": 0.08646660621311812
+      },
+      "l42_remove126_add120": {
+        "argmax_mismatch": 1,
+        "kl": 0.5278566414121144,
+        "nmse": 0.08742721679262364
+      },
+      "l42_remove126_add47": {
+        "argmax_mismatch": 1,
+        "kl": 0.5271912765326993,
+        "nmse": 0.08778213501137586
+      },
+      "l42_remove63_add120": {
+        "argmax_mismatch": 1,
+        "kl": 0.5334413120781922,
+        "nmse": 0.0869590282959833
+      },
+      "l42_remove63_add47": {
+        "argmax_mismatch": 1,
+        "kl": 0.5358001648257045,
+        "nmse": 0.08700043512701783
+      },
+      "original96": {
+        "argmax_mismatch": 1,
+        "kl": 0.5420845595308531,
+        "nmse": 0.10332229656419416
+      },
+      "r23g": {
+        "argmax_mismatch": 0,
+        "kl": 0.4469661722098285,
+        "nmse": 0.07011766078002049
+      }
+    },
+    "zh-my": {
+      "all8": {
+        "argmax_mismatch": 0,
+        "kl": 0.0607164133369635,
+        "nmse": 0.04598051877840448
+      },
+      "l10_remove100_add42": {
+        "argmax_mismatch": 0,
+        "kl": 0.06975081465790309,
+        "nmse": 0.04607391502174939
+      },
+      "l10_remove100_add95": {
+        "argmax_mismatch": 0,
+        "kl": 0.08883690534622941,
+        "nmse": 0.04670847835164237
+      },
+      "l10_remove78_add42": {
+        "argmax_mismatch": 0,
+        "kl": 0.06475976596673752,
+        "nmse": 0.046696543425786656
+      },
+      "l10_remove78_add95": {
+        "argmax_mismatch": 0,
+        "kl": 0.0844198043510158,
+        "nmse": 0.04555400784310327
+      },
+      "l15_remove4_add6": {
+        "argmax_mismatch": 0,
+        "kl": 0.06725428114081465,
+        "nmse": 0.04754801917720299
+      },
+      "l15_remove4_add64": {
+        "argmax_mismatch": 0,
+        "kl": 0.06394684706789132,
+        "nmse": 0.04757889889190539
+      },
+      "l15_remove71_add6": {
+        "argmax_mismatch": 0,
+        "kl": 0.06346824209912572,
+        "nmse": 0.04983728148540641
+      },
+      "l15_remove71_add64": {
+        "argmax_mismatch": 0,
+        "kl": 0.06343415662451518,
+        "nmse": 0.046557319593567494
+      },
+      "l40_remove58_add13": {
+        "argmax_mismatch": 0,
+        "kl": 0.06633213708287351,
+        "nmse": 0.04756525027730217
+      },
+      "l40_remove58_add84": {
+        "argmax_mismatch": 0,
+        "kl": 0.06083129499320881,
+        "nmse": 0.04559853120749205
+      },
+      "l40_remove62_add13": {
+        "argmax_mismatch": 0,
+        "kl": 0.06834103050233421,
+        "nmse": 0.047412616753615106
+      },
+      "l40_remove62_add84": {
+        "argmax_mismatch": 0,
+        "kl": 0.0634834272466893,
+        "nmse": 0.047156986999606444
+      },
+      "l42_remove126_add120": {
+        "argmax_mismatch": 0,
+        "kl": 0.06063989267852392,
+        "nmse": 0.04613811964300423
+      },
+      "l42_remove126_add47": {
+        "argmax_mismatch": 0,
+        "kl": 0.06054650220733103,
+        "nmse": 0.045888845301115
+      },
+      "l42_remove63_add120": {
+        "argmax_mismatch": 0,
+        "kl": 0.06001153627143916,
+        "nmse": 0.045971445471350264
+      },
+      "l42_remove63_add47": {
+        "argmax_mismatch": 0,
+        "kl": 0.06136006275609189,
+        "nmse": 0.045899163975926846
+      },
+      "original96": {
+        "argmax_mismatch": 0,
+        "kl": 0.07984518069504659,
+        "nmse": 0.04725533805377669
+      },
+      "r23g": {
+        "argmax_mismatch": 0,
+        "kl": 0.1552965070122628,
+        "nmse": 0.04474827075496432
+      }
+    }
+  },
+  "candidate_count": 16,
+  "checks": [
+    "archive SHA, 51-file inventory, regular-file and path-safety validation",
+    "exact runner/driver/collector/original/mask/inventory source pins",
+    "47x96 Original96, all8 and R23G masks; exact four changed-layer deltas",
+    "all 16 candidate masks independently reconstructed and hash-pinned",
+    "balanced 16-row Fit inventory, Holdout exclusion and corpus prompt identity",
+    "previous factorial plan/report/receipts and exact teacher identity",
+    "16 current teacher-logit hashes, receipt hashes, mask bindings and event order",
+    "historical Original96 and R23G per-row logits/metrics exact replay",
+    "independent overall/directional aggregates and candidate gate recomputation",
+    "clean process exit, empty stderr and terminal report binding"
+  ],
+  "decision": "Prefill-only. No Decode/Fresh/Holdout or product admission is implied.",
+  "directions": {
+    "my-zh": 8,
+    "zh-my": 8
+  },
+  "eligible_for_primary_fit_only": [
+    "l42_remove63_add120"
+  ],
+  "metrics": {
+    "all8": {
+      "argmax_mismatch": 1,
+      "kl": 0.29839593883182336,
+      "nmse": 0.06647467142496956
+    },
+    "l10_remove100_add42": {
+      "argmax_mismatch": 1,
+      "kl": 0.30851549676515294,
+      "nmse": 0.06485051299768052
+    },
+    "l10_remove100_add95": {
+      "argmax_mismatch": 1,
+      "kl": 0.33445816690145025,
+      "nmse": 0.06488341975173702
+    },
+    "l10_remove78_add42": {
+      "argmax_mismatch": 0,
+      "kl": 0.3296086932088037,
+      "nmse": 0.06536347560463941
+    },
+    "l10_remove78_add95": {
+      "argmax_mismatch": 1,
+      "kl": 0.33404680855655333,
+      "nmse": 0.06697096893984326
+    },
+    "l15_remove4_add6": {
+      "argmax_mismatch": 0,
+      "kl": 0.3328524944216529,
+      "nmse": 0.06548246430971846
+    },
+    "l15_remove4_add64": {
+      "argmax_mismatch": 1,
+      "kl": 0.2955004122847265,
+      "nmse": 0.06410327334221029
+    },
+    "l15_remove71_add6": {
+      "argmax_mismatch": 1,
+      "kl": 0.3130804981857706,
+      "nmse": 0.06850183209646138
+    },
+    "l15_remove71_add64": {
+      "argmax_mismatch": 1,
+      "kl": 0.31348755146345636,
+      "nmse": 0.06398161928366178
+    },
+    "l40_remove58_add13": {
+      "argmax_mismatch": 1,
+      "kl": 0.3040096201545238,
+      "nmse": 0.06726711726876645
+    },
+    "l40_remove58_add84": {
+      "argmax_mismatch": 1,
+      "kl": 0.30667739638877933,
+      "nmse": 0.06613058584557704
+    },
+    "l40_remove62_add13": {
+      "argmax_mismatch": 1,
+      "kl": 0.3006635989876335,
+      "nmse": 0.06728194405592339
+    },
+    "l40_remove62_add84": {
+      "argmax_mismatch": 1,
+      "kl": 0.30073703295577353,
+      "nmse": 0.06681179660636229
+    },
+    "l42_remove126_add120": {
+      "argmax_mismatch": 1,
+      "kl": 0.2942482670453192,
+      "nmse": 0.06678266821781394
+    },
+    "l42_remove126_add47": {
+      "argmax_mismatch": 1,
+      "kl": 0.29386888937001515,
+      "nmse": 0.06683549015624543
+    },
+    "l42_remove63_add120": {
+      "argmax_mismatch": 1,
+      "kl": 0.2967264241748157,
+      "nmse": 0.06646523688366678
+    },
+    "l42_remove63_add47": {
+      "argmax_mismatch": 1,
+      "kl": 0.29858011379089816,
+      "nmse": 0.06644979955147234
+    },
+    "original96": {
+      "argmax_mismatch": 1,
+      "kl": 0.3109648701129498,
+      "nmse": 0.07528881730898543
+    },
+    "r23g": {
+      "argmax_mismatch": 0,
+      "kl": 0.30113133961104566,
+      "nmse": 0.057432965767492405
+    }
+  },
+  "plan_sha256": "a80858f97ff201b3cf62f25c779ab0786bb6d0a60973204c6fc1f3dd1f8c700b",
+  "report_sha256": "45822586671bc7425bf5cb978944ce2dab2eda357d2f1063f15f24b88cddaa1f",
+  "samples": 16,
+  "selected": "l42_remove63_add120",
+  "status": "R23H_ALL8_ONE_SWAP_INDEPENDENT_RECEIPT_REPLAY_PASS"
+}

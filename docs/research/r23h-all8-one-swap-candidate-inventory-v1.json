@@ -1,0 +1,179 @@
+{
+  "status": "R23H_ALL8_ONE_SWAP_CANDIDATE_INVENTORY_FROZEN",
+  "base_mask_sha256": "1f7402ae0fb540c86ace21914b45ea0c42a113e5f38072a2d3f86795ee8ad70b",
+  "original96_mask_sha256": "23d615b5f6e33af73c008729a34b3a0dbe9713508a5fd299b72ee9559180e8e7",
+  "source_mask_blobs": {
+    "all8_revert10": "faa4d6146a3df4192e913e2702a926afa3fb095d",
+    "all8_revert15": "044a6f395d779489462df00a664cf7876732ab06",
+    "original96": "d8bcafe0fe1d8c6bacd0a425dfde57890b18f1ed"
+  },
+  "layers": [
+    10,
+    15,
+    40,
+    42
+  ],
+  "layer_changes": {
+    "10": {
+      "removed_from_original96": [
+        42,
+        95
+      ],
+      "added_by_all8": [
+        78,
+        100
+      ]
+    },
+    "15": {
+      "removed_from_original96": [
+        6,
+        64
+      ],
+      "added_by_all8": [
+        4,
+        71
+      ]
+    },
+    "40": {
+      "removed_from_original96": [
+        13,
+        84
+      ],
+      "added_by_all8": [
+        58,
+        62
+      ]
+    },
+    "42": {
+      "removed_from_original96": [
+        47,
+        120
+      ],
+      "added_by_all8": [
+        63,
+        126
+      ]
+    }
+  },
+  "candidates": [
+    {
+      "name": "l10_remove78_add42",
+      "layer": 10,
+      "removed_expert": 78,
+      "restored_expert": 42,
+      "mask_sha256": "8c912f51a6c062df5fc11f7e40ffe1d67cfe8a3c59d4851223b913a4a6814c5f"
+    },
+    {
+      "name": "l10_remove78_add95",
+      "layer": 10,
+      "removed_expert": 78,
+      "restored_expert": 95,
+      "mask_sha256": "0570832a4d78065d0fe7101060a610a88ca5506ee9db53676eac0af36a0a4e2c"
+    },
+    {
+      "name": "l10_remove100_add42",
+      "layer": 10,
+      "removed_expert": 100,
+      "restored_expert": 42,
+      "mask_sha256": "4f3b0ca36b5c467077d38553fa537e92306be5af7e194a672864b1e78a3b9fc2"
+    },
+    {
+      "name": "l10_remove100_add95",
+      "layer": 10,
+      "removed_expert": 100,
+      "restored_expert": 95,
+      "mask_sha256": "4971598895f224779d959fd9053ce0f08df39d26da7758f98f09e8c200f482c2"
+    },
+    {
+      "name": "l15_remove4_add6",
+      "layer": 15,
+      "removed_expert": 4,
+      "restored_expert": 6,
+      "mask_sha256": "11912784803f905dfaef7b2c68868e65cc97dfcbb7d924128207965153716cf3"
+    },
+    {
+      "name": "l15_remove4_add64",
+      "layer": 15,
+      "removed_expert": 4,
+      "restored_expert": 64,
+      "mask_sha256": "7a00b8cf336a19f7952e160a852d3a6ad0f305c5753ef048ba4b038f15306987"
+    },
+    {
+      "name": "l15_remove71_add6",
+      "layer": 15,
+      "removed_expert": 71,
+      "restored_expert": 6,
+      "mask_sha256": "dab4712e1d892efff9aa60609bd3ea8ceb5ec354b9ecfc34e190bc2dda086a18"
+    },
+    {
+      "name": "l15_remove71_add64",
+      "layer": 15,
+      "removed_expert": 71,
+      "restored_expert": 64,
+      "mask_sha256": "08db33be3be7a7341ebca73ff9b53dab2e7013ee8508b7b5f26950dbbe149888"
+    },
+    {
+      "name": "l40_remove58_add13",
+      "layer": 40,
+      "removed_expert": 58,
+      "restored_expert": 13,
+      "mask_sha256": "95f2252c6551cee1550ee3724e7686eef52e72ee6cf11b9b638c87d39d4f44d2"
+    },
+    {
+      "name": "l40_remove58_add84",
+      "layer": 40,
+      "removed_expert": 58,
+      "restored_expert": 84,
+      "mask_sha256": "4065998b5ff62fb1aba7575406a5ab499d93dbfd72ca9cc0a94f21605b723362"
+    },
+    {
+      "name": "l40_remove62_add13",
+      "layer": 40,
+      "removed_expert": 62,
+      "restored_expert": 13,
+      "mask_sha256": "3191fb5c83d7c1fcbc4de951c5fe532c1ae501000fee77004e5adf9a83e4c397"
+    },
+    {
+      "name": "l40_remove62_add84",
+      "layer": 40,
+      "removed_expert": 62,
+      "restored_expert": 84,
+      "mask_sha256": "35a16ae576669ca7a21df4e8298bf0f37ff7de2b99dce9806e02b7a8a2ca7bff"
+    },
+    {
+      "name": "l42_remove63_add47",
+      "layer": 42,
+      "removed_expert": 63,
+      "restored_expert": 47,
+      "mask_sha256": "43b49a32fc3ab4988977749a7fe206322fbbb0ba274076e34fb6a32f8016a10e"
+    },
+    {
+      "name": "l42_remove63_add120",
+      "layer": 42,
+      "removed_expert": 63,
+      "restored_expert": 120,
+      "mask_sha256": "f5d93021de52c065e0dddede1045d6410e0cbf6f645649731d1580626e66a6dc"
+    },
+    {
+      "name": "l42_remove126_add47",
+      "layer": 42,
+      "removed_expert": 126,
+      "restored_expert": 47,
+      "mask_sha256": "9d68fadc593bfac472a14fdaa2a49db645e2ad8d1c9ed846e6de012ad93a06ce"
+    },
+    {
+      "name": "l42_remove126_add120",
+      "layer": 42,
+      "removed_expert": 126,
+      "restored_expert": 120,
+      "mask_sha256": "29e54f77ff4797225fb7f6d0976a48cf4273253733c80af160b5458401db7ba7"
+    }
+  ],
+  "constraints": {
+    "experts_per_layer": 96,
+    "total_layers": 47,
+    "candidate_difference_from_all8": "exactly one removed all8 expert and one restored original96 expert in exactly one listed layer",
+    "holdout": "FORBIDDEN",
+    "scope": "candidate inventory only; not model-quality admission"
+  }
+}

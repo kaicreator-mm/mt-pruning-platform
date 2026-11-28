@@ -1,0 +1,22 @@
+{
+  "archive_bytes": 218720,
+  "archive_files": 51,
+  "archive_sha256": "da375b47a34a1ccc876c45b3d8de2fa1428ac8d51e14ec0409dcdb0f28cfeb8f",
+  "candidate_count": 16,
+  "decision": "Prefill-only. Advance no candidate unless independently replayed bidirectional gate passes.",
+  "directions": {
+    "my-zh": 8,
+    "zh-my": 8
+  },
+  "eligible_for_primary_fit_only": [
+    "l42_remove63_add120"
+  ],
+  "plan_sha256": "a80858f97ff201b3cf62f25c779ab0786bb6d0a60973204c6fc1f3dd1f8c700b",
+  "primary_fit_propagation_started": false,
+  "report_sha256": "45822586671bc7425bf5cb978944ce2dab2eda357d2f1063f15f24b88cddaa1f",
+  "runner_git_blob": "0fc170a1861340153663bc0fdd8b9f65f0fc336a",
+  "samples": 16,
+  "selected": "l42_remove63_add120",
+  "status": "R23H_ALL8_ONE_SWAP_BIDIRECTIONAL_PREFILL_COMPLETE_NOT_FRESH_ADMISSION",
+  "teacher": "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94"
+}

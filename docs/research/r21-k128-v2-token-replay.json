@@ -1,0 +1,882 @@
+{
+  "job": "job_01M8CSETQH00KECM8JQ3CQY9VA",
+  "exit_code": 0,
+  "failed_first_attempt": "job_01M8CSE544001XYGXJQ62GHE91 (incorrectly assumed single slot; corrected to no overlapping token streams)",
+  "status": "RAW_OUTPUT_TOKEN_REPLAY_PASS_NOT_QUALIFICATION",
+  "keep": 128,
+  "rows": 120,
+  "manifest_sha256": "b4fd031ae37e5fff2ac50d7cd7b098e5c2a7c4a11f23a7420c983a3eb80098d9",
+  "records_sha256": "2b977c4b18a697b24057b140f6c9ef3f7298ba0b959bdd1900822cd8e5d169db",
+  "server_log_snapshot_sha256": "384bb7f5b8f243ee3d716388a5e7bcba8eda26d47e1005330983232105c677f6",
+  "config_sha256": "0cfc80a5d92014b75bbc43de08ad7810928f743007ee9b049f6d13a1e1b4d832",
+  "raw_log_task_count": 120,
+  "slots": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "directions": {
+    "zh-my": 20,
+    "my-zh": 20,
+    "zh-en": 20,
+    "en-zh": 20,
+    "en-my": 20,
+    "my-en": 20
+  },
+  "totals": {
+    "raw_tokens": 10069,
+    "normalized_tokens": 9949,
+    "finish_eos": 120,
+    "server_truncated": 0,
+    "empty": 0
+  },
+  "notes": [],
+  "request_token_bindings": [
+    {
+      "id": "validation:zh-my:6",
+      "task": 0,
+      "token_sha256": "b4b6515bcfe64584cc834df8d15b9c9e2a0fb70b13f78806f35607960387ea65",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:25",
+      "task": 63,
+      "token_sha256": "6aa88b2864608c9d30a25f6f1804b18098ac2f07eea9a459611f8d00517353d8",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:27",
+      "task": 182,
+      "token_sha256": "25f9371e2b441e188a56b309c68a34ff81d4c1f52050f0009c86fd988d532722",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:30",
+      "task": 486,
+      "token_sha256": "aaaa37b3154bf4b6ef6193ca4fe8dc019a4a7d1264666ca8fdff3dd344199de4",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:32",
+      "task": 820,
+      "token_sha256": "2155bd124c030ff80440ad2a744e20c5f5124f1ab522f5a66ef4b4770f86874f",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:89",
+      "task": 1005,
+      "token_sha256": "22266f03c0f0a5467a4164380595376c9830483975485176b0eeb0d7aa227951",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:95",
+      "task": 1171,
+      "token_sha256": "bb00a0de48c3f082c53d433773c30d18d7c5113260f74220b8c2b30bc86e71b1",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:104",
+      "task": 1372,
+      "token_sha256": "c38ddfde4b9c2ced95e94d3b1a3c9743552355c2a9e41ebcc73094d7405e2eeb",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:114",
+      "task": 1493,
+      "token_sha256": "fe06f79872678a9e6681c6b5591f874a6412ef39eee9697e70f0a0ae83bbaa6f",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:142",
+      "task": 1748,
+      "token_sha256": "fcaccbef8bac69e318a343b4f052a0de581142741188d4580486f1a68d05ee9d",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:203",
+      "task": 1921,
+      "token_sha256": "a76b1ab6912cd7a81addb1a7ebe950d96a8984b9cac7ee7d18a3aebd5773aaea",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:223",
+      "task": 2264,
+      "token_sha256": "afee2f054126db38965326fb9cf72085ee4f7d297434ddf715d1872c581be98c",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:225",
+      "task": 2427,
+      "token_sha256": "aa8c469809a3d1f9db0b817c38dd125f105fe89b13946a37e9c12cfbcb100370",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:228",
+      "task": 2616,
+      "token_sha256": "8582a742139cc34205cae72b166d246b230b73982a69f9c22a3f36629e62a774",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:238",
+      "task": 2770,
+      "token_sha256": "ae5c724e705ae2641eff2a680b0e845a2267028d57e0c35607f18c14d4a8484d",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:250",
+      "task": 2938,
+      "token_sha256": "77a4f4a770115ded7aaae94666388af09806e31084b0af8e1ea3ad4f8532e161",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:281",
+      "task": 3173,
+      "token_sha256": "b2f9dae2116d6e0b227ba3aa0d4f9a0e7197853504603c7623f322c6d050d75d",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:284",
+      "task": 3315,
+      "token_sha256": "5c8f3044ed1620fccce37e9dd5167dc24013fdf3f70e7c2d5e712abefd7cfac1",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:429",
+      "task": 3418,
+      "token_sha256": "6eb45f7ed3df32782db45b556b2e2e725d096c5990ce96f7c69c288cfd8df679",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-my:432",
+      "task": 3605,
+      "token_sha256": "c4784049a6e40fab95d7842038839885ba15fa890dedeb1d61fcc1e981ffb9ad",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:32",
+      "task": 3769,
+      "token_sha256": "c0de978d12623977ad52416c722cc3ba2afc2b612726fdc6b30fcbd2e14fc27c",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:57",
+      "task": 3797,
+      "token_sha256": "4d33240d821eedc9842b42d37f57fcc75f0faccbf560cf9ea8cf0a05aa2fc39f",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:67",
+      "task": 3844,
+      "token_sha256": "40014bfad1e2e7de6a44e28a5d840a5a55b1b202cdfc024fe022a0ff2a67ba49",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:142",
+      "task": 3877,
+      "token_sha256": "e28a969dd94c9cd1600757dd873e8fddf460b357c33e29c8f555d590581ca28e",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:146",
+      "task": 3901,
+      "token_sha256": "bb959a03b2aa443c27b9be14f078fbb455ee5f39d333a060baec4f59bfd7d384",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:216",
+      "task": 3924,
+      "token_sha256": "4eb918659b3f0e22752dcc03447b64c4d122e545ba54a46485391c34bf5edbff",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:217",
+      "task": 3940,
+      "token_sha256": "25c5ecd0245279dbf53d3b28d53ecd5a6945f0a0324b8bd8da08393ff51f9829",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:234",
+      "task": 3966,
+      "token_sha256": "b28124e483591d30fabbf3a4092e87a902966d84e92c14ffd386e5b60805ffb1",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:252",
+      "task": 4020,
+      "token_sha256": "403316e34e1e0c0795b4795d0db57ca5c0bd01f385aa3355d120775b4181ebbd",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:269",
+      "task": 4048,
+      "token_sha256": "e22dc5598dca460e7eb8a7d20ab10c12402980e7ee271dfc124b3edcf18da0b6",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:271",
+      "task": 4080,
+      "token_sha256": "f45e58cb47ce508cbc3d85227d161d27a89d7d9c9c31650b7993bdf152e3aeb4",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:274",
+      "task": 4118,
+      "token_sha256": "6f34ed411a611df8cca1492114a547259c7fa6c66a56af5226a90317e0e8e98c",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:322",
+      "task": 4155,
+      "token_sha256": "23861c8d5a3759bf4471841aca1c9850049c71f6a4f2b12cd708703a9ff45fb9",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:323",
+      "task": 4188,
+      "token_sha256": "a59de0eaff9e0fb60e3ca9475086043c8e6ed0d18aa7820a972c098a0ff2cde5",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:370",
+      "task": 4226,
+      "token_sha256": "adf673954317492a138d9375d6406fe82bd3aea5708949c03ed26d98bf8716ab",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:405",
+      "task": 4260,
+      "token_sha256": "ee82b05e81861843b9833cad162cfb7ae2de67de917375ae2de3bf840e13e704",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:408",
+      "task": 4273,
+      "token_sha256": "b770e5c1323b5d8bff5742fd4f5643162dfd548860434af5476f830e05460236",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:410",
+      "task": 4296,
+      "token_sha256": "bcafae999d0d12d6f86dfa259741b8c40df5117203377122712bf11b96c748c4",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:438",
+      "task": 4316,
+      "token_sha256": "5acb9c7063dfc481ac697ea31181720899bb94783c9f859cfc89620398ee47d1",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-zh:469",
+      "task": 4337,
+      "token_sha256": "b6d4759142f2508612718bf87e1c9bc657fe77747c4c7b94b0ccdcc13194aa9c",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:6",
+      "task": 4360,
+      "token_sha256": "45423fbea2aa7305fb87a26f6c2e5da19f44d3c6b776ce18bcbe428a7c294427",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:25",
+      "task": 4372,
+      "token_sha256": "f372e1a1f53da0949101f1a4ec8c8acd04a28b423e0667479769ab87c5f27439",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:27",
+      "task": 4395,
+      "token_sha256": "90c96ec9580d748bca06d6eeca98a79f2e8c8b5cd43054150e2274943d65aed1",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:30",
+      "task": 4436,
+      "token_sha256": "b0f7522816f10050c182c4e5449d2ec3db00048d0129d849c62b6580a3f13db7",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:32",
+      "task": 4498,
+      "token_sha256": "e786cbe931f9ac8a90e1e7a141b831baf26108869445893859adfc3b262dc8c2",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:89",
+      "task": 4528,
+      "token_sha256": "b2863d748adcbaf0c830f9152e65e947eb215ddb4ccf0ed83ee7182300df1e74",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:95",
+      "task": 4560,
+      "token_sha256": "e56da7dc04b8df0fd291e9c06e860fadbd7e9aa231c84a3771c70a734eebb22c",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:104",
+      "task": 4583,
+      "token_sha256": "8874cbe06eeace6fcff64c0e1c5afa80d0a56082d855767f00bc0edc7edfff18",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:114",
+      "task": 4602,
+      "token_sha256": "2b368c678696d0e5c48fcfef5d1fcac224d05c26a19d655e0e2cf64ec51ef776",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:142",
+      "task": 4637,
+      "token_sha256": "f0240423e6d9c0983151c0c7b71ab4b370144c75f023c9a86ac56cd251f332a2",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:203",
+      "task": 4666,
+      "token_sha256": "d040cae945dd471bc954e1d2ccb1b60a21b6a312274a12209be18e40f4d5c2a3",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:223",
+      "task": 4716,
+      "token_sha256": "2239aa9fe89682531d276b71dfd8ca0ddd9be26ce2e9caf07fa85b18a8dcd32f",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:225",
+      "task": 4745,
+      "token_sha256": "44f5194b593118b878fae5e9176141c8265ab475d0da44b1905d3ee748265086",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:228",
+      "task": 4770,
+      "token_sha256": "ac228c5e6e4888dc6dc9e1f20043336371a906abda8bea087a29ed4e2b6ab50a",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:238",
+      "task": 4806,
+      "token_sha256": "0222aaf52588d181139eaee1d3b9e1a7d0d45d5f84fd4768d8a7b8a266ec62b0",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:250",
+      "task": 4827,
+      "token_sha256": "830d2eedb8cfa35666daaa60551f1d5227388f60f47ce2f6fd1852c455ade770",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:281",
+      "task": 4869,
+      "token_sha256": "93190d8d0af15a2a85b1b248c2d6688505d0cb2f8ab9b1fe14227c25b2366200",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:284",
+      "task": 4893,
+      "token_sha256": "3dd7c989e893fdf0d30391b804b468b76061a67de77ce8fe151d8e36d3057e1d",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:429",
+      "task": 4913,
+      "token_sha256": "e274085743a9b2132b25651721e3e9fcdb41b356811e6ec9c2164320bc6e01dc",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:zh-en:432",
+      "task": 4941,
+      "token_sha256": "18746f9012c33854f160c18f3457bf169b044ee1726dda0105d7e0e7bfea04f9",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:46",
+      "task": 4971,
+      "token_sha256": "0a93db39da2765089392897edb4e84e17cc0a924f22931d2053ea3c8010f22b7",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:71",
+      "task": 4996,
+      "token_sha256": "40bcaed09c9c8e7068a616aa073c691516dae0615064a88925c7bb3756806407",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:80",
+      "task": 5046,
+      "token_sha256": "c1098cd46547aa564d831328daf4966ea4c964f11b6dd62b54e6a346c1b38dd0",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:81",
+      "task": 5069,
+      "token_sha256": "9c734cfe2a816c5d97415c7788d117fc5a2001a27d1ff98e549684e08058facb",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:103",
+      "task": 5086,
+      "token_sha256": "68352146f58c9bdce19e1a3aebac2e77a7f65c07ecf49a95639b773687e9da9c",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:127",
+      "task": 5097,
+      "token_sha256": "99d913d000103a5b6f2786b8b557a05974dc97ad5a0defde05845f443307ba87",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:166",
+      "task": 5128,
+      "token_sha256": "ab75018bd4e440812d11b06f9f5cd85a063574e6f9c2b4fb93cd5954878581d6",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:196",
+      "task": 5155,
+      "token_sha256": "3831697fad98ab6354a4efe5aaa50f8a166992d7337c240d1f1a4ebb98e1b628",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:214",
+      "task": 5197,
+      "token_sha256": "6057c86100fb819355503786a1da0eaeba3bea5045da2915463c3a38d740d47a",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:233",
+      "task": 5230,
+      "token_sha256": "9809c5160e94b233a59b8be094dc11e9b20467cebd1d315ba9926b53e9198da4",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:238",
+      "task": 5246,
+      "token_sha256": "294d119c7486cfbd9eb4c35a5c2bbe48043bd268a1c22a46a852886b4d100a42",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:273",
+      "task": 5263,
+      "token_sha256": "f9d003a5b4b2c23119f58990ab4fed6118121545a86fc396965437b940f2d521",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:284",
+      "task": 5283,
+      "token_sha256": "16ebcbe8d6c7f3ec26822536cff0ea3ccc78b357243cacaa9085bc8aefe313ad",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:296",
+      "task": 5299,
+      "token_sha256": "abb299f41cf9fc8e24208c384f471f1c2ca2d6695dbbd249379334c9b63c0577",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:300",
+      "task": 5332,
+      "token_sha256": "26d60add96f3d4c76378496525b6538d987191e6a3629407e37bb7180d568b78",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:363",
+      "task": 5352,
+      "token_sha256": "58f3ef04356689f02340195e00d827d8ac98b3c9de31d25c06c8dfdb674c1970",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:370",
+      "task": 5379,
+      "token_sha256": "3d5eb483b17fbf00764239f92ed7affd83f6537cc03bbe831522938c0e8e8de6",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:373",
+      "task": 5409,
+      "token_sha256": "e57d20e11d58f7b6ada0ebfcb2b40ca521b639032b1e8990ed5989ffb9e51bf4",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:379",
+      "task": 5441,
+      "token_sha256": "47c7308aa6d7ff5b9ce4ef24502ccfb9d264e40dce28263a79c0d93ff761b75b",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-zh:387",
+      "task": 5457,
+      "token_sha256": "99cbc6f04ba01da2245412d3524bc3dd88e744163e23ed143157ae8e165916e0",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:46",
+      "task": 5479,
+      "token_sha256": "3f780409c28bbb2098e1541bc308aadfbeb249f7607064c363a21670f4f330e6",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:71",
+      "task": 5689,
+      "token_sha256": "c165897f7cd2b2df6b792c57dcea54ae7e3ef04a9670f1347e9a65b9de7c4bd7",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:80",
+      "task": 6031,
+      "token_sha256": "ae550ad82df52626183818904b96e34bb785c24b3ea374cba35b557c27c26d98",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:81",
+      "task": 6231,
+      "token_sha256": "c1f0b25a57c3728ec4eb1c060f044c1442a67f1cc4ed93d2eb4238ef526eddee",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:103",
+      "task": 6349,
+      "token_sha256": "8b3eeed2db78d13d33e345d62589875aab96887af49fec2fdc0fadb615d4780d",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:127",
+      "task": 6468,
+      "token_sha256": "08fe48912d34110228e19a47ededc62fb1ba4c0c171d174d5e42d181fd424d78",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:166",
+      "task": 6738,
+      "token_sha256": "7254b4b3892309126f18bf683751ed987c64d3ccff0f5a82d1b08879e745468f",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:196",
+      "task": 7003,
+      "token_sha256": "5f9b9cb1968937a93cde97dd71582684b9d5e571e308a70912e9e6d7b0edcd40",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:214",
+      "task": 7324,
+      "token_sha256": "745b69bf3895bdbced96a1aaefb3c889695426eecd03fa6d6dc3a6f36852bd18",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:233",
+      "task": 7559,
+      "token_sha256": "73b7a3dd6afd66da440aa1061e21d70251c573a0182e84e74afe12796b30e734",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:238",
+      "task": 7630,
+      "token_sha256": "1747cc2ec394dc350eaa3d3b5f40bd3dc100ea50c8d05de04edf65210cdaf24d",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:273",
+      "task": 7802,
+      "token_sha256": "3ab0ee12af0f9eb0f523a5f20083a3d69e78e10a52ed13424452e06ed81f7f4f",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:284",
+      "task": 7941,
+      "token_sha256": "67599832b5721dcc84d0f9863a60e12a686efbc6982b95f870fc242875b1f26b",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:296",
+      "task": 8043,
+      "token_sha256": "e1783d429a62a30771b5067409d16fa1beced86093ded0ceb1064fcdd968d874",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:300",
+      "task": 8353,
+      "token_sha256": "7d25b33ff84ffe54744b97f6dfdb68ff01bccb0e552c56b54b63672b6c06d2de",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:363",
+      "task": 8506,
+      "token_sha256": "ac9dc7ac02476b15d8d27fc12077e748e77790d45298231c316b4dea563d365f",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:370",
+      "task": 8722,
+      "token_sha256": "63429f10992bc2e12b072cfb1d958ea7105ab870ec353c3ee6c038d98752e7b6",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:373",
+      "task": 8950,
+      "token_sha256": "4d068c8c7d2c066c1b99b5cda76651510b2bfa45bd42278932d68ab1ef238cd3",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:379",
+      "task": 9238,
+      "token_sha256": "dd6ae53757e9543ee7e75bce786dad655c3ddff5227356b1fda03d5935fee9ff",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:en-my:387",
+      "task": 9357,
+      "token_sha256": "e943b50493033b27c966ef685e15ea838d79e13003d462b00d64e76a8fd963d6",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:32",
+      "task": 9528,
+      "token_sha256": "9ee97b56e5ed0000f6b5353ef6177367381a953302d6490dc10b00b66f8df98e",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:57",
+      "task": 9562,
+      "token_sha256": "181a13241e3c7a3642b206f41b0d59b296799926047fb89fcb35e4179de5d7b9",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:67",
+      "task": 9602,
+      "token_sha256": "715ca6944251ba07f051b67cb36a0c81c1808175269fb38bc348af0801a5e5bf",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:142",
+      "task": 9639,
+      "token_sha256": "97aee52c60f1926fceca7c966c2f91cb2491da9ac7f6ba59334fcd00dd4e391d",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:146",
+      "task": 9662,
+      "token_sha256": "b7f52b17c3e497b189bb69074f8c4132636428a991fecaef6975c3288929abd4",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:216",
+      "task": 9693,
+      "token_sha256": "39e1ff50abb570b1749cbfbbd78db555fc44b4cf7e7366ab9bf2c9e6b09dfd3a",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:217",
+      "task": 9713,
+      "token_sha256": "21de9f6766d31002dfe3407f0c269e4c8330434cb43155b56b281ab564f28499",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:234",
+      "task": 9739,
+      "token_sha256": "681d968e7286ea24be0d51d6966ef1fdcb95d1b868d7cb234e7ea3a1d5ae6e21",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:252",
+      "task": 9796,
+      "token_sha256": "1fc4b89556df183ed4d9ad7e22f6f91e72929e9d00a852218a189e2d5f76cba2",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:269",
+      "task": 9828,
+      "token_sha256": "db743c492c22a6a086cbe23915a5ce230fe467daaaf10a02fead4b788da3a990",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:271",
+      "task": 9859,
+      "token_sha256": "210b6b16cf3fee4ec5d76c4ecde066556c4e23f5dd56c47e3347422a6fb5c917",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:274",
+      "task": 9904,
+      "token_sha256": "857bb6dc72ed4915176b14007c08dbb82c499f5bb04f6bdd3bffb611675a8daf",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:322",
+      "task": 9940,
+      "token_sha256": "357f331f3e79b515190212f3c964c9b7675380ce7ee673ccb9260573c0c7b086",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:323",
+      "task": 9986,
+      "token_sha256": "8044912a3e1934599d68c69cd0ab5513853dac626dc373fcfa34c208355d817b",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:370",
+      "task": 10023,
+      "token_sha256": "44304738f5250fdbc37d7af970ea25dd4268c6c9be1ba20ebebfc79b13ac9826",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:405",
+      "task": 10072,
+      "token_sha256": "4f86a2f1957ff2c3131f0f978c19be2020c001703c9e4921b809b2e48eadbf8b",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:408",
+      "task": 10090,
+      "token_sha256": "fb4166a344385ceb1b228bccb3154d2381a2e6b9a4ba173fe45a304adf335fbf",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:410",
+      "task": 10117,
+      "token_sha256": "ca8359be1f7137903d5b0315e470016cec001376d251dd143947d0d4367cc4b9",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:438",
+      "task": 10142,
+      "token_sha256": "05268bc82fe83cbc732adcd79661f208c60fdcb5aada2f7af889b8b9426195e7",
+      "finish": "eos",
+      "server_truncated": 0
+    },
+    {
+      "id": "validation:my-en:469",
+      "task": 10165,
+      "token_sha256": "72f8c390a96c6837d841d10e2566e55465d47538c4d5cc1be485290ec882c2b4",
+      "finish": "eos",
+      "server_truncated": 0
+    }
+  ],
+  "limitations": [
+    "Independent raw log order/token replay only; sequential task order association, not a cryptographic request-ID binding.",
+    "Rendered prompt token equivalence and model full hash/quality/stock checks not completed.",
+    "Server truncated flag is distinct from generation length limit. EOS removed only for normalized count, raw tokens retained."
+  ]
+}

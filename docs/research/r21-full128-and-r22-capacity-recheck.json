@@ -1,0 +1,1469 @@
+{
+  "status": "ACTUAL_FULL128_PREFIX96_CAPACITY_READY",
+  "source_head": "f1449f70dc76de6655cad386baacc2de41774c04",
+  "native_prefix_audit": {
+    "job": "job_01M8DXJNVZ00RFK2TY6JSR0Q8V",
+    "exit_code": 0,
+    "result": {
+      "status": "INDEPENDENT_PREFIX_AUDIT_NOT_QUALIFICATION",
+      "receipts": {
+        "96": {
+          "pilot": {
+            "status": "PREFIX_VERIFIED_NOT_QUALIFICATION",
+            "complete": true,
+            "rows": 8,
+            "planned_rows": 8,
+            "unique": 6,
+            "journal_prefix_sha256": "136dddddb161f54accac65d101f82a54beea44af0462962dd623265440d130b9",
+            "admission_sha256": "463d3501fb12aa5051994692df1df5cc70c2c03870d2f14b143424dcc230a498",
+            "run_plan_sha256": "d7870175e8a45a54eed3010ea6402ec42e35f1329abcaaab3efe77e1598bb70b",
+            "master_log_snapshot_sha256": "4da43a4ad27dbfc12180e158b5bec0c4c9eb16347aa80567190006244554d2e0",
+            "matched_master_log_slices": 8,
+            "last_verified_master_byte": 1700470,
+            "totals": {
+              "rows": 8,
+              "eos": 8,
+              "length": 0,
+              "empty": 0,
+              "raw_tokens": 453,
+              "prompt_tokens": 799,
+              "prefill_ms": 31130.524,
+              "decode_ms": 50647.304000000004,
+              "wall_seconds": 82.13624696104671
+            },
+            "bindings": [
+              {
+                "id": "validation:en-my:103",
+                "task": 0,
+                "master_log_offset": 1157979,
+                "master_log_bytes": 126909,
+                "log_sha256": "1d58b3cbcce126d4db5608c98a6b286da3ba9d3f26324da4fedecdfb33c23e32",
+                "response_sha256": "317654b5a1912a30593d9d1fda1d78b9f41b03fda104ae7f1ca5f0448b04b814"
+              },
+              {
+                "id": "validation:en-zh:103",
+                "task": 115,
+                "master_log_offset": 1284888,
+                "master_log_bytes": 16766,
+                "log_sha256": "8c19909719d274814bc0493e17c87485d92b28f2ab215d5078b4ab06c9b75e44",
+                "response_sha256": "838d0b509764d9780e008cbd35ac81dd9aec56823363aa550708825af09cbc8f"
+              },
+              {
+                "id": "validation:my-en:142",
+                "task": 126,
+                "master_log_offset": 1301654,
+                "master_log_bytes": 31204,
+                "log_sha256": "e11f69abc47951ac589dcbce566cd1f930024e0bb07b2bc57dc8d4837042bdaf",
+                "response_sha256": "ed0249773adb0255d5a3c962ae3f3a34ca43b0ed26d38c96b22ccd8ec0d6231e"
+              },
+              {
+                "id": "validation:my-zh:142",
+                "task": 150,
+                "master_log_offset": 1332858,
+                "master_log_bytes": 31906,
+                "log_sha256": "bf574fe5a3677d2a10c097c5c6958c4c017a55743dc0b20256294527ccad24d0",
+                "response_sha256": "d5aacb35d117d78e48709a7e69ca904fb2f5139ce9ed63e9a86b41ffd1142f91"
+              },
+              {
+                "id": "validation:zh-en:104",
+                "task": 174,
+                "master_log_offset": 1364764,
+                "master_log_bytes": 26239,
+                "log_sha256": "5c2142726bbc3c7435296d21f1cb934ec6c8836ae3216d3104184c16bc54f4c4",
+                "response_sha256": "4a1f92d3810d9b838991ab6bc5cf8cf638beb8ec1e14edf0ac35365920308ea8"
+              },
+              {
+                "id": "validation:zh-my:104",
+                "task": 193,
+                "master_log_offset": 1391003,
+                "master_log_bytes": 138348,
+                "log_sha256": "c7a3795e51f232915c2077796a7361b711fac95fb5f3943243ae815e6645f3f5",
+                "response_sha256": "3842ca81bf8984e90fdaf556aab18bd9a223f64c9b33070e2de278dfbcecacef"
+              },
+              {
+                "id": "validation:my-zh:142",
+                "task": 315,
+                "master_log_offset": 1529351,
+                "master_log_bytes": 32015,
+                "log_sha256": "c240d1066ad2e3744f673dc67595987989da1d3f18ca2746122813bf6711bb90",
+                "response_sha256": "3a9b10923ac82bca5a4619a8051ceb808e120ed949c086ceb8bc03973f6777d1"
+              },
+              {
+                "id": "validation:zh-my:104",
+                "task": 339,
+                "master_log_offset": 1561366,
+                "master_log_bytes": 139104,
+                "log_sha256": "cb3e980b1c6e646c8504bd291efa1a86a8912b1f3f854669ab54cc04c0d656cb",
+                "response_sha256": "068a51746fdeb65fe47401dd199a3d82c9c036555fef28c1a8dd797455b2c112"
+              }
+            ]
+          },
+          "full": {
+            "status": "PREFIX_VERIFIED_NOT_QUALIFICATION",
+            "complete": false,
+            "rows": 12,
+            "planned_rows": 120,
+            "unique": 12,
+            "journal_prefix_sha256": "6aa018b3446930c0518f1764ba962c66003330ea4a791814f4e389be0ada8f8f",
+            "admission_sha256": "ab50e6a054b134662fd8f8cc2ce1adf350035c44ba10445909d5bcded11566d1",
+            "run_plan_sha256": "293efe2382350f6a50cf8d1319e236537d87bc6dc461326168fa3aa2c3c1085e",
+            "master_log_snapshot_sha256": "4c66097ebaa5a857b1a12f7591057016065b8410a819a761030e357bdd1a2b32",
+            "matched_master_log_slices": 12,
+            "last_verified_master_byte": 3994104,
+            "totals": {
+              "rows": 12,
+              "eos": 12,
+              "length": 0,
+              "empty": 0,
+              "raw_tokens": 2515,
+              "prompt_tokens": 757,
+              "prefill_ms": 41931.59299999999,
+              "decode_ms": 288115.03099999996,
+              "wall_seconds": 330.68917652900564
+            },
+            "bindings": [
+              {
+                "id": "validation:zh-my:6",
+                "task": 0,
+                "master_log_offset": 1157629,
+                "master_log_bytes": 85704,
+                "log_sha256": "1b07e05a9e670f36083a34034fafb94d978480b1dbd4958310dfa42276064c0a",
+                "response_sha256": "78874a94c9043cef83b635d7509a879bbca8e58fb732fe933835a7867e789bb6"
+              },
+              {
+                "id": "validation:zh-my:25",
+                "task": 77,
+                "master_log_offset": 1243333,
+                "master_log_bytes": 137246,
+                "log_sha256": "89e4fd3a067847afda82896adb7e9b79091ffb07ddb697f2677ee7cde2946788",
+                "response_sha256": "2c1e216a3e76d5ab0bded5d235fe84e8fb5cce1ecc829cd34222a4ae58a415db"
+              },
+              {
+                "id": "validation:zh-my:27",
+                "task": 199,
+                "master_log_offset": 1380579,
+                "master_log_bytes": 352566,
+                "log_sha256": "796a8ee81aa61c5ad4a2f630b07a2884e993a279a06d271fede943f351871445",
+                "response_sha256": "e1c512078b7f139c441581e8d18d3f49cfa0700640532c2de10780507a6d38d3"
+              },
+              {
+                "id": "validation:zh-my:30",
+                "task": 517,
+                "master_log_offset": 1733145,
+                "master_log_bytes": 394388,
+                "log_sha256": "e3386055632de3f9b28a3c491c6d6fd200d927cf35a01f0d1d213a06759ccc56",
+                "response_sha256": "c4f1953a28e25d7ee9e1c43bc0dbaf44c55f56471136ff8eabb26dbbf9a61f3a"
+              },
+              {
+                "id": "validation:zh-my:32",
+                "task": 873,
+                "master_log_offset": 2127533,
+                "master_log_bytes": 210052,
+                "log_sha256": "2d0d04a0c5505d8b7678ab37427aabbdade3f77a88674567f7c16f8f3576f11d",
+                "response_sha256": "430ea29e74862277a41c411683308b57bd6a18976535675b74c03bf796fe1912"
+              },
+              {
+                "id": "validation:zh-my:89",
+                "task": 1060,
+                "master_log_offset": 2337585,
+                "master_log_bytes": 183597,
+                "log_sha256": "d71c491295d3b5e3b9d97db8e97fecdcc25f70f70346b23bc074022459642a69",
+                "response_sha256": "a65e5c10b56ea49b176dc294c58e657d94c40cb1a57e363c910e986b5725cad8"
+              },
+              {
+                "id": "validation:zh-my:95",
+                "task": 1222,
+                "master_log_offset": 2521182,
+                "master_log_bytes": 237718,
+                "log_sha256": "11f31eed1096d83291de4bc80e03fbbd8577a0088acd242fe36bb1d84ec60963",
+                "response_sha256": "ad61414e6c2772b94693105d13db262c1416de7b6a39a93f56b27924c6f4bb71"
+              },
+              {
+                "id": "validation:zh-my:104",
+                "task": 1433,
+                "master_log_offset": 2758900,
+                "master_log_bytes": 139893,
+                "log_sha256": "051c05628323a413acfe21641150e858179424f9c0078d3d6f61df7e780be2b9",
+                "response_sha256": "77e06a20ff2b4ec6606d406cab86cb0015cd488c7f24891912ccd0baa4e45cbc"
+              },
+              {
+                "id": "validation:zh-my:114",
+                "task": 1555,
+                "master_log_offset": 2898793,
+                "master_log_bytes": 287830,
+                "log_sha256": "34dcb271e0275d1b35be2534f7310f55b38c655f0a8e39014a0f7242079eb97e",
+                "response_sha256": "1565af7cb2ce32c727f2aa9ee768956da83ca0aa49d21637e92f3131017ee116"
+              },
+              {
+                "id": "validation:zh-my:142",
+                "task": 1811,
+                "master_log_offset": 3186623,
+                "master_log_bytes": 195212,
+                "log_sha256": "c0f3cbbe61caca1ca6c0fdc8ac48ad169186a45c477cbec2923fae2a281ffa24",
+                "response_sha256": "2e36f32e68571a5d6ecdc1df5349ba1c7278f0fa7aa12dc6f0820d3dda347028"
+              },
+              {
+                "id": "validation:zh-my:203",
+                "task": 1983,
+                "master_log_offset": 3382107,
+                "master_log_bytes": 420389,
+                "log_sha256": "f3af98feb37b54485970eb98124c3014f0089c301e2971b92387bbd5dff2933b",
+                "response_sha256": "7165d4b98c775bcd57e74d92f211a5a492b9a2e987bf4b7a3140bc8b12e3c0e2"
+              },
+              {
+                "id": "validation:zh-my:223",
+                "task": 2359,
+                "master_log_offset": 3802496,
+                "master_log_bytes": 191608,
+                "log_sha256": "f018f6766b269df184fff080cb65c7a74dadd981cff34fcbccfc8b9fba019087",
+                "response_sha256": "2e4a5c60edfc6d1725caa57b8753f913526c9a883c06c37a390c231b4933f669"
+              }
+            ]
+          }
+        },
+        "128": {
+          "pilot": {
+            "status": "PREFIX_VERIFIED_NOT_QUALIFICATION",
+            "complete": true,
+            "rows": 8,
+            "planned_rows": 8,
+            "unique": 6,
+            "journal_prefix_sha256": "7cdad9f3efac24261b85b520979189f37beb366041afc62a765123bb973179f2",
+            "admission_sha256": "f247f80679ec27555102064ae48634048059b60994ae4907568b920f8514b5fd",
+            "run_plan_sha256": "874dd2a030790fbd14fe2135674eaff161a39afb2f6f4508c3d5d5a1f6dfa204",
+            "master_log_snapshot_sha256": "cdab0382447d960a157e9b0fac9307ab35db249c98ce1c1ae3dbde051d4f5f80",
+            "matched_master_log_slices": 8,
+            "last_verified_master_byte": 1694356,
+            "totals": {
+              "rows": 8,
+              "eos": 8,
+              "length": 0,
+              "empty": 0,
+              "raw_tokens": 446,
+              "prompt_tokens": 799,
+              "prefill_ms": 38331.96799999999,
+              "decode_ms": 50354.884000000005,
+              "wall_seconds": 89.07163791998755
+            },
+            "bindings": [
+              {
+                "id": "validation:en-my:103",
+                "task": 0,
+                "master_log_offset": 1159516,
+                "master_log_bytes": 126909,
+                "log_sha256": "025ca833953c2354a9e1086c3caff13a3c11054c2250eb9ce649f5d840221b0e",
+                "response_sha256": "4f4518384fec3c0107398ebac35049c8fb8be95178f394c9b448d2a68332005a"
+              },
+              {
+                "id": "validation:en-zh:103",
+                "task": 115,
+                "master_log_offset": 1286425,
+                "master_log_bytes": 16766,
+                "log_sha256": "3ae10e17c40586fd142c519a891769e846d248b80b70160e166f867aabbee70f",
+                "response_sha256": "fec558324f9e2df800cbf3881fb5d53a58fe37bca8fbe67933254ddb5905057e"
+              },
+              {
+                "id": "validation:my-en:142",
+                "task": 126,
+                "master_log_offset": 1303191,
+                "master_log_bytes": 29844,
+                "log_sha256": "100bb9ce1eebafe60cbc6c95385e06cb8549aca832177750f452325b79838b41",
+                "response_sha256": "8b52e2e8ea28770c88512500246d4baa73253522ec6153e63e50f236c633ed28"
+              },
+              {
+                "id": "validation:my-zh:142",
+                "task": 149,
+                "master_log_offset": 1333306,
+                "master_log_bytes": 29726,
+                "log_sha256": "682950822296ba554c575a35a911026036ff418dc3c7c8451b49dc060bd9611f",
+                "response_sha256": "5b1875553fa66e25df7ee2829fc4070dc01fef9fd0601fc1893192a3b1a17fd9"
+              },
+              {
+                "id": "validation:zh-en:104",
+                "task": 171,
+                "master_log_offset": 1363032,
+                "master_log_bytes": 26239,
+                "log_sha256": "47e12f43e44f97c85fcb12ac9e6035837719f476fa37850d7995b57ffed73e76",
+                "response_sha256": "b94839488a384f9d99ed8459612eec1bec8c902c1c453afbe9538736d544a823"
+              },
+              {
+                "id": "validation:zh-my:104",
+                "task": 190,
+                "master_log_offset": 1389271,
+                "master_log_bytes": 137247,
+                "log_sha256": "54ae77493c90cf3b1562c0f69343eddca19d4e7c2bae8685a67c79e57717259f",
+                "response_sha256": "6d20904582236843241148b46723567c15944eed3e22621adf35d8c5330bbc5a"
+              },
+              {
+                "id": "validation:my-zh:142",
+                "task": 311,
+                "master_log_offset": 1526518,
+                "master_log_bytes": 29835,
+                "log_sha256": "f4499ed2be0b4928c8653165dcf173a262809783db62e1b53374870bf945050a",
+                "response_sha256": "b8d9283a36cb7a7cfee31fa82c03ad1527f4516aae5bd8d62f32a4a00902b42d"
+              },
+              {
+                "id": "validation:zh-my:104",
+                "task": 333,
+                "master_log_offset": 1556353,
+                "master_log_bytes": 138003,
+                "log_sha256": "dcddaf9c11d6e2c7ad8a4ff3a7bbdf426ce58075dc658bf65b9e3670789a3ec5",
+                "response_sha256": "fffd9b1b2502155b5a92076747be890ca080441a4a6321cab84449a5e63ebf25"
+              }
+            ]
+          },
+          "full": {
+            "status": "PREFIX_VERIFIED_NOT_QUALIFICATION",
+            "complete": true,
+            "rows": 120,
+            "planned_rows": 120,
+            "unique": 120,
+            "journal_prefix_sha256": "a4eb8d2adc9d446139449d11571359ea28d2a7a959a1dc644e5e6cab16da7ea3",
+            "admission_sha256": "7ea9ca4b471c61d776fe93a8b5e6f517f19f4a87abab0767e3bdb1a16d641c38",
+            "run_plan_sha256": "3e9954c0caf273ad9088c137f02c3da145bc8597fd0732f3e77f6cff75fad5a3",
+            "master_log_snapshot_sha256": "e7433b07f666456b83cf8f75b7ab84130b08fa76bb7ed76e614f0ae901882510",
+            "matched_master_log_slices": 120,
+            "last_verified_master_byte": 14382842,
+            "totals": {
+              "rows": 120,
+              "eos": 120,
+              "length": 0,
+              "empty": 0,
+              "raw_tokens": 10018,
+              "prompt_tokens": 14428,
+              "prefill_ms": 544796.113,
+              "decode_ms": 1180150.38,
+              "wall_seconds": 1731.6181725587812
+            },
+            "bindings": [
+              {
+                "id": "validation:zh-my:6",
+                "task": 0,
+                "master_log_offset": 1159871,
+                "master_log_bytes": 84603,
+                "log_sha256": "d1da542bf2e6c645559d3523822cd99bf415f667fe09aca469a3c90ed46287ab",
+                "response_sha256": "a0a1af43314e2b25f7c6fd15f214eb6779beb3081fbd460b03629e20b3ddaf36"
+              },
+              {
+                "id": "validation:zh-my:25",
+                "task": 76,
+                "master_log_offset": 1244474,
+                "master_log_bytes": 134001,
+                "log_sha256": "728372b0841a7f12ff74d23e102366ab034fa90a486c8c8227ed39eeb608ee22",
+                "response_sha256": "79dbd0b007aca0d2d6cca2454aafbbd75a22c388d5455ce7e3de52ee0418b705"
+              },
+              {
+                "id": "validation:zh-my:27",
+                "task": 195,
+                "master_log_offset": 1378475,
+                "master_log_bytes": 361289,
+                "log_sha256": "a823e4e10de7ffde3472b2bf589387727efeaaee6098ace4513fece3d7a8cdb0",
+                "response_sha256": "f5afc9437bbf4c8751a16575d03717d4eecb2319e783307cb8819b9e3110b8d8"
+              },
+              {
+                "id": "validation:zh-my:30",
+                "task": 521,
+                "master_log_offset": 1739764,
+                "master_log_bytes": 375804,
+                "log_sha256": "ce2dcc19cea19b3831768dc8eccc45e07ee5ebc46761093c5b709534f8932d93",
+                "response_sha256": "db364ab2a5611ea77d1e4758f5d260f52da325569a99e2c1f7df2e028cd45b2e"
+              },
+              {
+                "id": "validation:zh-my:32",
+                "task": 860,
+                "master_log_offset": 2115568,
+                "master_log_bytes": 218718,
+                "log_sha256": "287e278cfd0ad07d9c81b287bae5a351581be0a773653bead904e23091bbae69",
+                "response_sha256": "2e50cf5ae6908ebcb8a2b7aa132cb4aa9cb5d4d158a43b095de084c6c9f874f0"
+              },
+              {
+                "id": "validation:zh-my:89",
+                "task": 1055,
+                "master_log_offset": 2334286,
+                "master_log_bytes": 171410,
+                "log_sha256": "851778280302cec7fea96d60683b5a9c5167f7763260c432380b024e60fcc8e2",
+                "response_sha256": "466895e81f6ab13c4c3bbcf1e5eaf92efd0c7288f4376a9a370a523f3517cb47"
+              },
+              {
+                "id": "validation:zh-my:95",
+                "task": 1206,
+                "master_log_offset": 2505696,
+                "master_log_bytes": 225460,
+                "log_sha256": "c1a7dcb70ac69ff149636ec093aeda48e769e95b930a5e65d55564ccac5e5bc4",
+                "response_sha256": "e1ca0bcb0b88ba63e271bcd3a70ce4e116e1fceac47ee61ef788d36878bc272d"
+              },
+              {
+                "id": "validation:zh-my:104",
+                "task": 1406,
+                "master_log_offset": 2731156,
+                "master_log_bytes": 138785,
+                "log_sha256": "5359397b7b097376d029d680ea89e770afbf299cbf7b1864826d47ccebdb308b",
+                "response_sha256": "87ee7f8178cb8d08bc51f2b155bb3f94b846a9d0f2a01c5118029808c5f29bad"
+              },
+              {
+                "id": "validation:zh-my:114",
+                "task": 1527,
+                "master_log_offset": 2869941,
+                "master_log_bytes": 263981,
+                "log_sha256": "889a35927e4a0059791e2ccef75b456215bc1b9cdd41da6e49058b569864e6e3",
+                "response_sha256": "4a92b3b59ceaad39b6e0d7fb51fd866d82225b5a14fafbd829bbc5c190785024"
+              },
+              {
+                "id": "validation:zh-my:142",
+                "task": 1761,
+                "master_log_offset": 3133922,
+                "master_log_bytes": 197679,
+                "log_sha256": "9498f34a30efc3519a7702b990ca4dcd96ffa6d5cfcc42cf07f1cf9a9de4335e",
+                "response_sha256": "94a73d7f1c0e89a089c58ecd4f1746a6faac7a46db001e8eb55b121ec7cabd27"
+              },
+              {
+                "id": "validation:zh-my:203",
+                "task": 1935,
+                "master_log_offset": 3331601,
+                "master_log_bytes": 421501,
+                "log_sha256": "33f7a6afefa4c1257e5a96129dd988693a21f1506d107ea8ecee39fc7eb9c50a",
+                "response_sha256": "bb1435bb224ee8f8df40e0851f24a05023d995730a1a6a48720db65ad157624a"
+              },
+              {
+                "id": "validation:zh-my:223",
+                "task": 2312,
+                "master_log_offset": 3753102,
+                "master_log_bytes": 192670,
+                "log_sha256": "e2c34d369be9d62f97e8021510f53bd8f899b948ee078f91c8b608ad55829140",
+                "response_sha256": "88feaf3a9810b5857b18708ee3cd5d5943cefa9aa96d69b9602e350a494dda4b"
+              },
+              {
+                "id": "validation:zh-my:225",
+                "task": 2481,
+                "master_log_offset": 3945772,
+                "master_log_bytes": 216931,
+                "log_sha256": "a49e0ae306dd11c9e9e0f25ea9d49c9050462e33eca5befeb5b2cd4ee852d2af",
+                "response_sha256": "b6e9dfeacf4252e1450b4803635552d4985971f3a32e1d3de660da6f7482248f"
+              },
+              {
+                "id": "validation:zh-my:228",
+                "task": 2672,
+                "master_log_offset": 4162703,
+                "master_log_bytes": 196209,
+                "log_sha256": "1e2033aa041892e8e5b6881bcaaa07bb87cbf996290a61069d08ee099e91a382",
+                "response_sha256": "ce03c5ebdfd16efa79cb114bd6ef9c729e5f2677a4b84103266e951550330ac2"
+              },
+              {
+                "id": "validation:zh-my:238",
+                "task": 2844,
+                "master_log_offset": 4358912,
+                "master_log_bytes": 189953,
+                "log_sha256": "a869cc154e396c8ff2ec95cccc2f84323a5ec10f5554e3f8d3a10263410b5765",
+                "response_sha256": "4491b896769dfa5a19d770f0e25297ee88aaca2ff73d0737106454855f20c536"
+              },
+              {
+                "id": "validation:zh-my:250",
+                "task": 3010,
+                "master_log_offset": 4548865,
+                "master_log_bytes": 269494,
+                "log_sha256": "258dcd6600f6d6d273d9064dc76b460cfe8e2aff5fc074808ddeae022df4760f",
+                "response_sha256": "ec061ea8a4bed5cf46b28e504f16ecdd3fd3fc6a021a5336f9aa027e5ed76ad0"
+              },
+              {
+                "id": "validation:zh-my:281",
+                "task": 3248,
+                "master_log_offset": 4818359,
+                "master_log_bytes": 163899,
+                "log_sha256": "162c283c12e29cad59107ab7c7729005dc1f01a94203b3757cd65ddc26cd70cd",
+                "response_sha256": "839ba2a0c3a2dc095a6eb350677963b5020db51c69f59ea63d7a2ae713b9f01f"
+              },
+              {
+                "id": "validation:zh-my:284",
+                "task": 3390,
+                "master_log_offset": 4982258,
+                "master_log_bytes": 125631,
+                "log_sha256": "a3bd9059d7ac84e3695720c890d17a650a484765d4f9a8d53ad043e823be6e80",
+                "response_sha256": "64a4bbe41c42301e709c80e2a8ecdfc4afc9a2110dc84de18c9d9a2359ac2f5c"
+              },
+              {
+                "id": "validation:zh-my:429",
+                "task": 3497,
+                "master_log_offset": 5107889,
+                "master_log_bytes": 218340,
+                "log_sha256": "8a027111b68b16dbd55e2e7b25ab317a0b1553ab9ed2855404e43468080c969e",
+                "response_sha256": "c1e501e7ce59ad8ad4f2aca58f7cedd8d2d421f2191c38592a5d469c4d84cb59"
+              },
+              {
+                "id": "validation:zh-my:432",
+                "task": 3688,
+                "master_log_offset": 5326229,
+                "master_log_bytes": 190929,
+                "log_sha256": "9dbc56ffe7aaa6a45118f537ad8961751074a8c41d8d9d8318521135aab26c87",
+                "response_sha256": "50cf0ac8288d422f8d2889f961e500130fdf28fa1e30389e88a36f08385a6074"
+              },
+              {
+                "id": "validation:my-zh:32",
+                "task": 3854,
+                "master_log_offset": 5517158,
+                "master_log_bytes": 40879,
+                "log_sha256": "f937833b4301214b5f823fec5453a45d8c2b992f34750c70aeeef6d80224a220",
+                "response_sha256": "6085a7985c408e00ba92b3fefaf3f890432580cb16ab708aa646a2a00fb84236"
+              },
+              {
+                "id": "validation:my-zh:57",
+                "task": 3883,
+                "master_log_offset": 5558037,
+                "master_log_bytes": 55242,
+                "log_sha256": "2c7354108c225418c40ac19e104339720ec20f83a4794bab45a7557aa9ff28e8",
+                "response_sha256": "9c38bb338a16955f589e90c756c3ccf91b211ef9337195e1fa23848e8e17c7e5"
+              },
+              {
+                "id": "validation:my-zh:67",
+                "task": 3924,
+                "master_log_offset": 5613279,
+                "master_log_bytes": 48306,
+                "log_sha256": "7e8ac0ac862b06bbf687db79edae5c451d04f13c96475fe6e31c3d5184b444c0",
+                "response_sha256": "ce4d2f76f9afe54c48b7a95928ae2298bbe0a63dedc1b60f7d32cb9560172173"
+              },
+              {
+                "id": "validation:my-zh:142",
+                "task": 3958,
+                "master_log_offset": 5661585,
+                "master_log_bytes": 34698,
+                "log_sha256": "cfd5e952d46bcc2e9b78ab64770f4c287f59174996e6b85540b787a02ded1310",
+                "response_sha256": "fe062b2174e65db329c4ca5d55afde880d23b9137fb01d2d4d5496f57885aa8f"
+              },
+              {
+                "id": "validation:my-zh:146",
+                "task": 3980,
+                "master_log_offset": 5696283,
+                "master_log_bytes": 35904,
+                "log_sha256": "03e01863a50c5a31a772d550f7e0ca087d98e910409eb471eaf797552d7a605d",
+                "response_sha256": "4a5177f38b3992a921f82f25d68530a08e7ff5033fdb7d7adb11475e7821b327"
+              },
+              {
+                "id": "validation:my-zh:216",
+                "task": 4003,
+                "master_log_offset": 5732187,
+                "master_log_bytes": 29439,
+                "log_sha256": "fb8b083e9076c2c919b4b81d17553cd335716ebf136271cd3199a29f86318451",
+                "response_sha256": "539af08eb50a5be34b85aea4a726bbbfa32359b7331a2fe5b8c2d80eb5e97f8f"
+              },
+              {
+                "id": "validation:my-zh:217",
+                "task": 4020,
+                "master_log_offset": 5761626,
+                "master_log_bytes": 39701,
+                "log_sha256": "49da4964314ac0e19caaa42fb328e260780792753f682c2b52be4169d45d0c01",
+                "response_sha256": "5fc9c26082c6ebe7f225e1f991f8419fd1d55b85e4e1c5ca3f4afa52fe2158e7"
+              },
+              {
+                "id": "validation:my-zh:234",
+                "task": 4046,
+                "master_log_offset": 5801327,
+                "master_log_bytes": 70118,
+                "log_sha256": "a9c511d0af3bc38cdcb65fa2bb91c718496232f2f3d713807da1e6e68f42c24b",
+                "response_sha256": "f7743a9899d6acc94f9dde7f2e6f8e325bf7b56183fce7baf36bf85cf287beb9"
+              },
+              {
+                "id": "validation:my-zh:252",
+                "task": 4099,
+                "master_log_offset": 5871445,
+                "master_log_bytes": 42878,
+                "log_sha256": "35b1446d97383d638c6d1fd7663f947dba8d5f2dcaadf99ccf9c1634ac1b9563",
+                "response_sha256": "474fc9f724bc6d58740136517681d3ad200cc93e5a07a3cd1c7c2945528ca5ed"
+              },
+              {
+                "id": "validation:my-zh:269",
+                "task": 4127,
+                "master_log_offset": 5914323,
+                "master_log_bytes": 45866,
+                "log_sha256": "08c20de7e4e99b89af94a3e16639b16687cad010384871ced5f33d8c5b8aeb74",
+                "response_sha256": "ed5a4eebcc948d915eba10a70611b9aa2dc66d3e6ca3ea158725b622e3ebcc04"
+              },
+              {
+                "id": "validation:my-zh:271",
+                "task": 4158,
+                "master_log_offset": 5960189,
+                "master_log_bytes": 52610,
+                "log_sha256": "19b8be7eb3377bc20112e7573072f96d0789f6b0e8407fb546dbc3b6c841127f",
+                "response_sha256": "eed85f1784efd657ecc78337adef87922c2994dc9d7591f544e5072dda273f29"
+              },
+              {
+                "id": "validation:my-zh:274",
+                "task": 4195,
+                "master_log_offset": 6012799,
+                "master_log_bytes": 50941,
+                "log_sha256": "e77dd668703f4531cbdbd5cb2fb57f1a5f45d20280afb994237dbba6c7e36f7a",
+                "response_sha256": "c24b77fbc2be3b9ee22327ab37c1068429d33d08293af4d73efa32e475e775da"
+              },
+              {
+                "id": "validation:my-zh:322",
+                "task": 4230,
+                "master_log_offset": 6063740,
+                "master_log_bytes": 48739,
+                "log_sha256": "c50f2723f0ff2e80ac3450dc79cf4d78a79b8868d4623bd3f8d3eae0fb5bae28",
+                "response_sha256": "94a026ce7afe85ccfa852ba79f2afe1475d79ede30ef5311a532b9d83793c143"
+              },
+              {
+                "id": "validation:my-zh:323",
+                "task": 4263,
+                "master_log_offset": 6112479,
+                "master_log_bytes": 52428,
+                "log_sha256": "baa5a813522477f9c5bbfb44e79da1f752cd69001354b1d0a4be68f653d4fb21",
+                "response_sha256": "c50ef2c9f35c5c016a10ceb7332d7cd8ff7f14eb6d171e8d6153a71cdafbb675"
+              },
+              {
+                "id": "validation:my-zh:370",
+                "task": 4299,
+                "master_log_offset": 6164907,
+                "master_log_bytes": 46012,
+                "log_sha256": "ae3328a275ba998da6c4a227d0a5b648e5dff58dce94c3e19d8eab4780d80ce5",
+                "response_sha256": "c3158986f7a74f1b78f0a0fa608289dbc4533465cd82e2388df771238066b6e8"
+              },
+              {
+                "id": "validation:my-zh:405",
+                "task": 4329,
+                "master_log_offset": 6210919,
+                "master_log_bytes": 29415,
+                "log_sha256": "30dfb9be28c9a29bb5e25746647a6b7bcc38ea8eb11419c0ef419cc8aa227ae5",
+                "response_sha256": "c025e85eeaebe0d328628eee08a55b68c3281662f193fcf2078ab05271c5d563"
+              },
+              {
+                "id": "validation:my-zh:408",
+                "task": 4344,
+                "master_log_offset": 6240334,
+                "master_log_bytes": 39423,
+                "log_sha256": "1bb5578c8910dc2caaeb5b67dae2c172d936a7787e90d66ca623566329f7d8f0",
+                "response_sha256": "f7388ac6195a255c8b2c6aa1ec7000b4601cd5cb2b1ea5d44e09a0c3cd92def3"
+              },
+              {
+                "id": "validation:my-zh:410",
+                "task": 4368,
+                "master_log_offset": 6279757,
+                "master_log_bytes": 36725,
+                "log_sha256": "133767792c280afa9698c5ea255973d51666a339d5b0f1a409ded839a7d4d067",
+                "response_sha256": "4278c5e7a94237b926b7b684b6722089179ce041857a3377a8651d2bd51fef31"
+              },
+              {
+                "id": "validation:my-zh:438",
+                "task": 4389,
+                "master_log_offset": 6316482,
+                "master_log_bytes": 36408,
+                "log_sha256": "0c1e5aa43a8d3347303eafa4040b76aabc964d598d5fdb5769e073e2e5265f53",
+                "response_sha256": "1c90a53c8442181ac8b3817cdd9b18c4c5e6806762afca52b435863700c13e9b"
+              },
+              {
+                "id": "validation:my-zh:469",
+                "task": 4410,
+                "master_log_offset": 6352890,
+                "master_log_bytes": 38821,
+                "log_sha256": "087a0c799b7a119c02c2b610a67aecb84e952b22ad602b48ce2bec9c2ea2aff9",
+                "response_sha256": "b29adca5ac49ee1ca1a789180c0e95a582c15875651a26820d128b7b24b4fcdb"
+              },
+              {
+                "id": "validation:zh-en:6",
+                "task": 4433,
+                "master_log_offset": 6391711,
+                "master_log_bytes": 26672,
+                "log_sha256": "180b58ebeff00bf4720748060fffc5a873e61cde0e1a965d552e605bc693c79c",
+                "response_sha256": "3235bbc8fa9971829acf0ed5692ba3e6c4b48585fb001508d5fa72ee8a48ef56"
+              },
+              {
+                "id": "validation:zh-en:25",
+                "task": 4445,
+                "master_log_offset": 6418383,
+                "master_log_bytes": 33997,
+                "log_sha256": "b02b928152ae2e964a655501b6b81095e18e00f4d0b49ed6e75e5a7939adcc02",
+                "response_sha256": "df3f565cc9f5b45af766e26425bddba6d12f64bf9f67b895440e0b64babad439"
+              },
+              {
+                "id": "validation:zh-en:27",
+                "task": 4468,
+                "master_log_offset": 6452380,
+                "master_log_bytes": 59125,
+                "log_sha256": "0ba6a2819f004bc83b6ab86e2e48d669aab6b924a7a8cbc9b3503d807ae0a53c",
+                "response_sha256": "56df1419a5aef2a2c5249c7deba31eb16fdf94470e987c6d0783f41f6724e3d5"
+              },
+              {
+                "id": "validation:zh-en:30",
+                "task": 4509,
+                "master_log_offset": 6511505,
+                "master_log_bytes": 82756,
+                "log_sha256": "ce6f675fe9e53bf6f375841ec45450aaa3c2ce08dbe0beb023622133f63a3705",
+                "response_sha256": "fdc022b00553533afc99832591d788ea6035c3f3a8fdea23a756c62a9c064f3b"
+              },
+              {
+                "id": "validation:zh-en:32",
+                "task": 4571,
+                "master_log_offset": 6594261,
+                "master_log_bytes": 47313,
+                "log_sha256": "76cdce8629f55a2beef91a014c6e4c2474a2281e4337e15581f93017dd519eac",
+                "response_sha256": "11152f05c21bd1dadefb8798ea86be4b8df144d3ce667cf733db51eedbe88a92"
+              },
+              {
+                "id": "validation:zh-en:89",
+                "task": 4601,
+                "master_log_offset": 6641574,
+                "master_log_bytes": 48534,
+                "log_sha256": "950ca89c7e66dd452abcfdb1dc8d62663d35c47432991bafe1a9b3c437fd3c35",
+                "response_sha256": "86a18e7e41a9b7e3d340780929986287e9feeac0d97e9d3054260062f6b96160"
+              },
+              {
+                "id": "validation:zh-en:95",
+                "task": 4632,
+                "master_log_offset": 6690108,
+                "master_log_bytes": 39868,
+                "log_sha256": "3dd95c5cbd34e16a00bca1a7f30d271e789058d1baa7cdaa8619682ff658b3e9",
+                "response_sha256": "932fa84f4624daed657cf4fd15bf55aaa5a13d5734a2c98253d6aa1c8003c655"
+              },
+              {
+                "id": "validation:zh-en:104",
+                "task": 4655,
+                "master_log_offset": 6729976,
+                "master_log_bytes": 35544,
+                "log_sha256": "0e8816c0e8c6f4a0687fc8800f29ff83c2b77141168dfba07cccf469a210535e",
+                "response_sha256": "929d22e97c3fc07bc909ac409835d8652059d44968cac5a2d0f945f98e7af9cc"
+              },
+              {
+                "id": "validation:zh-en:114",
+                "task": 4674,
+                "master_log_offset": 6765520,
+                "master_log_bytes": 48198,
+                "log_sha256": "b3f0e512f4cfd674de971818d4b56e0e0c8a6895789a3548dc49f01d05590f1d",
+                "response_sha256": "137001d1993a2a5065e2d5cebfaea4cea9b5719593ff048142c668dde8d0834c"
+              },
+              {
+                "id": "validation:zh-en:142",
+                "task": 4709,
+                "master_log_offset": 6813718,
+                "master_log_bytes": 45927,
+                "log_sha256": "42795ea13d64ae10247c413fad6de3a33fcba95ff20ba2f628ce5f26f39341a5",
+                "response_sha256": "af215fe6944f5f22eedbc6b4135f68983a2f1d649b28f0368a27b338e92e1c97"
+              },
+              {
+                "id": "validation:zh-en:203",
+                "task": 4737,
+                "master_log_offset": 6859645,
+                "master_log_bytes": 70608,
+                "log_sha256": "cbc16fbe8968a33efaa31c33899cc98a6cbb632f0fc3c610de873f5c8447ce35",
+                "response_sha256": "c25d7337c688cd6d3837b1b04c828c284e7f596e2aed1ef12ce3a9391c03129f"
+              },
+              {
+                "id": "validation:zh-en:223",
+                "task": 4787,
+                "master_log_offset": 6930253,
+                "master_log_bytes": 47550,
+                "log_sha256": "bed7024fe3be6943bf8ede74a819813b5e7e4c20202b5d5eae243bbcca8b2762",
+                "response_sha256": "620fb1f8b70838c9bf2a998989d5dbc3f28679f27fd24e6b44995cf8f8ad032b"
+              },
+              {
+                "id": "validation:zh-en:225",
+                "task": 4816,
+                "master_log_offset": 6977803,
+                "master_log_bytes": 43171,
+                "log_sha256": "b37f0f1be6f4a7ae157575b4fde30436c90fbe69b996cea2e4b38c2ac0413c88",
+                "response_sha256": "b28451dfd5e297e25d7223166b8a4d051a88a3e6b4d86936d3b4139688342f20"
+              },
+              {
+                "id": "validation:zh-en:228",
+                "task": 4841,
+                "master_log_offset": 7020974,
+                "master_log_bytes": 55567,
+                "log_sha256": "3a2af22436bfaaeca6d3ce361c0411d2794d0ad679787478a085b9b90305d88a",
+                "response_sha256": "e40d18664cb74d0bc27b084aaacbd61412667871553c5dd112d3d5194c122835"
+              },
+              {
+                "id": "validation:zh-en:238",
+                "task": 4877,
+                "master_log_offset": 7076541,
+                "master_log_bytes": 39167,
+                "log_sha256": "50012de32e65bc95051e0bffab03332cc4b81ceb7989dc818f01f22b7ac374ff",
+                "response_sha256": "bad5bff7d08cda3776082eb9dc2bc25f691b99fa868710387f049a35baf8a7a2"
+              },
+              {
+                "id": "validation:zh-en:250",
+                "task": 4898,
+                "master_log_offset": 7115708,
+                "master_log_bytes": 62725,
+                "log_sha256": "3ce602ecc4c7c3b7e629f2f7c2f5f64634b2c4f053291c649cc004ce001418f6",
+                "response_sha256": "13d8004ca6791bd178c43eec6562b09a3ea0afbf03561b196445789f3edd9037"
+              },
+              {
+                "id": "validation:zh-en:281",
+                "task": 4940,
+                "master_log_offset": 7178433,
+                "master_log_bytes": 41825,
+                "log_sha256": "9998f25d20d3e33d79d2bd6b747ee8315fee542263ca967d8d2e17b7bcf21329",
+                "response_sha256": "88deccbe5ad5767ce6435b7946f146cd74c8cd8f33d33516d43dd6623fff254b"
+              },
+              {
+                "id": "validation:zh-en:284",
+                "task": 4963,
+                "master_log_offset": 7220258,
+                "master_log_bytes": 38657,
+                "log_sha256": "d2daa0adb283afcbe5dbd6e3c4d46a8cf5c6d0d7093e95f4997ceab472c634b1",
+                "response_sha256": "73b1c27607bc553ef6e011f84593d92710a7c952258ea6901cf0bdba32d6b154"
+              },
+              {
+                "id": "validation:zh-en:429",
+                "task": 4983,
+                "master_log_offset": 7258915,
+                "master_log_bytes": 48890,
+                "log_sha256": "e5948b439b3d8ee78352ea86d2336608732317c5c1afed0f794d3cd6ccf8ca9b",
+                "response_sha256": "4e49099a3487c9c824b59548a93ce74528a2f4abbafdb5cd5c2d7df34a58945f"
+              },
+              {
+                "id": "validation:zh-en:432",
+                "task": 5012,
+                "master_log_offset": 7307805,
+                "master_log_bytes": 50244,
+                "log_sha256": "cbaf5a60a8e371ca80a33cf1a866ca49d6767772ba2617916847ac454bf4c71d",
+                "response_sha256": "10fdf91a6625adc4da6ff17a453ea10c502b5d29fc00d95d0be60ce32950039b"
+              },
+              {
+                "id": "validation:en-zh:46",
+                "task": 5042,
+                "master_log_offset": 7358049,
+                "master_log_bytes": 43842,
+                "log_sha256": "2e3c3b7edbb2222b1997e8f3cf073035adac18a58991fb5c545c9de06fa20426",
+                "response_sha256": "a5e806a5421d0cbdaeb83186342b253154038f66c87159d4a0c402cf3c749c9b"
+              },
+              {
+                "id": "validation:en-zh:71",
+                "task": 5066,
+                "master_log_offset": 7401891,
+                "master_log_bytes": 73180,
+                "log_sha256": "3596530d6c3714e4d5482379d02b583f71e365d523c573edcf7dea193be84405",
+                "response_sha256": "c22a00053ec90728a888bd3c7971a75b304afa03130e8f8190294e9b621c4cb5"
+              },
+              {
+                "id": "validation:en-zh:80",
+                "task": 5116,
+                "master_log_offset": 7475071,
+                "master_log_bytes": 43337,
+                "log_sha256": "5796f7a90790c126d20230047171f8d1d58df099d0ea28e7eacd56abc455515e",
+                "response_sha256": "1ad372f065a513f50d497d332d7c6c9a198d6553e1516791321d9c429c8ce273"
+              },
+              {
+                "id": "validation:en-zh:81",
+                "task": 5139,
+                "master_log_offset": 7518408,
+                "master_log_bytes": 36749,
+                "log_sha256": "90c135985b51a296feed2d596acf309886cf880f3e84459b2085813bf19cad59",
+                "response_sha256": "1b2e97a57650fa8d2f29c1a2c53ff6e8810956670839e01e18c4171b077265fb"
+              },
+              {
+                "id": "validation:en-zh:103",
+                "task": 5156,
+                "master_log_offset": 7555157,
+                "master_log_bytes": 30248,
+                "log_sha256": "4526331f2a4f4f9df3ebf1ee005191f5aa6d211ead54aed0c8095407083c3a72",
+                "response_sha256": "6228713b0e9e4159688d47b8b1ffc1d0f53d029605cbeba971dd87de42f4a4da"
+              },
+              {
+                "id": "validation:en-zh:127",
+                "task": 5167,
+                "master_log_offset": 7585405,
+                "master_log_bytes": 45536,
+                "log_sha256": "7aaf10b45fcd3d4fb15afebb4bef9b3422916936e6018637e92c89cc02406b10",
+                "response_sha256": "2fbcd8862f3a5fea24698dc41004f3d2ab01f37867e1ca5101c0496a89dc316e"
+              },
+              {
+                "id": "validation:en-zh:166",
+                "task": 5198,
+                "master_log_offset": 7630941,
+                "master_log_bytes": 48424,
+                "log_sha256": "f0d4e806c45ff432c781be3c4dbcb8a96ca413e7b8f0c54ed64736a3fa029fdf",
+                "response_sha256": "d91250afe243afa4150b755af3e2ca7aea922b4a27289aec4df26eb6b2c04aa9"
+              },
+              {
+                "id": "validation:en-zh:196",
+                "task": 5225,
+                "master_log_offset": 7679365,
+                "master_log_bytes": 65420,
+                "log_sha256": "e59e38ad4b0ed1416ca9141760edb3308243b9ba6c8edec60c446331375e8013",
+                "response_sha256": "c28c943730c92d306e34329c10a5a527472341f77626e9f25827e5f60607778c"
+              },
+              {
+                "id": "validation:en-zh:214",
+                "task": 5267,
+                "master_log_offset": 7744785,
+                "master_log_bytes": 54447,
+                "log_sha256": "9ae9ccfd9a8ad9e334e9b436e446a4534f4c26ac4eccbeae1e80330a7d4c790d",
+                "response_sha256": "8c8948b726fee95c623770d005ab31657c22ee1b1ddb3d3328b12201e4a10041"
+              },
+              {
+                "id": "validation:en-zh:233",
+                "task": 5299,
+                "master_log_offset": 7799232,
+                "master_log_bytes": 35595,
+                "log_sha256": "265f0773f9f3fe3c8003424bf4db910fb66ea176c0fb37b0dcb10bc1350d70ec",
+                "response_sha256": "ec271e4528bdbbd4d92320e6a6df29e0d636c5b81b32da28a02578032e53729d"
+              },
+              {
+                "id": "validation:en-zh:238",
+                "task": 5314,
+                "master_log_offset": 7834827,
+                "master_log_bytes": 30343,
+                "log_sha256": "1910fbd11f0fc7a0f0cfbaf80ca7cfbd59f0e239e9b9f63ca450f4a3c9ff6b4d",
+                "response_sha256": "3381b48ec84f2d0a2acdba686dc0f241f0de1e8b1b6e44f2aca1d5203efef519"
+              },
+              {
+                "id": "validation:en-zh:273",
+                "task": 5331,
+                "master_log_offset": 7865170,
+                "master_log_bytes": 43654,
+                "log_sha256": "10731ab1a6a75e1bb3e0992cfb58729d625100c85d84ec9872bb232597c15b46",
+                "response_sha256": "3d8c9581d3796c76d789928bb5024b215bb66d5922c8f22e19e027ebc889c8d3"
+              },
+              {
+                "id": "validation:en-zh:284",
+                "task": 5353,
+                "master_log_offset": 7908824,
+                "master_log_bytes": 37145,
+                "log_sha256": "eb57c6aefadaf08c7a3d8b93e6ba775b2846e589ea97f7dd7d6578cbe2c98343",
+                "response_sha256": "8aa8bb063a0b8e91c32432e04c743eb6343dfd89a962b71edea85a5cf6d137c2"
+              },
+              {
+                "id": "validation:en-zh:296",
+                "task": 5369,
+                "master_log_offset": 7945969,
+                "master_log_bytes": 48436,
+                "log_sha256": "24b33752f840fc56d251b369240f0c550ee81a958703a692093de613484c4e1f",
+                "response_sha256": "7227c2c2d1b9661c9bc666691cbb99bb3e80dcf37e1fa54809e0d614a6ce3541"
+              },
+              {
+                "id": "validation:en-zh:300",
+                "task": 5402,
+                "master_log_offset": 7994405,
+                "master_log_bytes": 41046,
+                "log_sha256": "fb313c7a0459553cf2bee1561de5effd29d9959cb8a8a40a4c12643fb2035c96",
+                "response_sha256": "1c82c8dd0a330cf955ad033c5e9fc02114d946afb770a3f0792be9ed79412d9e"
+              },
+              {
+                "id": "validation:en-zh:363",
+                "task": 5421,
+                "master_log_offset": 8035451,
+                "master_log_bytes": 49629,
+                "log_sha256": "3368d73def2430fe018bc035ffd4d63ee1cc69e4f3a883ad8361ad470fa2505d",
+                "response_sha256": "ba560d0249624ae3106b59447013e98c19b269077e3123bdc26d835b91c670ac"
+              },
+              {
+                "id": "validation:en-zh:370",
+                "task": 5448,
+                "master_log_offset": 8085080,
+                "master_log_bytes": 55486,
+                "log_sha256": "1f675009abf55e5f21a6b2d5e975d7989c460b66b90d5cb7bd129f9760e06fe5",
+                "response_sha256": "006f0c9f1017b737ba31d60368f7ac8a1c61c03b9b1c91f5a33c76a95d2f945b"
+              },
+              {
+                "id": "validation:en-zh:373",
+                "task": 5480,
+                "master_log_offset": 8140566,
+                "master_log_bytes": 58256,
+                "log_sha256": "9d1ec24fda3eb2b90923160f06e448a2c258772318a668a130dd52302b6bca00",
+                "response_sha256": "c3dad43222eb4675dff2c6f7682723f6ee75f991840b2f336ce54a912a96294f"
+              },
+              {
+                "id": "validation:en-zh:379",
+                "task": 5514,
+                "master_log_offset": 8198822,
+                "master_log_bytes": 37947,
+                "log_sha256": "2eff3add0e070c711606a0e50d2999fc1d573bd55d66b970fcf0af0b8b5941ef",
+                "response_sha256": "9b3e07442c7645686a3e3c2411f8af9ae342b1cc853148c9c086b38760b72fd0"
+              },
+              {
+                "id": "validation:en-zh:387",
+                "task": 5530,
+                "master_log_offset": 8236769,
+                "master_log_bytes": 35388,
+                "log_sha256": "c049ad63cf6cb7c3db056afb6b9e33f259b8cdefe5c266196c6a230a40200e67",
+                "response_sha256": "8f357df10a946b0751cf958c34890a983996ed3883305861e912a8dfeac53244"
+              },
+              {
+                "id": "validation:en-my:46",
+                "task": 5551,
+                "master_log_offset": 8272157,
+                "master_log_bytes": 269095,
+                "log_sha256": "6688229d8ab672c5f4d7acd6dd1df2ea9138cc209bb374ca5282fd4c993e1217",
+                "response_sha256": "9236ab25cdc489e2169bf3c20807455d3bb0ef3c21eaf5af3995daa275c326b5"
+              },
+              {
+                "id": "validation:en-my:71",
+                "task": 5774,
+                "master_log_offset": 8541252,
+                "master_log_bytes": 377876,
+                "log_sha256": "8dd9c26b0de772269663e179c300af7e295b2c6bfb0d5ca282f399ff22d006c9",
+                "response_sha256": "9640127ca41bbf47c449240c2d03988c0bbd2e0dcb81aa27ce3b895afcad0e19"
+              },
+              {
+                "id": "validation:en-my:80",
+                "task": 6094,
+                "master_log_offset": 8919128,
+                "master_log_bytes": 227183,
+                "log_sha256": "a468e0959fd4acad1b213055f80781d91371a9bd2f856348f132be83cc9375ce",
+                "response_sha256": "05f6b296b3717156779925df404beabfaa9395596cfaa074d1924b4bdf9927ea"
+              },
+              {
+                "id": "validation:en-my:81",
+                "task": 6279,
+                "master_log_offset": 9146311,
+                "master_log_bytes": 156811,
+                "log_sha256": "510e72447bb3f2c03d6f43541f08eebed4e9716c7fb93b7f87ba4208ce7d6bd0",
+                "response_sha256": "6735b995334889f65f12f86736be9d85cbf30ebe9ef66833893efc9499cf2305"
+              },
+              {
+                "id": "validation:en-my:103",
+                "task": 6401,
+                "master_log_offset": 9303122,
+                "master_log_bytes": 149157,
+                "log_sha256": "61a59319ce2e4f4b219bc926ef966c3216193267b1129629d22acd8ad5bea9ba",
+                "response_sha256": "d60c27adfe3a22cd858bf3f7d3a0980e02a2be0ab8fbce1805693b2e8303a918"
+              },
+              {
+                "id": "validation:en-my:127",
+                "task": 6516,
+                "master_log_offset": 9452279,
+                "master_log_bytes": 329555,
+                "log_sha256": "70bcc8c7e64aba2eacae4f9c61f259af9a77cca404415d788ddfba2863551d75",
+                "response_sha256": "20417635157778793c7781e9031efd43f90ab32361ef182e9f4aebdea2b3e25d"
+              },
+              {
+                "id": "validation:en-my:166",
+                "task": 6792,
+                "master_log_offset": 9781834,
+                "master_log_bytes": 330017,
+                "log_sha256": "77f082be13f991822a80c8cee2b4fcd8514f8878e6e407c2f329be8e870759c2",
+                "response_sha256": "309f231b97b700a21a2751abe22e542f437bd0ff93bb57b31010d23682eb26b1"
+              },
+              {
+                "id": "validation:en-my:196",
+                "task": 7068,
+                "master_log_offset": 10111851,
+                "master_log_bytes": 385985,
+                "log_sha256": "6d2310531b1479bafeb6ae782e59a549ee35fb3e6f4b4c0dc7254cc3422cfd9d",
+                "response_sha256": "466e25689e3fa3cd94493f56bfc1c45588b0757101c2bb95f1d47fbd9e8aa1e5"
+              },
+              {
+                "id": "validation:en-my:214",
+                "task": 7394,
+                "master_log_offset": 10497836,
+                "master_log_bytes": 267632,
+                "log_sha256": "22a92ce9b8382ef61f68b8c439a15f49c0f04f76fe578b9dec317666dc30c40d",
+                "response_sha256": "faf1635d8f91affaaa88c669cfe7ddaf0dddb004db18e3a3f055d91870bf13ca"
+              },
+              {
+                "id": "validation:en-my:233",
+                "task": 7614,
+                "master_log_offset": 10765468,
+                "master_log_bytes": 98988,
+                "log_sha256": "181d0eafd4fb1007eae277f0403170a7fc09bd106b59af589df060ab2c4face3",
+                "response_sha256": "0678bcbf2b11739c0ac37bebb1dba64009948ab726c504f7dfc532b3af3a6f1d"
+              },
+              {
+                "id": "validation:en-my:238",
+                "task": 7683,
+                "master_log_offset": 10864456,
+                "master_log_bytes": 214208,
+                "log_sha256": "23f32169fe01ff2d9e19be70c92f5e472834b26dff6f2959384266f8e21932ab",
+                "response_sha256": "e13db0e2acbedadb813afc7dac8c941493ec8db10ede737da2e2dcec10d1478b"
+              },
+              {
+                "id": "validation:en-my:273",
+                "task": 7855,
+                "master_log_offset": 11078664,
+                "master_log_bytes": 181973,
+                "log_sha256": "13ea3c177f9cc670b9d024b85bfff879086ee3e0a5329df8c4c247f8534f3e76",
+                "response_sha256": "eba77e19b5cba47bfc73bb2b1c210301955eb1c892f29902303bf94cb964af39"
+              },
+              {
+                "id": "validation:en-my:284",
+                "task": 7998,
+                "master_log_offset": 11260637,
+                "master_log_bytes": 138677,
+                "log_sha256": "cd6452c6f933e9755a4209992db0d8ab51d12f4f664a52ccb4b7164d7e92c49a",
+                "response_sha256": "356475a5389bb570d3bcf7084c6371884c7f38ce6c4bc61b527400d14d29a746"
+              },
+              {
+                "id": "validation:en-my:296",
+                "task": 8102,
+                "master_log_offset": 11399314,
+                "master_log_bytes": 359200,
+                "log_sha256": "71e3785e2a6e9d2f7a00b361d0eeee7eeca955bf4974f53aab592c7c0cdd43b9",
+                "response_sha256": "c4fe73b64d21f9aa00c96b09d25acd8b59414a4545e6163f3e661af27542004e"
+              },
+              {
+                "id": "validation:en-my:300",
+                "task": 8403,
+                "master_log_offset": 11758514,
+                "master_log_bytes": 188403,
+                "log_sha256": "9096d4a3e162b267f42272a5c210c40af6eb212209c847eb7b8ab450d6cf0882",
+                "response_sha256": "1be35c84396f56cf58f7ff564d053ab37bc6c1d3fdc33b086e7fce9e4c9477ad"
+              },
+              {
+                "id": "validation:en-my:363",
+                "task": 8551,
+                "master_log_offset": 11946917,
+                "master_log_bytes": 200896,
+                "log_sha256": "ea0d27ece5f24c957f52a1839965864ca15976eddbd5818f81d58ab7af6dbd6f",
+                "response_sha256": "d123d48c8a0c6ac79e8c0fe20ebcc0e68a9cbd8b84ac82710ba9c515677f2a17"
+              },
+              {
+                "id": "validation:en-my:370",
+                "task": 8710,
+                "master_log_offset": 12147813,
+                "master_log_bytes": 286167,
+                "log_sha256": "167b0f0254b65e56738bafe6600f7defda1c7af58aacc93aa7e4f68b29c06069",
+                "response_sha256": "921d390ee200adc78a2f1cd097f7d138d0f07cc6dfcbb0eac84be713b8b091af"
+              },
+              {
+                "id": "validation:en-my:373",
+                "task": 8945,
+                "master_log_offset": 12433980,
+                "master_log_bytes": 341270,
+                "log_sha256": "fdd9072510749c7b386278d05f3ce0955d3edf26b68b1dcb15d249f96da646e4",
+                "response_sha256": "548477b6378a9827e6f0b9862e00943967b49351f0eeb4f0c2f9c1d09c058f85"
+              },
+              {
+                "id": "validation:en-my:379",
+                "task": 9229,
+                "master_log_offset": 12775250,
+                "master_log_bytes": 145760,
+                "log_sha256": "19fbfb45498e5bb7c18c589530c0638e4b2ad9742c0a7d1af42d4929778e9dcc",
+                "response_sha256": "2a20670a997ef17647a7a915685291fab8c8b21b5d7f963cbc0185bde9e03973"
+              },
+              {
+                "id": "validation:en-my:387",
+                "task": 9338,
+                "master_log_offset": 12921010,
+                "master_log_bytes": 214045,
+                "log_sha256": "9674aaa35d524d1752332733465423e71fc60f25796d2e9647e98facf5c3b769",
+                "response_sha256": "9a366df9f0dafa58546e6588bdb568ef19687a03ff69da6d4d2305dd3d06b66f"
+              },
+              {
+                "id": "validation:my-en:32",
+                "task": 9508,
+                "master_log_offset": 13135055,
+                "master_log_bytes": 62775,
+                "log_sha256": "662a99d688377e0bfdf383fae14e652d3e2237f81855ebe396676c50a8e24a70",
+                "response_sha256": "67b19944bf4bd1ca6e7836f7f3494d43457942ff86f2c2a1c4dacdcb2944d2b8"
+              },
+              {
+                "id": "validation:my-en:57",
+                "task": 9542,
+                "master_log_offset": 13197830,
+                "master_log_bytes": 67726,
+                "log_sha256": "017312fd8dfb1ce4099ff53b096fc2fbf3ed6aa2b4d82f8e591e6319dce4a497",
+                "response_sha256": "64c80158729f6d23fff55ff20fcba0a15c71f1eaae44c9ae312da8c9643f853a"
+              },
+              {
+                "id": "validation:my-en:67",
+                "task": 9580,
+                "master_log_offset": 13265556,
+                "master_log_bytes": 68401,
+                "log_sha256": "09236285d36cd821d583d3a77ea654833ebfe01263ebf4f4844ce927969a96cf",
+                "response_sha256": "2b47699fee734a62e763f93bab6b2ae9124becf8eb409da412d6d7eeb6503a64"
+              },
+              {
+                "id": "validation:my-en:142",
+                "task": 9618,
+                "master_log_offset": 13333957,
+                "master_log_bytes": 51448,
+                "log_sha256": "94e46c8ac13b8dec110c50d7ae1a581f1f3714ce14ffce7525dd03dcd9761b2f",
+                "response_sha256": "5ec7f9cb986870e53399ec37843da732af4c6b50eb45102888f21a1f94148e88"
+              },
+              {
+                "id": "validation:my-en:146",
+                "task": 9641,
+                "master_log_offset": 13385405,
+                "master_log_bytes": 61588,
+                "log_sha256": "0b2a66c78975087285c1889980abad2564ec80008a7480b71846c59224346887",
+                "response_sha256": "9c5a58ff0a11bd94880fa19cc33977da9ef7e929efb82dc7a4da97697e13aaad"
+              },
+              {
+                "id": "validation:my-en:216",
+                "task": 9673,
+                "master_log_offset": 13446993,
+                "master_log_bytes": 48395,
+                "log_sha256": "32a8446e7a2d618cb875def4dfddee375d3a7ca8ad3d57a95464e66be9b26158",
+                "response_sha256": "5d4d1fa976f4e1b8f8691580f878ef03a0e7221d71f97e58bd1dd638eb9fed88"
+              },
+              {
+                "id": "validation:my-en:217",
+                "task": 9693,
+                "master_log_offset": 13495388,
+                "master_log_bytes": 56454,
+                "log_sha256": "0954b929c7f1d7cff289e7d20af636701523aade07a9cf69bc26159d5aca194f",
+                "response_sha256": "8329de50a2bcf80051b1e1f1d70170cad5648ca2a3e484b06ddfa00e8c89c9ec"
+              },
+              {
+                "id": "validation:my-en:234",
+                "task": 9720,
+                "master_log_offset": 13551842,
+                "master_log_bytes": 81273,
+                "log_sha256": "35366e72df2a59816de28f032e65220afbde0090b3ead662ce7d1890f322c82b",
+                "response_sha256": "d56f514d8749a0bf2cad070d316fe852a88dd7570161403c8718105de9e79f71"
+              },
+              {
+                "id": "validation:my-en:252",
+                "task": 9769,
+                "master_log_offset": 13633115,
+                "master_log_bytes": 61665,
+                "log_sha256": "897225bbb13a5f469aa9269d5fb42902419bf49aac474716b48d89c5373a7fbd",
+                "response_sha256": "4f206b95584387dbcfac03fbe9c15ee249e75023b3f3dfb7da293fb25a54f47d"
+              },
+              {
+                "id": "validation:my-en:269",
+                "task": 9800,
+                "master_log_offset": 13694780,
+                "master_log_bytes": 61128,
+                "log_sha256": "2292c0292268947806d90079d03e69f582506ed7aacb27ce8f5391b59e8847ad",
+                "response_sha256": "43831dbb48a74d01b8d37fc41296fd8527a3f3d35f898cedaa22c7731896816c"
+              },
+              {
+                "id": "validation:my-en:271",
+                "task": 9831,
+                "master_log_offset": 13756407,
+                "master_log_bytes": 76247,
+                "log_sha256": "dd7a90b8239398c2b2ea77001a26e03d4a7905b560255a322922a1234831ca7b",
+                "response_sha256": "67bcf0b1269542df5cf327f6facd959549dfeffc5fd8c8e0a47c1958f6c3edc9"
+              },
+              {
+                "id": "validation:my-en:274",
+                "task": 9875,
+                "master_log_offset": 13832654,
+                "master_log_bytes": 67839,
+                "log_sha256": "7257f2f9453c16f06cbaf92fcb84304d80f5c245140504f03b5f7c5cd2a58bb2",
+                "response_sha256": "fa57fc4468b82bb2e2164fbe5a6243f1054273dafcb310d98780b41bfe1b1100"
+              },
+              {
+                "id": "validation:my-en:322",
+                "task": 9911,
+                "master_log_offset": 13900493,
+                "master_log_bytes": 79024,
+                "log_sha256": "38516564cbb7d88be400b9dc51e7079ac4ed42ef29d3527dc103f86212b0be5b",
+                "response_sha256": "8747dedf7007f2b8e948d4001437ed05050035686632b3074fae6ac40afd78c2"
+              },
+              {
+                "id": "validation:my-en:323",
+                "task": 9957,
+                "master_log_offset": 13979517,
+                "master_log_bytes": 69115,
+                "log_sha256": "2681981e18328939f5d9f6ad4d51c598eb2f1bcb6f46c72a58a52fca157a1050",
+                "response_sha256": "6b90bc0dced08fc0a315ccc33037ed7c22690a66d3e1ee81b20d609133fa2102"
+              },
+              {
+                "id": "validation:my-en:370",
+                "task": 9994,
+                "master_log_offset": 14048909,
+                "master_log_bytes": 59716,
+                "log_sha256": "df0e9f361d86eed3dc514dbbb04e8e075e97c48d35d65590415c12c766828bbd",
+                "response_sha256": "d6110fa21c0b12d6bd946ec00fa8c518c807b296b743473916f144633440ba33"
+              },
+              {
+                "id": "validation:my-en:405",
+                "task": 10022,
+                "master_log_offset": 14108625,
+                "master_log_bytes": 46459,
+                "log_sha256": "fad580d5bcdf71234380fb55477c643ef57b3a098c06b1642083d9079e8cf831",
+                "response_sha256": "b0e99d8ab6d8ea9f80a4935440fa4a2f3f8bb8f2b37014af037a9d73c17a0abe"
+              },
+              {
+                "id": "validation:my-en:408",
+                "task": 10038,
+                "master_log_offset": 14155084,
+                "master_log_bytes": 58807,
+                "log_sha256": "a31ee8f2db67851516ebdd227a53023bff448924152c002912409cb86aa8aaa2",
+                "response_sha256": "aaebe327a96bbe2c8118e5d2ca502fb22e26cdc77231a13268da42e699fe2f52"
+              },
+              {
+                "id": "validation:my-en:410",
+                "task": 10065,
+                "master_log_offset": 14213891,
+                "master_log_bytes": 57199,
+                "log_sha256": "374c027c815b3d1f4a520641c5cc1428aa1424e82249263c34f0986904a875a0",
+                "response_sha256": "6277f74b268970f487f0c1d2e592f9d10f1ee34783023cebbd0e26526b710ac0"
+              },
+              {
+                "id": "validation:my-en:438",
+                "task": 10090,
+                "master_log_offset": 14271090,
+                "master_log_bytes": 55785,
+                "log_sha256": "0e2e9212d48c48c4394eefeaa2d82a5e0ad9e3b37519bf03b959d1f7ee3747be",
+                "response_sha256": "9bc02cb04d439058bee309b92e5b0f98e136010635f5635204c4a89e2ba476c1"
+              },
+              {
+                "id": "validation:my-en:469",
+                "task": 10114,
+                "master_log_offset": 14326875,
+                "master_log_bytes": 55967,
+                "log_sha256": "f5e8c84176fb78327d6f5759569458bc3690c2efce010d170d7ce357f04afbbf",
+                "response_sha256": "5d802152ef5d53d6c017b2fd236a3f990015cd390c3671779ae548ea052fd20f"
+              }
+            ]
+          }
+        }
+      },
+      "pilot_full_reproducibility": {
+        "96": {
+          "matched": 1,
+          "same_raw_tokens": 1,
+          "same_text": 1,
+          "differences": []
+        },
+        "128": {
+          "matched": 6,
+          "same_raw_tokens": 6,
+          "same_text": 6,
+          "differences": []
+        }
+      },
+      "bf16_bridge_descriptive": {
+        "96": {
+          "zh-my": {
+            "n": 12,
+            "complete_direction": false,
+            "bf16": 39.07489490063594,
+            "native": 37.14860602566789,
+            "exact_text": 0,
+            "exact_tokens": 0,
+            "flags_bf16": {
+              "degenerate_repetition": 12,
+              "digits_differ_from_reference": 1
+            },
+            "flags_native": {
+              "degenerate_repetition": 12,
+              "digits_differ_from_reference": 1
+            }
+          }
+        },
+        "128": {
+          "zh-my": {
+            "n": 20,
+            "complete_direction": true,
+            "bf16": 39.75961947428229,
+            "native": 39.064691009220525,
+            "exact_text": 10,
+            "exact_tokens": 10,
+            "flags_bf16": {
+              "degenerate_repetition": 20,
+              "digits_differ_from_reference": 3
+            },
+            "flags_native": {
+              "degenerate_repetition": 20,
+              "digits_differ_from_reference": 3
+            }
+          },
+          "my-zh": {
+            "n": 20,
+            "complete_direction": true,
+            "bf16": 21.121994946527995,
+            "native": 21.43007676337321,
+            "exact_text": 11,
+            "exact_tokens": 11,
+            "flags_bf16": {
+              "length_ratio_outlier": 1,
+              "digits_differ_from_reference": 1
+            },
+            "flags_native": {
+              "length_ratio_outlier": 1,
+              "digits_differ_from_reference": 1
+            }
+          },
+          "zh-en": {
+            "n": 20,
+            "complete_direction": true,
+            "bf16": 58.625453041205425,
+            "native": 58.625453041205425,
+            "exact_text": 20,
+            "exact_tokens": 20,
+            "flags_bf16": {
+              "digits_differ_from_reference": 3
+            },
+            "flags_native": {
+              "digits_differ_from_reference": 3
+            }
+          },
+          "en-zh": {
+            "n": 20,
+            "complete_direction": true,
+            "bf16": 32.12204093749179,
+            "native": 33.20615384525985,
+            "exact_text": 13,
+            "exact_tokens": 13,
+            "flags_bf16": {
+              "digits_differ_from_reference": 1
+            },
+            "flags_native": {
+              "digits_differ_from_reference": 1
+            }
+          },
+          "en-my": {
+            "n": 20,
+            "complete_direction": true,
+            "bf16": 43.06524303143311,
+            "native": 43.18951106244898,
+            "exact_text": 10,
+            "exact_tokens": 10,
+            "flags_bf16": {
+              "degenerate_repetition": 20
+            },
+            "flags_native": {
+              "degenerate_repetition": 20
+            }
+          },
+          "my-en": {
+            "n": 20,
+            "complete_direction": true,
+            "bf16": 52.859975663009436,
+            "native": 52.97899473181423,
+            "exact_text": 9,
+            "exact_tokens": 9,
+            "flags_bf16": {
+              "digits_differ_from_reference": 1
+            },
+            "flags_native": {
+              "digits_differ_from_reference": 1
+            }
+          }
+        }
+      },
+      "matched_native_prefix_descriptive": {
+        "zh-my": {
+          "96": 37.14860602566789,
+          "128": 38.13476030347779,
+          "n": 12,
+          "complete_direction": false,
+          "delta": -0.9861542778099022
+        }
+      },
+      "limitations": [
+        "Full model hashes were checked by execution driver, not re-read here.",
+        "BF16 reference differs in runtime and precision; bridge is descriptive, not canonical gate.",
+        "Active journal prefix only; no test split scoring or mask fitting."
+      ]
+    }
+  },
+  "guarded96_post_retirement_preflight": {
+    "job": "job_01M8DXMZ7000DVK9S8WV367QQJ",
+    "exit_code": 0,
+    "result": {
+      "status": "BLOCKED",
+      "blockers": [
+        "ACTIVE_GPU_OR_MODEL_PROCESS"
+      ],
+      "source_header_sha256": "aa7df89983ceb9a0278905e683f0568ba426d62a824155a538e0359eba6f049f",
+      "mask_sha256": "4589d613512ac0a07f02be500e8b2fabe3f4beb78ddd171e14fd26cd8078960c",
+      "planned_bytes": 45953803936,
+      "free_bytes": 85191471104,
+      "reserve_bytes": 10737418240,
+      "shortfall_bytes": 0,
+      "gpu_pids": [
+        522408
+      ],
+      "model_processes": [
+        {
+          "pid": 522408,
+          "comm": "llama-server"
+        }
+      ],
+      "full_source_hash_rechecked": false
+    }
+  }
+}
