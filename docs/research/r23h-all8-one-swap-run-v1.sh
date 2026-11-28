@@ -22,9 +22,16 @@ source "$HOME/miniconda3/etc/profile.d/conda.sh"
 conda activate mt-pruning
 python -m py_compile "$RUN/screen.py"
 
+ENGINE_HEAD="$(git -C "$HOME/mt-pruning-platform" rev-parse HEAD)"
+WORKTREE_HEAD="$(git -C "$WORKTREE" rev-parse HEAD)"
+test "$ENGINE_HEAD" = "3212303e1e02994a5124db8c85195b91325c7a7c"
+test "$WORKTREE_HEAD" = "$PINNED_HEAD"
+export PYTHONPATH="$HOME/mt-pruning-platform${PYTHONPATH:+:$PYTHONPATH}"
+printf '{"status":"R23H_ALL8_ONE_SWAP_RUNTIME_ENVIRONMENT","engine_repo_head":"%s","worktree_head":"%s","pythonpath":"%s"}\n' "$ENGINE_HEAD" "$WORKTREE_HEAD" "$PYTHONPATH" > "$RUN/run-v1.log"
+
 set +e
 MT_PRUNING_REPO="$WORKTREE" python -u "$RUN/screen.py" "$RUN" \
-  > "$RUN/run-v1.log" 2> "$RUN/run-v1.stderr"
+  >> "$RUN/run-v1.log" 2> "$RUN/run-v1.stderr"
 rc=$?
 printf '%s\n' "$rc" > "$RUN/exit-v1-code"
 exit "$rc"
