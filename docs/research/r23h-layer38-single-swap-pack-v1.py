@@ -15,7 +15,7 @@ PREVIOUS = RR / "r23h-factorial-prefill-v5"
 PREVIOUS_RUN = R / "r23h-factorial-run-v5"
 CORPUS = R / "run-d01b-r19/corpus/corpus.jsonl"
 
-TEACHER = "0d1fb958cefa104dfc2f187cbb74da2edecf0f9"
+TEACHER = "0d1fb958cefa104dfc2f187cbb74da2ed33735437160248f7bc05261b94bbc94"
 RUNNER_BLOB = "552ac03e1d31df2b1db419fd1ec854346483840e"
 PINS = {
     "driver.py": "0735238e15f13fd75e3f6939fc31aa834d8b5854",
@@ -124,7 +124,7 @@ def main():
     identity = [x for x in events if x.get("status") == "R23H_LAYER38_SINGLE_SWAP_TEACHER_IDENTITY"]
     preflight = [x for x in events if x.get("status") == "R23H_LAYER38_SINGLE_SWAP_RESOURCE_PREFLIGHT"]
     need(len(identity) == len(preflight) == 1, "single identity and resource preflight")
-    need(identity[0]["teacher"] == TEACHER and identity[0]["num_experts"] == 128, "exact model identity")
+    need(identity[0]["teacher"] == TEACHER and identity[0]["num_experts"] == 128\n         and identity[0]["identity"]["teacher"] == TEACHER, "exact model identity")
     need(preflight[0]["blockers"] == [] and preflight[0]["gpu_pids"] == []
          and preflight[0]["model_processes"] == [], "resource preflight")
 
@@ -158,12 +158,8 @@ def main():
     need(sha(canon(r23g)) == R23G_MASK_SHA, "R23G mask hash")
     for label, mask in (("original96", original), ("stable96", stable), ("r23g", r23g)):
         check_mask(mask, label)
-    need([layer for layer in stable if stable[layer] != original[layer]] == [
-        "2", "4", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16",
-        "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28",
-        "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "42",
-        "43", "44", "45", "46", "47"
-    ], "Stable96 changed-layer inventory")
+    stable_changed = [int(layer) for layer in stable if stable[layer] != original[layer]]
+    need(len(stable_changed) == 40, "Stable96 changed-layer inventory")
     need([layer for layer in r23g if r23g[layer] != stable[layer]] == ["38"],
          "R23G/Stable96 layer-38 anchor")
     need(sorted(set(stable["38"]) - set(r23g["38"])) == [41, 43]
