@@ -17,7 +17,7 @@ test ! -e "$RUN"
 test ! -e "$RR/r23h-all8-one-swap-prefill-v1"
 mkdir -p "$R/worktrees" "$RR"
 
-git -C "$REPO" fetch --no-tags origin "refs/heads/\${BRANCH}"
+git -C "$REPO" fetch --no-tags origin "refs/heads/${BRANCH}"
 git -C "$REPO" cat-file -e "${PINNED_HEAD}^{commit}"
 git -C "$REPO" merge-base --is-ancestor "$PINNED_HEAD" FETCH_HEAD
 
