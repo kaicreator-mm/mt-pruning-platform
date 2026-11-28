@@ -1,0 +1,476 @@
+{
+  "all_argmax_equal": false,
+  "cache": {
+    "experts": {
+      "bytes": 2145386496,
+      "evictions": 29290,
+      "hits": 0,
+      "misses": 29631,
+      "source_bytes": 93211066368
+    },
+    "peak_allocated": 8431922688,
+    "peak_reserved": 8883535872,
+    "static": {
+      "bytes": 5720428032,
+      "evictions": 0,
+      "hits": 624,
+      "misses": 624,
+      "source_bytes": 2885078528
+    }
+  },
+  "limits": "Fixed forced tokens with causal masking; whole-chunk vs stepwise CPU may differ numerically. No free-running quality or acceptance.",
+  "logits_sha256": "acd634ce5c4a617d77a90f31be34164b9911a3b64ef30c871515ca9524bafc57",
+  "max_nmse": 0.032259062005776155,
+  "reference_sha256": "13e8cf69c159fa2aa6b61860617947ac3ceb2f15f915203007bb9499bfd1b097",
+  "results": [
+    {
+      "cpu_seconds": 24.778046937004547,
+      "cuda_seconds": 16.435174975005793,
+      "id": "calibration:zh-my:826",
+      "metrics": [
+        {
+          "argmax_equal": true,
+          "kl": 0.0027801792473848876,
+          "name": "teacher",
+          "nmse": 0.009270559067113078,
+          "route_overlap": 7.904255319148936,
+          "step": 0
+        },
+        {
+          "argmax_equal": true,
+          "kl": 1.989555171889252e-05,
+          "name": "teacher",
+          "nmse": 0.0018889180608982917,
+          "route_overlap": 7.829787234042553,
+          "step": 1
+        },
+        {
+          "argmax_equal": true,
+          "kl": 5.73554255156435e-07,
+          "name": "teacher",
+          "nmse": 0.0004793672820186377,
+          "route_overlap": 7.9361702127659575,
+          "step": 2
+        },
+        {
+          "argmax_equal": true,
+          "kl": 3.715159223965637e-07,
+          "name": "teacher",
+          "nmse": 0.0034603767398297437,
+          "route_overlap": 7.8936170212765955,
+          "step": 3
+        },
+        {
+          "argmax_equal": true,
+          "kl": 3.127591758433618e-05,
+          "name": "teacher",
+          "nmse": 0.01224089942251923,
+          "route_overlap": 7.74468085106383,
+          "step": 4
+        },
+        {
+          "argmax_equal": true,
+          "kl": 1.4736824243874217e-08,
+          "name": "teacher",
+          "nmse": 0.005942618621109542,
+          "route_overlap": 7.702127659574468,
+          "step": 5
+        },
+        {
+          "argmax_equal": true,
+          "kl": 6.305830409367999e-08,
+          "name": "teacher",
+          "nmse": 0.0026934921953209326,
+          "route_overlap": 7.723404255319149,
+          "step": 6
+        },
+        {
+          "argmax_equal": true,
+          "kl": 4.7379469236219196e-08,
+          "name": "teacher",
+          "nmse": 0.010838772837274645,
+          "route_overlap": 7.319148936170213,
+          "step": 7
+        },
+        {
+          "argmax_equal": true,
+          "kl": 7.403244143021732e-06,
+          "name": "teacher",
+          "nmse": 0.032259062005776155,
+          "route_overlap": 7.617021276595745,
+          "step": 8
+        },
+        {
+          "argmax_equal": true,
+          "kl": 0.020460698585452346,
+          "name": "original96",
+          "nmse": 0.008095304655934464,
+          "route_overlap": 7.819148936170213,
+          "step": 0
+        },
+        {
+          "argmax_equal": true,
+          "kl": 6.510666033326795e-07,
+          "name": "original96",
+          "nmse": 0.001518308254062484,
+          "route_overlap": 7.872340425531915,
+          "step": 1
+        },
+        {
+          "argmax_equal": true,
+          "kl": 3.274833768332357e-07,
+          "name": "original96",
+          "nmse": 0.000611472254854026,
+          "route_overlap": 7.872340425531915,
+          "step": 2
+        },
+        {
+          "argmax_equal": true,
+          "kl": 4.042051242172672e-07,
+          "name": "original96",
+          "nmse": 0.004637649970834157,
+          "route_overlap": 7.808510638297872,
+          "step": 3
+        },
+        {
+          "argmax_equal": true,
+          "kl": 7.745949330750317e-06,
+          "name": "original96",
+          "nmse": 0.011624804500581126,
+          "route_overlap": 7.808510638297872,
+          "step": 4
+        },
+        {
+          "argmax_equal": true,
+          "kl": 4.93806312795479e-09,
+          "name": "original96",
+          "nmse": 0.002576687595200068,
+          "route_overlap": 7.74468085106383,
+          "step": 5
+        },
+        {
+          "argmax_equal": true,
+          "kl": 4.1266498112765814e-07,
+          "name": "original96",
+          "nmse": 0.002657447644395492,
+          "route_overlap": 7.851063829787234,
+          "step": 6
+        },
+        {
+          "argmax_equal": true,
+          "kl": 1.937128797600924e-09,
+          "name": "original96",
+          "nmse": 0.004243521424990927,
+          "route_overlap": 7.531914893617022,
+          "step": 7
+        },
+        {
+          "argmax_equal": true,
+          "kl": 3.581010843980854e-07,
+          "name": "original96",
+          "nmse": 0.014574159808992635,
+          "route_overlap": 7.787234042553192,
+          "step": 8
+        },
+        {
+          "argmax_equal": true,
+          "kl": 0.10846679047728189,
+          "name": "l42",
+          "nmse": 0.01901470699575884,
+          "route_overlap": 7.74468085106383,
+          "step": 0
+        },
+        {
+          "argmax_equal": true,
+          "kl": 1.1960537635770431e-05,
+          "name": "l42",
+          "nmse": 0.001418773548854572,
+          "route_overlap": 7.9361702127659575,
+          "step": 1
+        },
+        {
+          "argmax_equal": true,
+          "kl": 3.6737091111069305e-06,
+          "name": "l42",
+          "nmse": 0.0011143251016434456,
+          "route_overlap": 7.872340425531915,
+          "step": 2
+        },
+        {
+          "argmax_equal": true,
+          "kl": 4.008077338420887e-07,
+          "name": "l42",
+          "nmse": 0.0022705111019546555,
+          "route_overlap": 7.829787234042553,
+          "step": 3
+        },
+        {
+          "argmax_equal": true,
+          "kl": 5.846844833826687e-05,
+          "name": "l42",
+          "nmse": 0.010167134156251126,
+          "route_overlap": 7.638297872340425,
+          "step": 4
+        },
+        {
+          "argmax_equal": true,
+          "kl": 4.456190048327191e-09,
+          "name": "l42",
+          "nmse": 0.003466065147884187,
+          "route_overlap": 7.723404255319149,
+          "step": 5
+        },
+        {
+          "argmax_equal": true,
+          "kl": 7.059655136313758e-08,
+          "name": "l42",
+          "nmse": 0.003535145514816227,
+          "route_overlap": 7.74468085106383,
+          "step": 6
+        },
+        {
+          "argmax_equal": true,
+          "kl": 7.749709473357318e-09,
+          "name": "l42",
+          "nmse": 0.0061604455612267305,
+          "route_overlap": 7.51063829787234,
+          "step": 7
+        },
+        {
+          "argmax_equal": true,
+          "kl": 2.3083523035365868e-05,
+          "name": "l42",
+          "nmse": 0.011114757815254894,
+          "route_overlap": 7.702127659574468,
+          "step": 8
+        }
+      ],
+      "speedup": 1.5076229474092235
+    },
+    {
+      "cpu_seconds": 44.91375203800271,
+      "cuda_seconds": 17.212900161001016,
+      "id": "calibration:my-zh:642",
+      "metrics": [
+        {
+          "argmax_equal": false,
+          "kl": 0.15308778093199638,
+          "name": "teacher",
+          "nmse": 0.016172505172419735,
+          "route_overlap": 7.723404255319149,
+          "step": 0
+        },
+        {
+          "argmax_equal": true,
+          "kl": 3.378156647018535e-07,
+          "name": "teacher",
+          "nmse": 0.0010137986318316922,
+          "route_overlap": 7.787234042553192,
+          "step": 1
+        },
+        {
+          "argmax_equal": true,
+          "kl": 1.222147275380747e-06,
+          "name": "teacher",
+          "nmse": 0.003653732646542055,
+          "route_overlap": 7.872340425531915,
+          "step": 2
+        },
+        {
+          "argmax_equal": true,
+          "kl": 0.00129516266006957,
+          "name": "teacher",
+          "nmse": 0.0019793558713568373,
+          "route_overlap": 7.723404255319149,
+          "step": 3
+        },
+        {
+          "argmax_equal": true,
+          "kl": 8.539438466498536e-08,
+          "name": "teacher",
+          "nmse": 0.002487239335529018,
+          "route_overlap": 7.872340425531915,
+          "step": 4
+        },
+        {
+          "argmax_equal": true,
+          "kl": 9.442832328686822e-08,
+          "name": "teacher",
+          "nmse": 0.004793365805594218,
+          "route_overlap": 7.680851063829787,
+          "step": 5
+        },
+        {
+          "argmax_equal": true,
+          "kl": 1.6029530407169833e-07,
+          "name": "teacher",
+          "nmse": 0.0023426275714213177,
+          "route_overlap": 7.851063829787234,
+          "step": 6
+        },
+        {
+          "argmax_equal": true,
+          "kl": 4.24584675342604e-06,
+          "name": "teacher",
+          "nmse": 0.0017393743627123286,
+          "route_overlap": 7.829787234042553,
+          "step": 7
+        },
+        {
+          "argmax_equal": true,
+          "kl": 0.0001699405825488768,
+          "name": "teacher",
+          "nmse": 0.00029640229743303244,
+          "route_overlap": 7.914893617021277,
+          "step": 8
+        },
+        {
+          "argmax_equal": false,
+          "kl": 0.05174790573775307,
+          "name": "original96",
+          "nmse": 0.01398951473348474,
+          "route_overlap": 7.76595744680851,
+          "step": 0
+        },
+        {
+          "argmax_equal": true,
+          "kl": 1.0126858608975521e-06,
+          "name": "original96",
+          "nmse": 0.0023508873874065754,
+          "route_overlap": 7.8936170212765955,
+          "step": 1
+        },
+        {
+          "argmax_equal": true,
+          "kl": 1.0637309566347823e-07,
+          "name": "original96",
+          "nmse": 0.002482152978856094,
+          "route_overlap": 7.829787234042553,
+          "step": 2
+        },
+        {
+          "argmax_equal": true,
+          "kl": 0.004051550196262506,
+          "name": "original96",
+          "nmse": 0.0023766737702910342,
+          "route_overlap": 7.872340425531915,
+          "step": 3
+        },
+        {
+          "argmax_equal": true,
+          "kl": 2.1331261143844748e-07,
+          "name": "original96",
+          "nmse": 0.002334306578688118,
+          "route_overlap": 7.808510638297872,
+          "step": 4
+        },
+        {
+          "argmax_equal": true,
+          "kl": 6.90229897408604e-08,
+          "name": "original96",
+          "nmse": 0.005043624890443189,
+          "route_overlap": 7.638297872340425,
+          "step": 5
+        },
+        {
+          "argmax_equal": true,
+          "kl": 1.2509344288693053e-05,
+          "name": "original96",
+          "nmse": 0.007294181646081427,
+          "route_overlap": 7.51063829787234,
+          "step": 6
+        },
+        {
+          "argmax_equal": true,
+          "kl": 3.669949090484007e-08,
+          "name": "original96",
+          "nmse": 0.0006426318892698749,
+          "route_overlap": 7.872340425531915,
+          "step": 7
+        },
+        {
+          "argmax_equal": true,
+          "kl": 1.8402721413419398e-06,
+          "name": "original96",
+          "nmse": 0.0003253043007867149,
+          "route_overlap": 7.9787234042553195,
+          "step": 8
+        },
+        {
+          "argmax_equal": true,
+          "kl": 0.02770083823751339,
+          "name": "l42",
+          "nmse": 0.0037984245662203587,
+          "route_overlap": 7.840425531914893,
+          "step": 0
+        },
+        {
+          "argmax_equal": true,
+          "kl": 3.84397403885446e-08,
+          "name": "l42",
+          "nmse": 0.00037329022539555554,
+          "route_overlap": 7.957446808510638,
+          "step": 1
+        },
+        {
+          "argmax_equal": true,
+          "kl": 2.65403387153909e-07,
+          "name": "l42",
+          "nmse": 0.0025011433646179556,
+          "route_overlap": 7.8936170212765955,
+          "step": 2
+        },
+        {
+          "argmax_equal": true,
+          "kl": 0.002853933086768505,
+          "name": "l42",
+          "nmse": 0.0037504397014504337,
+          "route_overlap": 7.829787234042553,
+          "step": 3
+        },
+        {
+          "argmax_equal": true,
+          "kl": 2.6887848910851586e-07,
+          "name": "l42",
+          "nmse": 0.003356012673653882,
+          "route_overlap": 7.680851063829787,
+          "step": 4
+        },
+        {
+          "argmax_equal": true,
+          "kl": 3.3828200580991777e-07,
+          "name": "l42",
+          "nmse": 0.004516824775520678,
+          "route_overlap": 7.659574468085107,
+          "step": 5
+        },
+        {
+          "argmax_equal": true,
+          "kl": 7.499325262377551e-06,
+          "name": "l42",
+          "nmse": 0.0021843051587864893,
+          "route_overlap": 7.595744680851064,
+          "step": 6
+        },
+        {
+          "argmax_equal": true,
+          "kl": 5.0525919037246524e-06,
+          "name": "l42",
+          "nmse": 0.001430449628753992,
+          "route_overlap": 7.74468085106383,
+          "step": 7
+        },
+        {
+          "argmax_equal": true,
+          "kl": 0.000174722156733824,
+          "name": "l42",
+          "nmse": 0.0004170821611749015,
+          "route_overlap": 7.9361702127659575,
+          "step": 8
+        }
+      ],
+      "speedup": 2.6093076482116047
+    }
+  ],
+  "status": "CUDA_WHOLE_TRAJECTORY_DIAGNOSTIC_NOT_ORACLE"
+}
