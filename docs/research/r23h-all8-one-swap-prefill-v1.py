@@ -3,10 +3,10 @@ Bidirectional fixed-Fit Prefill screen only; no Decode, Fresh, Holdout or model 
 import copy, fcntl, hashlib, importlib.util, json, math, os, pathlib, sys, time, traceback
 
 P = pathlib.Path
-sys.path.insert(0, str(P.home() / "mt-pruning-platform"))
+REPO = P(os.environ.get("MT_PRUNING_REPO", str(P.home() / "mt-pruning-platform")))
+sys.path.insert(0, str(REPO))
 R = P.home() / ".cache/mt-pruning"
 RR = R / "r23-results"
-REPO = P.home() / "mt-pruning-platform"
 USB_PRIMARY = P("/mnt/mt-storage/mt-pruning/evidence/r23g-recovery-38ed4798")
 USB_FALLBACK = R / "r23g-recovery-ssd-38ed4798"
 USB = USB_PRIMARY if (USB_PRIMARY / "expanded.json").is_file() else USB_FALLBACK
