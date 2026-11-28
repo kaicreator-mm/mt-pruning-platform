@@ -332,6 +332,7 @@ def main():
         "decision": "Prefill-only. Advance no candidate unless the independently replayed bidirectional gate passes."
     }
     manifest_path = RR / "r23h-layer38-single-swap-prefill-v2-manifest.json"
+    need(not manifest_path.exists(), "refuse to overwrite evidence manifest")
     manifest_path.write_text(json.dumps(manifest, sort_keys=True, indent=2) + "\n")
     print(json.dumps({"status": "R23H_LAYER38_SINGLE_SWAP_EVIDENCE_PACKED",
                       "manifest": manifest, "archive": str(archive_path)}, sort_keys=True, indent=2))
