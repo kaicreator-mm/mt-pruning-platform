@@ -1,0 +1,51 @@
+{
+  "archive_sha256": "bf4d30d535326a2efdffd13eb9b8dcb03c9fc98fdd2c7f76765ea6e42a14f10c",
+  "gpu_peak_memory_mib": 14651,
+  "gpu_peak_utilization_pct": 100,
+  "gpu_samples": 36,
+  "identity": "b9ce18bfe6d397a126f8328471bb4c2fbd39aee4e7843f02961bbbf75a5fac73  /home/cc/.cache/mt-pruning/r20-r1/build/bin/llama-bench\nb6f73a72ad0683a5d2fd6986405058086201261957d74c0b99ae16175c46259e  /home/cc/.cache/mt-pruning/gguf-r20-r1/k96-q4_k_m.gguf\n",
+  "limits": "Rejected Original96 Q4 reference only; synthetic combined PP+TG throughput, not separate decode speed, translation quality, or accepted deployment. CPU-mapped buffer remains; no fully GPU-resident claim.",
+  "measurements": [
+    {
+      "average_run_ns": 1206663815,
+      "combined_tokens_per_second": 530.393402,
+      "context_prompt": 512,
+      "generation_tokens": 128,
+      "placement": [
+        "load_tensors: offloaded 49/49 layers to GPU",
+        "load_tensors:   CPU_Mapped model buffer size =   132.75 MiB",
+        "load_tensors:        CUDA0 model buffer size = 13150.88 MiB",
+        "llama_kv_cache:      CUDA0 KV buffer size =    72.00 MiB"
+      ],
+      "result_sha256": "4111545378607388ea5f204301139a5dfc036e2fe2d0eac3cf1b51606c34cdda"
+    },
+    {
+      "average_run_ns": 1819247770,
+      "combined_tokens_per_second": 1196.098963,
+      "context_prompt": 2048,
+      "generation_tokens": 128,
+      "placement": [
+        "load_tensors: offloaded 49/49 layers to GPU",
+        "load_tensors:   CPU_Mapped model buffer size =   132.75 MiB",
+        "load_tensors:        CUDA0 model buffer size = 13150.88 MiB",
+        "llama_kv_cache:      CUDA0 KV buffer size =   216.00 MiB"
+      ],
+      "result_sha256": "cdac0b52a549a0a4d137b456c96ef045fb5a0836c733baa3e7934ba4d09ee1c8"
+    },
+    {
+      "average_run_ns": 4731048650,
+      "combined_tokens_per_second": 1758.59554,
+      "context_prompt": 8192,
+      "generation_tokens": 128,
+      "placement": [
+        "load_tensors: offloaded 49/49 layers to GPU",
+        "load_tensors:   CPU_Mapped model buffer size =   132.75 MiB",
+        "load_tensors:        CUDA0 model buffer size = 13150.88 MiB",
+        "llama_kv_cache:      CUDA0 KV buffer size =   792.00 MiB"
+      ],
+      "result_sha256": "6b31edd759a2b830b6662431d54d00599131eb0e4009028ddd1b96723fc78c9c"
+    }
+  ],
+  "status": "R24_ORIGINAL96_Q4_CUDA_CONTEXT_BENCH_COMPLETE_DIAGNOSTIC_NOT_QUALITY",
+  "version": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16144 MiB):\n  Device 0: Tesla V100-SXM2-16GB, compute capability 7.0, VMM: yes, VRAM: 16144 MiB\nversion: 1.1.0-dev (build 0, commit unknown)\nbuilt with GNU 12.4.0 for Linux x86_64\n"
+}
