@@ -1,5 +1,5 @@
 """R23H: four one-swap layer-38 variants between Stable96 and R23G.
-Fit-only actual Prefill KL/NMSE; reuses exact baselines from the replayed 2^3 screen."""
+Fit-only actual Prefill KL/NMSE; all three baselines are remeasured in the same run."""
 import hashlib,importlib.util,json,math,os,pathlib,sys,time,fcntl,traceback
 P=pathlib.Path
 R=P.home()/".cache/mt-pruning"
@@ -22,6 +22,8 @@ R23G_MASK_SHA="77f97b8990835dc48738680b3ec78bdce7d5088a0d1b4a41d2aef886891d42aa"
 PINS={"driver":"0735238e15f13fd75e3f6939fc31aa834d8b5854","collector":"02daf65bb7fe0526b2a700d17013054f7b0eea46"}
 SWAPS=[(41,89),(41,123),(43,89),(43,123)]
 CANDIDATE_ORDER=["l38_swap_41_to_89","l38_swap_41_to_123","l38_swap_43_to_89","l38_swap_43_to_123"]
+BASELINES=["original96","stable96","r23g"]
+ALL_NAMES=BASELINES+CANDIDATE_ORDER
 
 def need(x,m):
     if not x: raise ValueError(m)
@@ -55,10 +57,6 @@ def aggregate(group,name):
     return {"kl":mean([x["metrics"][name]["kl"] for x in group]),
             "nmse":mean([x["metrics"][name]["nmse"] for x in group]),
             "argmax_mismatch":sum(x["metrics"][name]["argmax_mismatch"] for x in group)}
-def aggregate_values(group):
-    return {"kl":mean([x["kl"] for x in group]),
-            "nmse":mean([x["nmse"] for x in group]),
-            "argmax_mismatch":sum(x["argmax_mismatch"] for x in group)}
 def prepare(d):
     expanded=json.loads(pin(USB/"expanded.json",EXPANDED_BLOB,True))
     rows=[r for r in expanded["fit"] if r["direction"] in ("zh-my","my-zh")]
@@ -67,26 +65,23 @@ def prepare(d):
     stable=json.loads(pin(RR/"expanded-stable96-v1.json",STABLE_SHA))["kept"]
     r23g=json.loads(pin(USB/"candidate.json",CANDIDATE_SHA))["kept"]
     need(sha(canon(original))==ORIGINAL_MASK_SHA and sha(canon(r23g))==R23G_MASK_SHA,"base masks")
-    need([int(l) for l in original if original[l]!=stable[l]]==[10,15,34],"Stable96 layers")
-    need([int(l) for l in stable if stable[l]!=r23g[l]]==[38],"R23G layer-38-only difference")
+    need(all(len(set(stable[str(l)])-set(original[str(l)]))==2 for l in (10,15,34)),"stable layer expert changes")
+    need([int(l) for l in stable if stable[l]!=r23g[l]]==[38],"R23G differs from Stable96 only at layer38")
     need(sorted(set(stable["38"])-set(r23g["38"]))==[41,43],"layer38 removed experts")
     need(sorted(set(r23g["38"])-set(stable["38"]))==[89,123],"layer38 added experts")
-    prev_plan_raw=pin(PREVIOUS/"plan.json",PREVIOUS_PLAN_SHA)
-    prev_report_raw=pin(PREVIOUS/"report.json",PREVIOUS_REPORT_SHA)
-    prev_plan=json.loads(prev_plan_raw);prev_report=json.loads(prev_report_raw)
+    prev_plan=json.loads(pin(PREVIOUS/"plan.json",PREVIOUS_PLAN_SHA))
+    prev_report=json.loads(pin(PREVIOUS/"report.json",PREVIOUS_REPORT_SHA))
     need(prev_plan["status"]=="R23H_FACTORIAL_FIT_PREFILL_SCREEN_ONLY" and prev_plan["teacher"]==TEACHER,"previous plan")
     need(prev_report["status"]=="R23H_FACTORIAL_BIDIRECTIONAL_FIT_PREFILL_SCREEN_COMPLETE_NOT_FRESH_ADMISSION","previous report")
-    stable_candidate=next(x for x in prev_plan["screen"] if x["name"]=="stable_10_15_34")
-    need(stable_candidate["kept"]==stable,"stable96 candidate binding")
-    previous_log=(PREVIOUS_RUN/"run.log").read_bytes()
-    previous_events=[json.loads(line) for line in previous_log.splitlines() if line.startswith(b"{")]
-    previous_captures=[x for x in previous_events if x.get("status")=="R23H_FACTORIAL_PREFILL_CAPTURED"]
-    need(len(previous_captures)==16 and [x["index"] for x in previous_captures]==list(range(16)),"previous receipt event inventory")
+    need(prev_plan["ids"]==[r["id"] for r in rows],"previous Fit IDs")
+    prev_events=[json.loads(line) for line in (PREVIOUS_RUN/"run.log").read_bytes().splitlines() if line.startswith(b"{")]
+    captures=[x for x in prev_events if x.get("status")=="R23H_FACTORIAL_PREFILL_CAPTURED"]
+    need(len(captures)==16 and [x["index"] for x in captures]==list(range(16)),"previous receipt event inventory")
     previous=[]
     for i in range(16):
-        raw=pin(PREVIOUS/f"{i:02d}.json",previous_captures[i]["sha256"])
+        raw=pin(PREVIOUS/f"{i:02d}.json",captures[i]["sha256"])
         previous.append(json.loads(raw))
-    need([x["id"] for x in previous]==[x["id"] for x in rows],"previous receipt IDs")
+    need([x["id"] for x in previous]==[r["id"] for r in rows],"previous receipt IDs")
     need(all(x["teacher_sha256"]==TEACHER for x in previous),"previous teacher hashes")
     corpus=pin(R/"run-d01b-r19/corpus/corpus.jsonl",CORPUS_SHA)
     ctx={x["id"]:x for x in map(json.loads,corpus.splitlines()) if x["split"]=="calibration" and x["id"] in {r["id"] for r in rows}}
@@ -106,6 +101,9 @@ def prepare(d):
         source_stable96_sha256=STABLE_SHA,source_r23g_mask_sha256=R23G_MASK_SHA,
         source_original96_mask_sha256=ORIGINAL_MASK_SHA,ids=[r["id"] for r in rows],
         directions={"zh-my":8,"my-zh":8},layer38_removed_experts=[41,43],layer38_added_experts=[89,123],
+        baselines=[{"name":"original96","mask_sha256":sha(canon(original))},
+                   {"name":"stable96","mask_sha256":sha(canon(stable))},
+                   {"name":"r23g","mask_sha256":sha(canon(r23g))}],
         candidates=[candidates[n] for n in CANDIDATE_ORDER],holdout="FORBIDDEN",
         gate={"zh-my":"candidate KL strictly below original96; NMSE and argmax_mismatch no worse than original96",
               "my-zh":"candidate KL, NMSE, and argmax_mismatch no worse than R23G",
@@ -118,7 +116,8 @@ def run(d):
     event("R23H_LAYER38_SINGLE_SWAP_PLAN_FROZEN",sha256=ph,candidates=[{"name":x["name"],"removed":x["removed_expert"],"added":x["added_expert"]} for x in plan["candidates"]])
     drv=load(d,"driver");c=load(d,"collector");c.verify_code()
     corpus=pin(R/"run-d01b-r19/corpus/corpus.jsonl",CORPUS_SHA)
-    masks={x["name"]:x["kept"] for x in plan["candidates"]}
+    masks={"original96":original,"stable96":stable,"r23g":r23g}
+    masks.update({x["name"]:x["kept"] for x in plan["candidates"]})
     with (R/"r23-admissions/batch.lock").open("a+") as lk:
         deadline=time.monotonic()+7200
         while True:
@@ -149,25 +148,18 @@ def run(d):
             rec=dict(id=r["id"],direction=r["direction"],index=i,plan_sha256=ph,teacher_sha256=th,metrics={})
             for name,mask in masks.items():
                 h,z=prefill(prompt,mask);q=metric(t,z)
+                if name in ("original96","r23g"):
+                    oldq=old["metrics"][name]
+                    need(h==oldq["logits_sha256"] and abs(q["kl"]-oldq["kl"])<1e-12
+                         and abs(q["nmse"]-oldq["nmse"])<1e-12
+                         and q["argmax_mismatch"]==oldq["argmax_mismatch"],
+                         "historical baseline exact replay "+name+"/"+r["id"])
                 rec["metrics"][name]=dict(q,logits_sha256=h,mask_sha256=sha(canon(mask)))
             h,_=prefill(prompt,None);need(h==th,"teacher restoration")
             h=publish(dst/f"{i:02d}.json",rec);captures.append(rec)
             event("R23H_LAYER38_SINGLE_SWAP_PREFILL_CAPTURED",index=i,id=r["id"],sha256=h,kl={n:q["kl"] for n,q in rec["metrics"].items()})
-        names=["original96","stable96","r23g",*CANDIDATE_ORDER]
-        baseline={name:[x["metrics"][src] for x in previous] for name,src in
-            (("original96","original96"),("stable96","stable_10_15_34"),("r23g","r23g"))}
-        metrics={name:aggregate_values(baseline[name]) for name in ("original96","stable96","r23g")}
-        metrics.update({name:aggregate(captures,name) for name in CANDIDATE_ORDER})
-        by_direction={}
-        for direction in ("zh-my","my-zh"):
-            by_direction[direction]={}
-            for name in ("original96","stable96","r23g"):
-                group=[baseline[name][i] for i,r in enumerate(rows) if r["direction"]==direction]
-                by_direction[direction][name]={
-                    "kl":mean([x["kl"] for x in group]),"nmse":mean([x["nmse"] for x in group]),
-                    "argmax_mismatch":sum(x["argmax_mismatch"] for x in group)}
-            group=[x for x in captures if x["direction"]==direction]
-            for name in CANDIDATE_ORDER:by_direction[direction][name]=aggregate(group,name)
+        metrics={name:aggregate(captures,name) for name in ALL_NAMES}
+        by_direction={d:{name:aggregate([x for x in captures if x["direction"]==d],name) for name in ALL_NAMES} for d in ("zh-my","my-zh")}
         eligible=[]
         for name in CANDIDATE_ORDER:
             zh,zh0=by_direction["zh-my"][name],by_direction["zh-my"]["original96"]
@@ -177,7 +169,7 @@ def run(d):
         out=dict(status="R23H_LAYER38_SINGLE_SWAP_BIDIRECTIONAL_PREFILL_COMPLETE_NOT_FRESH_ADMISSION",
             plan_sha256=ph,samples=16,metrics=metrics,by_direction=by_direction,
             eligible_for_full_fit_propagation_only=eligible,selected=eligible[0] if eligible else None,
-            limits="Fixed Fit Prefill only for zh-my/my-zh; baseline rows reused from independently replayed factorial evidence; no Decode, Fresh, Holdout, quality admission, or physical model build.")
+            limits="Fixed Fit Prefill only for zh-my/my-zh; all baselines remeasured in this run; no Decode, Fresh, Holdout, quality admission, or physical model build.")
         rh=publish(dst/"report.json",out)
         event(out["status"],report_sha256=rh,**{k:v for k,v in out.items() if k!="status"})
 if __name__=="__main__":
