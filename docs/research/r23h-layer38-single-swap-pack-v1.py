@@ -124,7 +124,8 @@ def main():
     identity = [x for x in events if x.get("status") == "R23H_LAYER38_SINGLE_SWAP_TEACHER_IDENTITY"]
     preflight = [x for x in events if x.get("status") == "R23H_LAYER38_SINGLE_SWAP_RESOURCE_PREFLIGHT"]
     need(len(identity) == len(preflight) == 1, "single identity and resource preflight")
-    need(identity[0]["teacher"] == TEACHER and identity[0]["num_experts"] == 128\n         and identity[0]["identity"]["teacher"] == TEACHER, "exact model identity")
+    need(identity[0]["teacher"] == TEACHER and identity[0]["num_experts"] == 128
+         and identity[0]["identity"]["teacher"] == TEACHER, "exact model identity")
     need(preflight[0]["blockers"] == [] and preflight[0]["gpu_pids"] == []
          and preflight[0]["model_processes"] == [], "resource preflight")
 
