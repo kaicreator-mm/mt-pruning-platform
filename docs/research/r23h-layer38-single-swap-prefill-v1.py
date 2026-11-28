@@ -8,6 +8,7 @@ USB_PRIMARY=P("/mnt/mt-storage/mt-pruning/evidence/r23g-recovery-38ed4798")
 USB_FALLBACK=R/"r23g-recovery-ssd-38ed4798"
 USB=USB_PRIMARY if (USB_PRIMARY/"expanded.json").is_file() else USB_FALLBACK
 PREVIOUS=RR/"r23h-factorial-prefill-v5"
+PREVIOUS_RUN=R/"r23h-factorial-run-v5"
 TEACHER="0d1fb958cefa104dfc2f187cbb74da2edecf0f9"
 PREVIOUS_PLAN_SHA="580abfa0bbd3cf4fa9d88f9381e61db7615c8a739d90f840bc0e7de9fd8423a2"
 PREVIOUS_REPORT_SHA="e906a1e16b38902ea3282afc44b9afcc190b1673b3ffb9cdfc0d01d456b77fa1"
@@ -54,6 +55,10 @@ def aggregate(group,name):
     return {"kl":mean([x["metrics"][name]["kl"] for x in group]),
             "nmse":mean([x["metrics"][name]["nmse"] for x in group]),
             "argmax_mismatch":sum(x["metrics"][name]["argmax_mismatch"] for x in group)}
+def aggregate_values(group):
+    return {"kl":mean([x["kl"] for x in group]),
+            "nmse":mean([x["nmse"] for x in group]),
+            "argmax_mismatch":sum(x["argmax_mismatch"] for x in group)}
 def prepare(d):
     expanded=json.loads(pin(USB/"expanded.json",EXPANDED_BLOB,True))
     rows=[r for r in expanded["fit"] if r["direction"] in ("zh-my","my-zh")]
@@ -73,9 +78,14 @@ def prepare(d):
     need(prev_report["status"]=="R23H_FACTORIAL_BIDIRECTIONAL_FIT_PREFILL_SCREEN_COMPLETE_NOT_FRESH_ADMISSION","previous report")
     stable_candidate=next(x for x in prev_plan["screen"] if x["name"]=="stable_10_15_34")
     need(stable_candidate["kept"]==stable,"stable96 candidate binding")
+    previous_log=(PREVIOUS_RUN/"run.log").read_bytes()
+    previous_events=[json.loads(line) for line in previous_log.splitlines() if line.startswith(b"{")]
+    previous_captures=[x for x in previous_events if x.get("status")=="R23H_FACTORIAL_PREFILL_CAPTURED"]
+    need(len(previous_captures)==16 and [x["index"] for x in previous_captures]==list(range(16)),"previous receipt event inventory")
     previous=[]
     for i in range(16):
-        previous.append(json.loads(pin(PREVIOUS/f"{i:02d}.json",sha((PREVIOUS/f"{i:02d}.json").read_bytes()))))
+        raw=pin(PREVIOUS/f"{i:02d}.json",previous_captures[i]["sha256"])
+        previous.append(json.loads(raw))
     need([x["id"] for x in previous]==[x["id"] for x in rows],"previous receipt IDs")
     need(all(x["teacher_sha256"]==TEACHER for x in previous),"previous teacher hashes")
     corpus=pin(R/"run-d01b-r19/corpus/corpus.jsonl",CORPUS_SHA)
@@ -146,7 +156,7 @@ def run(d):
         names=["original96","stable96","r23g",*CANDIDATE_ORDER]
         baseline={name:[x["metrics"][src] for x in previous] for name,src in
             (("original96","original96"),("stable96","stable_10_15_34"),("r23g","r23g"))}
-        metrics={name:aggregate(baseline[name],name) for name in ("original96","stable96","r23g")}
+        metrics={name:aggregate_values(baseline[name]) for name in ("original96","stable96","r23g")}
         metrics.update({name:aggregate(captures,name) for name in CANDIDATE_ORDER})
         by_direction={}
         for direction in ("zh-my","my-zh"):
