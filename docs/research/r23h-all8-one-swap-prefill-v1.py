@@ -191,11 +191,11 @@ def prepare(directory):
     r23g = json.loads(pin(USB / "candidate.json", CANDIDATE_BLOB))["kept"]
     need(sha(canon(original)) == ORIGINAL_MASK_SHA
          and sha(canon(r23g)) == R23G_MASK_SHA, "original/R23G mask pins")
-    revert10 = json.loads(pin(REPO / "docs/research/r23h-all8-factorial-masks/all8_revert10.json",
+    revert10 = json.loads(pin(directory / "all8_revert10.json",
                               REVERT10_BLOB, True))
-    revert15 = json.loads(pin(REPO / "docs/research/r23h-all8-factorial-masks/all8_revert15.json",
+    revert15 = json.loads(pin(directory / "all8_revert15.json",
                               REVERT15_BLOB, True))
-    inventory = json.loads(pin(REPO / "docs/research/r23h-all8-one-swap-candidate-inventory-v1.json", INVENTORY_BLOB, True))
+    inventory = json.loads(pin(directory / "candidate-inventory.json", INVENTORY_BLOB, True))
     all8, candidates = build_masks(original, revert10, revert15, inventory)
     check_mask(r23g, "r23g")
 
