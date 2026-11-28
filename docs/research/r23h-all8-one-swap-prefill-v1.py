@@ -22,6 +22,7 @@ ORIGINAL_BLOB = "d8bcafe0fe1d8c6bacd0a425dfde57890b18f1ed"
 ORIGINAL_MASK_SHA = "23d615b5f6e33af73c008729a34b3a0dbe9713508a5fd299b72ee9559180e8e7"
 R23G_MASK_SHA = "77f97b8990835dc48738680b3ec78bdce7d5088a0d1b4a41d2aef886891d42aa"
 ALL8_MASK_SHA = "1f7402ae0fb540c86ace21914b45ea0c42a113e5f38072a2d3f86795ee8ad70b"
+INVENTORY_BLOB = "65e57a3add8cff36979b06928af22bcdcefe3ce6"
 REVERT10_BLOB = "faa4d6146a3df4192e913e2702a926afa3fb095d"
 REVERT15_BLOB = "044a6f395d779489462df00a664cf7876732ab06"
 PINS = {
@@ -122,7 +123,7 @@ def aggregate(group, name):
     }
 
 
-def build_masks(original, revert10, revert15):
+def build_masks(original, revert10, revert15, inventory):
     need(revert10["base_mask_sha256"] == ALL8_MASK_SHA
          and revert15["base_mask_sha256"] == ALL8_MASK_SHA, "all8 source base pins")
     need(revert10["changed_layers"] == [15, 40, 42]
@@ -163,6 +164,19 @@ def build_masks(original, revert10, revert15):
                 )
     need(list(candidates) == CANDIDATE_ORDER and len(candidates) == 16,
          "complete 16-candidate inventory")
+    need(inventory["status"] == "R23H_ALL8_ONE_SWAP_CANDIDATE_INVENTORY_FROZEN"
+         and inventory["base_mask_sha256"] == ALL8_MASK_SHA
+         and inventory["original96_mask_sha256"] == ORIGINAL_MASK_SHA
+         and inventory["layers"] == list(LAYERS), "frozen candidate inventory header")
+    frozen = inventory["candidates"]
+    need(len(frozen) == 16, "frozen candidate inventory count")
+    for expected, actual in zip(frozen, candidates.values()):
+        need(expected["name"] == actual["name"]
+             and expected["layer"] == actual["layer"]
+             and expected["removed_expert"] == actual["removed_expert"]
+             and expected["restored_expert"] == actual["restored_expert"]
+             and expected["mask_sha256"] == actual["mask_sha256"],
+             "frozen candidate inventory mismatch " + actual["name"])
     return all8, candidates
 
 
@@ -181,7 +195,8 @@ def prepare(directory):
                               REVERT10_BLOB, True))
     revert15 = json.loads(pin(REPO / "docs/research/r23h-all8-factorial-masks/all8_revert15.json",
                               REVERT15_BLOB, True))
-    all8, candidates = build_masks(original, revert10, revert15)
+    inventory = json.loads(pin(REPO / "docs/research/r23h-all8-one-swap-candidate-inventory-v1.json", INVENTORY_BLOB, True))
+    all8, candidates = build_masks(original, revert10, revert15, inventory)
     check_mask(r23g, "r23g")
 
     previous_plan = json.loads(pin(PREVIOUS / "plan.json", PREVIOUS_PLAN_SHA))
@@ -231,6 +246,7 @@ def prepare(directory):
         source_original96_mask_sha256=ORIGINAL_MASK_SHA,
         source_r23g_mask_sha256=R23G_MASK_SHA,
         source_all8_mask_sha256=ALL8_MASK_SHA,
+        source_candidate_inventory_blob=INVENTORY_BLOB,
         source_all8_revert10_blob=REVERT10_BLOB,
         source_all8_revert15_blob=REVERT15_BLOB,
         ids=[row["id"] for row in rows],
