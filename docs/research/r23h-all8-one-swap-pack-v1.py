@@ -123,8 +123,20 @@ def build_masks(files):
     frozen = inventory["candidates"]
     need(inventory["status"] == "R23H_ALL8_ONE_SWAP_CANDIDATE_INVENTORY_FROZEN"
          and inventory["base_mask_sha256"] == ALL8_MASK_SHA
+         and inventory["original96_mask_sha256"] == ORIGINAL_MASK_SHA
+         and inventory["layers"] == list(LAYERS)
+         and inventory["source_mask_blobs"] == {
+             "all8_revert10": PINS["all8_revert10.json"],
+             "all8_revert15": PINS["all8_revert15.json"],
+             "original96": PINS["original.json"],
+         }
          and len(frozen) == 16 and list(candidates) == CANDIDATE_ORDER,
          "candidate inventory header/order")
+    for layer in LAYERS:
+        delta = inventory["layer_changes"][str(layer)]
+        need(delta["removed_from_original96"] == EXPECTED_CHANGES[layer][0]
+             and delta["added_by_all8"] == EXPECTED_CHANGES[layer][1],
+             "candidate inventory layer delta " + str(layer))
     for item, name in zip(frozen, CANDIDATE_ORDER):
         actual = candidates[name]
         need(item["name"] == name and item["layer"] == actual["layer"]
@@ -224,6 +236,16 @@ def main():
          "plan scope")
     need(plan["directions"] == {"zh-my": 8, "my-zh": 8}
          and len(plan["ids"]) == 16 and len(set(plan["ids"])) == 16, "plan Fit inventory")
+    need(plan["source_previous_plan_sha256"] == PREVIOUS_PLAN_SHA
+         and plan["source_previous_report_sha256"] == PREVIOUS_REPORT_SHA
+         and plan["source_original96_mask_sha256"] == ORIGINAL_MASK_SHA
+         and plan["source_r23g_mask_sha256"] == R23G_MASK_SHA
+         and plan["source_all8_mask_sha256"] == ALL8_MASK_SHA
+         and plan["source_candidate_inventory_blob"] == PINS["candidate-inventory.json"]
+         and plan["source_all8_revert10_blob"] == PINS["all8_revert10.json"]
+         and plan["source_all8_revert15_blob"] == PINS["all8_revert15.json"],
+         "plan source pins")
+    need(plan["changed_layers"] == list(LAYERS), "plan changed layers")
     need([x["name"] for x in plan["baselines"]] == BASELINES
          and [x["name"] for x in plan["candidates"]] == CANDIDATE_ORDER,
          "plan mask inventory")
@@ -257,14 +279,18 @@ def main():
     need(sha(previous_plan_raw) == PREVIOUS_PLAN_SHA
          and sha(previous_report_raw) == PREVIOUS_REPORT_SHA, "previous factorial provenance")
     previous_plan = parse(previous_plan_raw, "previous plan")
-    need(previous_plan["ids"] == plan["ids"] and previous_plan["teacher"] == TEACHER,
-         "previous Fit IDs/teacher")
+    need(previous_plan["status"] == "R23H_FACTORIAL_FIT_PREFILL_SCREEN_ONLY"
+         and previous_report["status"] == "R23H_FACTORIAL_BIDIRECTIONAL_PREFILL_SCREEN_COMPLETE_NOT_FRESH_ADMISSION"
+         and previous_plan["ids"] == plan["ids"] and previous_plan["teacher"] == TEACHER,
+         "previous Fit IDs/teacher/report")
     previous_events = [parse(line, "previous run log")
                        for line in files["input/previous-factorial-run.log"].splitlines()
                        if line.startswith(b"{")]
     previous_captures = [x for x in previous_events
                          if x.get("status") == "R23H_FACTORIAL_PREFILL_CAPTURED"]
-    need(len(previous_captures) == 16, "previous receipt event count")
+    need(len(previous_captures) == 16
+         and [x["index"] for x in previous_captures] == list(range(16)),
+         "previous receipt event count/order")
     previous = []
     for index, event_row in enumerate(previous_captures):
         raw = files[f"input/previous-factorial-receipts/{index:02d}.json"]
@@ -286,7 +312,12 @@ def main():
         receipt = parse(raw, "current receipt")
         old = previous[index]
         need(receipt["id"] == row["id"] == old["id"]
-             and receipt["direction"] == row["direction"], "receipt identity " + str(index))
+             and receipt["direction"] == row["direction"]
+             and captures[index]["id"] == row["id"]
+             and teacher_checks[index]["id"] == row["id"]
+             and teacher_checks[index]["index"] == index
+             and teacher_checks[index]["match"] is True,
+             "receipt identity " + str(index))
         need(receipt["index"] == index and receipt["plan_sha256"] == plan_sha,
              "receipt plan/index " + str(index))
         need(receipt["teacher_sha256"] == old["teacher_sha256"]
@@ -296,9 +327,10 @@ def main():
         for name in ALL_NAMES:
             metric = receipt["metrics"][name]
             need(metric["mask_sha256"] == sha(canon(masks[name])), "mask binding " + name)
-            need(math.isfinite(metric["kl"]) and metric["kl"] >= 0
-                 and math.isfinite(metric["nmse"]) and metric["nmse"] >= 0,
-                 "finite metric " + name)
+            need(type(metric["kl"]) in (int, float) and math.isfinite(metric["kl"]) and metric["kl"] >= 0
+                 and type(metric["nmse"]) in (int, float) and math.isfinite(metric["nmse"]) and metric["nmse"] >= 0
+                 and type(metric["logits_sha256"]) is str and len(metric["logits_sha256"]) == 64,
+                 "finite metric/hash " + name)
             need(type(metric["argmax_mismatch"]) is int
                  and metric["argmax_mismatch"] in (0, 1), "argmax mismatch " + name)
         for baseline in ("original96", "r23g"):
@@ -310,7 +342,10 @@ def main():
     report_raw = files["batch/report.json"]
     report = parse(report_raw, "report")
     need(report["status"] == "R23H_ALL8_ONE_SWAP_BIDIRECTIONAL_PREFILL_COMPLETE_NOT_FRESH_ADMISSION"
-         and report["plan_sha256"] == plan_sha and report["samples"] == 16, "report scope")
+         and report["plan_sha256"] == plan_sha and report["samples"] == 16
+         and "no Decode" in report["limits"] and "Fresh" in report["limits"]
+         and "Holdout" in report["limits"] and "physical model build" in report["limits"],
+         "report scope/limits")
     overall = {name: aggregate(receipts, name) for name in ALL_NAMES}
     by_direction = {
         direction: {
