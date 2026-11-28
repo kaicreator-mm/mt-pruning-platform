@@ -1,0 +1,168 @@
+{
+  "archive_sha256": "ecefcf9b7c30dd3dfd48a7af26d18e6e3617297c43b1c419b986a400567ca3a6",
+  "by_direction": {
+    "my-zh": {
+      "original96": {
+        "argmax_mismatch": 1,
+        "kl": 0.5420845595308531,
+        "nmse": 0.10332229656419416
+      },
+      "r23g": {
+        "argmax_mismatch": 0,
+        "kl": 0.4469661722098285,
+        "nmse": 0.07011766078002049
+      },
+      "r23g_revert10": {
+        "argmax_mismatch": 0,
+        "kl": 0.5047130118397408,
+        "nmse": 0.07395745388071032
+      },
+      "r23g_revert10_15": {
+        "argmax_mismatch": 0,
+        "kl": 0.620470020553284,
+        "nmse": 0.07399737689299686
+      },
+      "r23g_revert10_15_34": {
+        "argmax_mismatch": 0,
+        "kl": 0.6353385964523877,
+        "nmse": 0.0742553951669978
+      },
+      "r23g_revert10_34": {
+        "argmax_mismatch": 0,
+        "kl": 0.5118246829084196,
+        "nmse": 0.07311632069830623
+      },
+      "r23g_revert15": {
+        "argmax_mismatch": 0,
+        "kl": 0.5322977737031449,
+        "nmse": 0.07276343032576026
+      },
+      "r23g_revert15_34": {
+        "argmax_mismatch": 0,
+        "kl": 0.5204605574932831,
+        "nmse": 0.07334957037821128
+      },
+      "r23g_revert34": {
+        "argmax_mismatch": 0,
+        "kl": 0.44887877792564845,
+        "nmse": 0.06933901910633196
+      }
+    },
+    "zh-my": {
+      "original96": {
+        "argmax_mismatch": 0,
+        "kl": 0.07984518069504659,
+        "nmse": 0.04725533805377669
+      },
+      "r23g": {
+        "argmax_mismatch": 0,
+        "kl": 0.1552965070122628,
+        "nmse": 0.04474827075496432
+      },
+      "r23g_revert10": {
+        "argmax_mismatch": 0,
+        "kl": 0.1287133809737228,
+        "nmse": 0.04773843414351742
+      },
+      "r23g_revert10_15": {
+        "argmax_mismatch": 0,
+        "kl": 0.13413349020740795,
+        "nmse": 0.046339988794385195
+      },
+      "r23g_revert10_15_34": {
+        "argmax_mismatch": 0,
+        "kl": 0.139745377245513,
+        "nmse": 0.04598762853168539
+      },
+      "r23g_revert10_34": {
+        "argmax_mismatch": 0,
+        "kl": 0.13302969032792336,
+        "nmse": 0.04823932516267246
+      },
+      "r23g_revert15": {
+        "argmax_mismatch": 0,
+        "kl": 0.1774166729708343,
+        "nmse": 0.04417596434539385
+      },
+      "r23g_revert15_34": {
+        "argmax_mismatch": 0,
+        "kl": 0.17758779599749855,
+        "nmse": 0.04391169674458728
+      },
+      "r23g_revert34": {
+        "argmax_mismatch": 0,
+        "kl": 0.15862059544212287,
+        "nmse": 0.04515504075589218
+      }
+    }
+  },
+  "checks": [
+    "archive SHA, member inventory, path safety and regular-file validation",
+    "exact v3 runner and pinned driver/collector/original mask blobs",
+    "plan/report scope, previous factorial provenance and recovery receipt binding",
+    "all seven 47x96 R23G-background masks reconstructed from original96/R23G",
+    "16 frozen Fit rows, balanced directions, Holdout exclusion and corpus prompt identity",
+    "18 historical R23G receipt hashes and all available teacher/original96/R23G logit replays",
+    "resource preflight, exact pinned teacher identity and clean run exit/stderr",
+    "all 16 receipt hashes, event order, mask bindings and finite metric values",
+    "independent overall/direction aggregates and candidate gate recomputation"
+  ],
+  "decision": "Prefill-only result. Advance only the selected candidate, if any, to a separately gated full Fit propagation; no Decode/Fresh/Holdout or product admission is implied.",
+  "directions": {
+    "my-zh": 8,
+    "zh-my": 8
+  },
+  "eligible_for_full_fit_propagation_only": [],
+  "metrics": {
+    "original96": {
+      "argmax_mismatch": 1,
+      "kl": 0.3109648701129498,
+      "nmse": 0.07528881730898543
+    },
+    "r23g": {
+      "argmax_mismatch": 0,
+      "kl": 0.30113133961104566,
+      "nmse": 0.057432965767492405
+    },
+    "r23g_revert10": {
+      "argmax_mismatch": 0,
+      "kl": 0.31671319640673185,
+      "nmse": 0.060847944012113866
+    },
+    "r23g_revert10_15": {
+      "argmax_mismatch": 0,
+      "kl": 0.377301755380346,
+      "nmse": 0.06016868284369102
+    },
+    "r23g_revert10_15_34": {
+      "argmax_mismatch": 0,
+      "kl": 0.3875419868489503,
+      "nmse": 0.0601215118493416
+    },
+    "r23g_revert10_34": {
+      "argmax_mismatch": 0,
+      "kl": 0.32242718661817155,
+      "nmse": 0.060677822930489345
+    },
+    "r23g_revert15": {
+      "argmax_mismatch": 0,
+      "kl": 0.35485722333698955,
+      "nmse": 0.058469697335577046
+    },
+    "r23g_revert15_34": {
+      "argmax_mismatch": 0,
+      "kl": 0.3490241767453909,
+      "nmse": 0.05863063356139928
+    },
+    "r23g_revert34": {
+      "argmax_mismatch": 0,
+      "kl": 0.3037496866838857,
+      "nmse": 0.057247029931112074
+    }
+  },
+  "plan_sha256": "52bd4cfdde4025b327ed949ddc54577dc145f256f2580f4233c75d8b1a98a602",
+  "report_sha256": "c296bc110fdfd5a4f09dc19a95ca89b59dabe0ee92fa22809fbf7d7f52e91538",
+  "samples": 16,
+  "selected": null,
+  "status": "R23H_R23G_REVERSION_BIDIRECTIONAL_PREFILL_INDEPENDENT_REPLAY_PASS"
+}
