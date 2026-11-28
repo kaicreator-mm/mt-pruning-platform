@@ -36,7 +36,7 @@ $gitBlobInput = New-Object byte[] ($header.Length + $scriptBytes.Length)
 $sha1 = [System.Security.Cryptography.SHA1]::Create()
 $scriptBlob = ([BitConverter]::ToString($sha1.ComputeHash($gitBlobInput))).Replace("-", "").ToLowerInvariant()
 $sha1.Dispose()
-if ($scriptBlob -ne "6edc40c457ce42098a8c72ff889017ecb67b7e49") {
+if ($scriptBlob -ne "4fb774a645536a8ec83d10259bdc629533d0df54") {
     throw "Independent replay source pin mismatch"
 }
 
