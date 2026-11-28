@@ -1,0 +1,45 @@
+{
+  "all_argmax_equal": false,
+  "archive_sha256": "870803e5fce019208c5f8d0ad663a34f0e702a996c816dabd6e2d8386ed8d120",
+  "cache": {
+    "experts": {
+      "bytes": 4290772992,
+      "evictions": 48599,
+      "hits": 0,
+      "misses": 49281,
+      "source_bytes": 155024621568
+    },
+    "peak_allocated": 10564708864,
+    "peak_reserved": 11221860352,
+    "static": {
+      "bytes": 5720428032,
+      "evictions": 0,
+      "hits": 10608,
+      "misses": 624,
+      "source_bytes": 2885078528
+    }
+  },
+  "cache_warning": "Expert cache zero hits: performance defect; not a gate bypass.",
+  "limits": "Checks source, evidence identity, reported metrics and aggregates, not independent numerical recomputation from raw CUDA logits or quality admission.",
+  "max_nmse": 0.03526382148674229,
+  "peak_sampled_gpu_mib": 11081,
+  "peak_sampled_gpu_pct": 59,
+  "reference_sha256": "13e8cf69c159fa2aa6b61860617947ac3ceb2f15f915203007bb9499bfd1b097",
+  "report_sha256": "372f00402f165b4267f0fe24ef5380d9afb8754f6406514bbf4cd0f8a6127052",
+  "status": "CUDA_DIAGNOSTIC_EVIDENCE_REPLAY_PASS_NOT_ORACLE_ADMISSION",
+  "steps": 54,
+  "timings": [
+    {
+      "batched_speedup": 0.962854588171613,
+      "cpu_reference_seconds": 24.778046937004547,
+      "cuda_seconds": 25.733944918989437,
+      "id": "calibration:zh-my:826"
+    },
+    {
+      "batched_speedup": 1.654231070189977,
+      "cpu_reference_seconds": 44.91375203800271,
+      "cuda_seconds": 27.150833307008725,
+      "id": "calibration:my-zh:642"
+    }
+  ]
+}
