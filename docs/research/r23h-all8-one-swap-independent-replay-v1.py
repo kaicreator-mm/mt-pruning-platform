@@ -207,6 +207,12 @@ def main():
 
     events = [strict_json(line, "run log") for line in get(F, "run/run-v1.log").splitlines()
               if line.startswith(b"{")]
+    runtime = [x for x in events if x.get("status") == "R23H_ALL8_ONE_SWAP_RUNTIME_ENVIRONMENT"]
+    need(len(runtime) == 1
+         and runtime[0]["engine_repo_head"] == "3212303e1e02994a5124db8c85195b91325c7a7c"
+         and runtime[0]["worktree_head"] == "03e9e876f7aed4d1c3fd6f2271215f67eb074141"
+         and runtime[0]["pythonpath"].split(":")[0] == "/home/cc/mt-pruning-platform",
+         "runtime engine import provenance")
     plan_events = [x for x in events if x.get("status") == "R23H_ALL8_ONE_SWAP_PLAN_FROZEN"]
     identity = [x for x in events if x.get("status") == "R23H_ALL8_ONE_SWAP_TEACHER_IDENTITY"]
     preflight = [x for x in events if x.get("status") == "R23H_ALL8_ONE_SWAP_RESOURCE_PREFLIGHT"]
