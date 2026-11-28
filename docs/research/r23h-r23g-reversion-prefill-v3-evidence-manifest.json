@@ -1,0 +1,23 @@
+{
+  "status": "R23H_R23G_BACKGROUND_REVERSION_SCREEN_INDEPENDENTLY_REPLAYED_NO_CANDIDATE",
+  "plan_sha256": "52bd4cfdde4025b327ed949ddc54577dc145f256f2580f4233c75d8b1a98a602",
+  "report_sha256": "c296bc110fdfd5a4f09dc19a95ca89b59dabe0ee92fa22809fbf7d7f52e91538",
+  "evidence_archive_sha256": "ecefcf9b7c30dd3dfd48a7af26d18e6e3617297c43b1c419b986a400567ca3a6",
+  "evidence_archive_bytes": 630631,
+  "evidence_archive_files": 50,
+  "runner_git_blob": "bfd31208cf0884fbea17d3b1b2b3d9e32f0158c9",
+  "independent_replay_status": "R23H_R23G_REVERSION_BIDIRECTIONAL_PREFILL_INDEPENDENT_REPLAY_PASS",
+  "independent_replay_script_sha256": "3b7ed05524fd9c3763246811e298964b21e41bd2312455202de40a8db7502031",
+  "independent_host": "Windows 11 / Ryzen 7 8845HS",
+  "execution_host": "V100 server, CPU mmap, 8 threads, CUDA disabled",
+  "samples": 16,
+  "directions": {
+    "zh_my": 8,
+    "my_zh": 8
+  },
+  "candidate_count": 7,
+  "eligible": [],
+  "selected": null,
+  "full_fit_propagation_started": false,
+  "decision": "No R23G-background layer-reversion candidate meets both zh-my and my-zh Prefill gates. Do not advance this candidate family to full Fit propagation or Decode."
+}
