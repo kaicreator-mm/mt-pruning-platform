@@ -229,7 +229,7 @@ def main():
         need(receipt["id"] == row["id"] and receipt["direction"] == row["direction"]
              and receipt["index"] == index and receipt["plan_sha256"] == PLAN_SHA,
              "receipt identity " + str(index))
-        need(receipt["teacher_sha256"] == TEACHER or len(receipt["teacher_sha256"]) == 64,
+        need(receipt["teacher_sha256"] == TEACHER,
              "teacher receipt hash")
         need(set(receipt["metrics"]) == set(NAMES), "metric inventory " + row["id"])
         for name in NAMES:
