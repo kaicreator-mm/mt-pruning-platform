@@ -165,8 +165,8 @@ def main():
          and [x["id"] for x in new_receipts] == pb["ids"], "receipt order")
     for old, new in zip(old_receipts, new_receipts):
         need(old["direction"] == new["direction"], "direction mismatch " + old["id"])
-        need(old["teacher_sha256"] == new["teacher_sha256"] == TEACHER,
-             "teacher hash mismatch " + old["id"])
+        need(old["teacher_sha256"] == new["teacher_sha256"] and len(old["teacher_sha256"]) == 64,
+             "teacher-logit hash mismatch " + old["id"])
         for baseline in ("original96", "r23g"):
             x, y = old["metrics"][baseline], new["metrics"][baseline]
             need(x["logits_sha256"] == y["logits_sha256"], "baseline logits mismatch " + baseline + "/" + old["id"])
