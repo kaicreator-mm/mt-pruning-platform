@@ -4,7 +4,7 @@ set -euo pipefail
 PINNED_HEAD="03e9e876f7aed4d1c3fd6f2271215f67eb074141"
 R="$HOME/.cache/mt-pruning"
 RUN="$R/r23h-all8-one-swap-run-v1"
-WORKTREE="$R/worktrees/r23h-all8-one-swap-\${PINNED_HEAD:0:12}"
+WORKTREE="$R/worktrees/r23h-all8-one-swap-${PINNED_HEAD:0:12}"
 OUT="$R/r23-results/r23h-all8-one-swap-prefill-v1"
 
 test -d "$RUN"
