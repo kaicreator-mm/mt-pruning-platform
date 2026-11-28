@@ -111,8 +111,7 @@ def main():
     need(report["status"] == "R23H_R23G_BACKGROUND_REVERSION_BIDIRECTIONAL_PREFILL_COMPLETE_NOT_FRESH_ADMISSION",
          "report scope")
     need(report["plan_sha256"] == PLAN_SHA and report["samples"] == 16, "report plan/sample binding")
-    need("no Decode" in report["limits"] and "no Fresh" in report["limits"] and "no Holdout" in report["limits"],
-         "report limits")
+    need("no Decode, Fresh, Holdout" in report["limits"], "report limits")
 
     expanded_raw = (RECOVERY_DIR / "expanded.json").read_bytes()
     need(blob(expanded_raw) == EXPANDED_BLOB, "expanded Fit input blob")
