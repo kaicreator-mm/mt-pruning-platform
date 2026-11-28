@@ -280,7 +280,7 @@ def main():
          and sha(previous_report_raw) == PREVIOUS_REPORT_SHA, "previous factorial provenance")
     previous_plan = parse(previous_plan_raw, "previous plan")
     need(previous_plan["status"] == "R23H_FACTORIAL_FIT_PREFILL_SCREEN_ONLY"
-         and previous_report["status"] == "R23H_FACTORIAL_BIDIRECTIONAL_PREFILL_SCREEN_COMPLETE_NOT_FRESH_ADMISSION"
+         and previous_report["status"] == "R23H_FACTORIAL_BIDIRECTIONAL_FIT_PREFILL_SCREEN_COMPLETE_NOT_FRESH_ADMISSION"
          and previous_plan["ids"] == plan["ids"] and previous_plan["teacher"] == TEACHER,
          "previous Fit IDs/teacher/report")
     previous_events = [parse(line, "previous run log")
