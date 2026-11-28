@@ -85,10 +85,10 @@ def check_mask(mask, label):
 
 
 def aggregate(group, name):
-    need(len(group) == 8, "aggregate count " + name)
+    need(len(group) in (8, 16), "aggregate count " + name)
     return {
-        "kl": math.fsum(x["metrics"][name]["kl"] for x in group) / 8,
-        "nmse": math.fsum(x["metrics"][name]["nmse"] for x in group) / 8,
+        "kl": math.fsum(x["metrics"][name]["kl"] for x in group) / len(group),
+        "nmse": math.fsum(x["metrics"][name]["nmse"] for x in group) / len(group),
         "argmax_mismatch": sum(x["metrics"][name]["argmax_mismatch"] for x in group),
     }
 
