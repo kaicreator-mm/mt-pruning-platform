@@ -101,8 +101,10 @@ def main():
     previous_report = obj(A, "batch/report.json")
     current_report = obj(B, "batch/report.json")
     need(sha(A["batch/report.json"]) == PREVIOUS_REPORT_SHA, "previous report SHA")
-    need(previous_report["plan_sha256"] == PREVIOUS_PLAN_SHA, "previous report binding")
-    need(current_report["plan_sha256"] == CURRENT_PLAN_SHA, "current report binding")
+    need(previous_report["status"] == "R23H_FACTORIAL_BIDIRECTIONAL_FIT_PREFILL_SCREEN_COMPLETE_NOT_FRESH_ADMISSION"
+         and previous_report["plan_sha256"] == PREVIOUS_PLAN_SHA, "previous report binding")
+    need(current_report["status"] == "R23H_R23G_BACKGROUND_REVERSION_BIDIRECTIONAL_PREFILL_COMPLETE_NOT_FRESH_ADMISSION"
+         and current_report["plan_sha256"] == CURRENT_PLAN_SHA, "current report binding")
 
     # Both screens must use the same frozen prompt rows and pinned source corpus.
     for path in ("input/expanded.json", "input/candidate.json", "input/recovery-receipt.json",
@@ -133,6 +135,7 @@ def main():
         for baseline in ("original96", "r23g"):
             a, b = old["metrics"][baseline], new["metrics"][baseline]
             need(a["logits_sha256"] == b["logits_sha256"], "baseline logits mismatch " + baseline + "/" + old["id"])
+            need(a["mask_sha256"] == b["mask_sha256"], "baseline mask mismatch " + baseline + "/" + old["id"])
             for metric in METRICS:
                 need(a[metric] == b[metric], "baseline metric mismatch " + baseline + "/" + old["id"])
         need(old["teacher_sha256"] == new["teacher_sha256"] == TEACHER,
@@ -252,7 +255,10 @@ def main():
                   for bits in itertools.product((0, 1), repeat=4)],
         "eligible_for_full_fit_propagation_only": eligible,
         "factorial_effects": effects,
-        "decision": "Prefill-only factorial evidence. No candidate is admitted to Decode/Fresh/Holdout or product use by this analysis.",
+        "decision": (
+            "Prefill-only factorial evidence. Eligible candidates, if any, may proceed only to a separately "
+            "gated full Fit propagation; no Decode/Fresh/Holdout or product admission is implied."
+        ),
         "checks": [
             "both evidence archives independently hash-pinned",
             "same frozen 16 Fit IDs, directions, corpus and source inputs",
