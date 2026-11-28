@@ -27,6 +27,8 @@ For each changed layer, generate the four one-for-one swaps that remove one of t
 
 No other layer or tensor is changed. No top-k, router, tokenizer, shared expert, training, or model-weight materialization is involved.
 
+The exact 16 candidate names and mask SHA-256 values are frozen in `r23h-all8-one-swap-candidate-inventory-v1.json`; the runner pins that Git blob and fails closed if any generated mask differs.
+
 ## Actual Prefill screen
 
 - 16 frozen Fit prompts: 8 `zh-my` and 8 `my-zh`; Holdout is forbidden.
